@@ -13,7 +13,7 @@ const TOKYO_METRO_API_BASE_URL = "https://tokyo-metro-app.vercel.app";
  * =========================================================
  */
 
-export type TokyoMetroRailway = "Ginza" | "Marunouchi";
+export type TokyoMetroRailway = "Ginza" | "Marunouchi" | "Hibiya";
 
 /*
  * =========================================================
@@ -30,7 +30,7 @@ export type TokyoMetroUpcomingTrain = {
 
   trainType: string | null;
 
-  destinationStations: Array<string | null>;
+  destinationStations: (string | null)[];
 
   train: string | null;
 };
@@ -38,7 +38,7 @@ export type TokyoMetroUpcomingTrain = {
 /*
  * =========================================================
  * 방향
- * =(=============)[]====================================
+ * =========================================================
  */
 
 export type TokyoMetroDirection = {
@@ -93,41 +93,23 @@ export type TokyoMetroTimetableResponse = {
 
 const GINZA_STATION_MAP: Record<string, string> = {
   G01: "Shibuya",
-
   G02: "OmoteSando",
-
   G03: "Gaiemmae",
-
   G04: "AoyamaItchome",
-
   G05: "AkasakaMitsuke",
-
   G06: "TameikeSanno",
-
   G07: "Toranomon",
-
   G08: "Shimbashi",
-
   G09: "Ginza",
-
   G10: "Kyobashi",
-
   G11: "Nihombashi",
-
   G12: "Mitsukoshimae",
-
   G13: "Kanda",
-
   G14: "Suehirocho",
-
   G15: "UenoHiroKoji",
-
   G16: "Ueno",
-
   G17: "Inaricho",
-
   G18: "Tawaramachi",
-
   G19: "Asakusa",
 };
 
@@ -139,54 +121,69 @@ const GINZA_STATION_MAP: Record<string, string> = {
 
 const MARUNOUCHI_STATION_MAP: Record<string, string> = {
   M01: "Ogikubo",
-
   M02: "MinamiAsagaya",
-
   M03: "ShinKoenji",
-
   M04: "HigashiKoenji",
-
   M05: "ShinNakano",
-
   M06: "NakanoSakaue",
-
   M07: "NishiShinjuku",
-
   M08: "Shinjuku",
-
   M09: "ShinjukuSanchome",
-
   M10: "ShinjukuGyoemmae",
-
   M11: "YotsuyaSanchome",
-
   M12: "Yotsuya",
-
   M13: "AkasakaMitsuke",
-
   M14: "KokkaiGijidomae",
-
   M15: "Kasumigaseki",
-
   M16: "Ginza",
-
   M17: "Tokyo",
-
   M18: "Otemachi",
-
   M19: "Awajicho",
-
   M20: "Ochanomizu",
-
   M21: "HongoSanchome",
-
   M22: "Korakuen",
-
   M23: "Myogadani",
-
   M24: "ShinOtsuka",
-
   M25: "Ikebukuro",
+};
+
+/*
+ * =========================================================
+ * 히비야선 Station Map
+ * =========================================================
+ *
+ * H01 나카메구로
+ * ↓
+ * H22 기타센주
+ *
+ * 앱에서는 H01, H02 같은 역번호를 사용하고
+ * API 요청 시 ODPT Station ID의 영문 역명으로 변환한다.
+ * =========================================================
+ */
+
+const HIBIYA_STATION_MAP: Record<string, string> = {
+  H01: "NakaMeguro",
+  H02: "Ebisu",
+  H03: "HiroO",
+  H04: "Roppongi",
+  H05: "Kamiyacho",
+  H06: "ToranomonHills",
+  H07: "Kasumigaseki",
+  H08: "Hibiya",
+  H09: "Ginza",
+  H10: "HigashiGinza",
+  H11: "Tsukiji",
+  H12: "Hatchobori",
+  H13: "Kayabacho",
+  H14: "Ningyocho",
+  H15: "Kodemmacho",
+  H16: "Akihabara",
+  H17: "NakaOkachimachi",
+  H18: "Ueno",
+  H19: "Iriya",
+  H20: "Minowa",
+  H21: "MinamiSenju",
+  H22: "KitaSenju",
 };
 
 /*
@@ -199,6 +196,8 @@ const STATION_MAPS: Record<TokyoMetroRailway, Record<string, string>> = {
   Ginza: GINZA_STATION_MAP,
 
   Marunouchi: MARUNOUCHI_STATION_MAP,
+
+  Hibiya: HIBIYA_STATION_MAP,
 };
 
 /*
@@ -216,6 +215,9 @@ export const resolveTokyoMetroRailway = (
 
     case "marunouchi":
       return "Marunouchi";
+
+    case "hibiya":
+      return "Hibiya";
 
     default:
       return undefined;
@@ -328,12 +330,19 @@ export const fetchTokyoMetroTrains = async (
   const requested = normalizeDirection(directionId);
 
   /*
-   * 앱:
+   * 앱 directionId:
    *
+   * 긴자선
    * asakusa
    * shibuya
+   *
+   * 마루노우치선
    * ogikubo
    * ikebukuro
+   *
+   * 히비야선
+   * nakameguro
+   * kitasenju
    *
    * API:
    *
@@ -341,6 +350,15 @@ export const fetchTokyoMetroTrains = async (
    * Shibuya
    * Ogikubo
    * Ikebukuro
+   * NakaMeguro
+   * KitaSenju
+   *
+   * normalizeDirection()을 거치므로
+   *
+   * NakaMeguro → nakameguro
+   * KitaSenju  → kitasenju
+   *
+   * 로 정상 비교된다.
    */
 
   const matchingDirection = data.directions.find(
@@ -354,7 +372,9 @@ export const fetchTokyoMetroTrains = async (
       .join(", ");
 
     throw new Error(
-      `${railway} ${stationId}에서 ${directionId} 방향을 찾을 수 없습니다. API 방향: ${directions || "없음"}`,
+      `${railway} ${stationId}에서 ${directionId} 방향을 찾을 수 없습니다. API 방향: ${
+        directions || "없음"
+      }`,
     );
   }
 

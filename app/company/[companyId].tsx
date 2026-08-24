@@ -193,6 +193,14 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
 
         description: "오기쿠보 · 신주쿠 · 도쿄 · 이케부쿠로",
       },
+      {
+        id: "hibiya",
+        code: "H",
+        nameKo: "히비야선",
+        nameJa: "日比谷線",
+        color: "#B5B5AC",
+        description: "나카메구로 · 긴자 · 우에노 · 기타센주",
+      },
 
       /*
        * 다음에 추가

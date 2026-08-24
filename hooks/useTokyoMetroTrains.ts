@@ -29,6 +29,20 @@ type UseTokyoMetroTrainsResult = {
  * =========================================================
  * Tokyo Metro Hook
  * =========================================================
+ *
+ * 지원 노선:
+ *
+ * ginza
+ * marunouchi
+ * hibiya
+ *
+ * lineId
+ * ↓
+ * resolveTokyoMetroRailway()
+ * ↓
+ * Ginza / Marunouchi / Hibiya
+ *
+ * =========================================================
  */
 
 export const useTokyoMetroTrains = (
@@ -46,11 +60,15 @@ export const useTokyoMetroTrains = (
 
   /*
    * =======================================================
-   * Load
+   * 열차 데이터 로드
    * =======================================================
    */
 
   const loadTrains = useCallback(async () => {
+    /*
+     * 필수 값이 없으면 요청하지 않는다.
+     */
+
     if (!lineId || !stationId || !directionId) {
       setTrains([]);
 
@@ -62,15 +80,22 @@ export const useTokyoMetroTrains = (
     }
 
     /*
-     * lineId
+     * =====================================================
+     * 앱 lineId → Tokyo Metro Railway
+     * =====================================================
      *
      * ginza
-     * marunouchi
-     *
      * ↓
-     *
      * Ginza
+     *
+     * marunouchi
+     * ↓
      * Marunouchi
+     *
+     * hibiya
+     * ↓
+     * Hibiya
+     * =====================================================
      */
 
     const railway = resolveTokyoMetroRailway(lineId);
@@ -91,9 +116,9 @@ export const useTokyoMetroTrains = (
       setError(null);
 
       /*
-       * ===============================================
-       * 실제 시간표
-       * ===============================================
+       * ===================================================
+       * 실제 Tokyo Metro 시간표
+       * ===================================================
        */
 
       const rawTrains = await fetchTokyoMetroTrains(
@@ -105,9 +130,11 @@ export const useTokyoMetroTrains = (
       );
 
       /*
-       * ===============================================
+       * ===================================================
+       * Tokyo Metro API 데이터
+       * ↓
        * 공통 Train[]
-       * ===============================================
+       * ===================================================
        */
 
       const adaptedTrains = adaptTokyoMetroTrains(
@@ -117,16 +144,16 @@ export const useTokyoMetroTrains = (
       );
 
       /*
-       * ===============================================
-       * 다음 3대
-       * ===============================================
+       * ===================================================
+       * 가까운 열차부터 최대 3대
+       * ===================================================
        */
 
-      setTrains(
-        adaptedTrains
-          .sort((a, b) => a.minutesUntilDeparture - b.minutesUntilDeparture)
-          .slice(0, 3),
-      );
+      const nextTrains = adaptedTrains
+        .sort((a, b) => a.minutesUntilDeparture - b.minutesUntilDeparture)
+        .slice(0, 3);
+
+      setTrains(nextTrains);
     } catch (loadError) {
       console.error("도쿄메트로 열차 데이터 오류:", loadError);
 
@@ -144,13 +171,19 @@ export const useTokyoMetroTrains = (
 
   /*
    * =======================================================
-   * 자동 요청
+   * lineId / stationId / directionId 변경 시 자동 요청
    * =======================================================
    */
 
   useEffect(() => {
     void loadTrains();
   }, [loadTrains]);
+
+  /*
+   * =======================================================
+   * 반환
+   * =======================================================
+   */
 
   return {
     trains,

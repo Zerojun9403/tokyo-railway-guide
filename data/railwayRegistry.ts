@@ -27,15 +27,18 @@ import {
 
 import { GINZA_COLOR, ginzaStations, ginzaTrains } from "./lines/ginza";
 import {
-  KEISEI_COLOR,
-  keiseiMainStations,
-  keiseiMainTrains,
-} from "./lines/keisei-main";
-import {
   MARUNOUCHI_COLOR,
   marunouchiStations,
   marunouchiTrains,
 } from "./lines/marunouchi";
+
+import { HIBIYA_COLOR, hibiyaStations, hibiyaTrains } from "./lines/hibiya";
+
+import {
+  KEISEI_COLOR,
+  keiseiMainStations,
+  keiseiMainTrains,
+} from "./lines/keisei-main";
 
 import { OEDO_COLOR, oedoStations, oedoTrains } from "./lines/oedo";
 
@@ -225,6 +228,17 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
     stations: marunouchiStations,
 
     trains: marunouchiTrains,
+  },
+
+  hibiya: {
+    id: "hibiya",
+    operatorId: "tokyo-metro",
+    nameKo: "히비야선",
+    nameJa: "日比谷線",
+    lineCode: "H",
+    color: HIBIYA_COLOR,
+    stations: hibiyaStations,
+    trains: hibiyaTrains,
   },
 
   /*

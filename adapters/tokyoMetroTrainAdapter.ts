@@ -294,6 +294,145 @@ const TOKYO_METRO_DESTINATIONS: Record<string, DestinationName> = {
     ko: "나카노신바시",
     ja: "中野新橋",
   },
+  /*
+   * =======================================================
+   * 히비야선
+   * =======================================================
+   */
+
+  nakameguro: {
+    ko: "나카메구로",
+    ja: "中目黒",
+  },
+
+  ebisu: {
+    ko: "에비스",
+    ja: "恵比寿",
+  },
+
+  hiroo: {
+    ko: "히로오",
+    ja: "広尾",
+  },
+
+  roppongi: {
+    ko: "롯폰기",
+    ja: "六本木",
+  },
+
+  kamiyacho: {
+    ko: "가미야초",
+    ja: "神谷町",
+  },
+
+  toranomonhills: {
+    ko: "도라노몬힐즈",
+    ja: "虎ノ門ヒルズ",
+  },
+
+  /*
+   * kasumigaseki
+   * ginza
+   * ueno
+   *
+   * 위에서 이미 등록되어 있으므로 중복 등록하지 않는다.
+   */
+
+  hibiya: {
+    ko: "히비야",
+    ja: "日比谷",
+  },
+
+  higashiginza: {
+    ko: "히가시긴자",
+    ja: "東銀座",
+  },
+
+  tsukiji: {
+    ko: "쓰키지",
+    ja: "築地",
+  },
+
+  hatchobori: {
+    ko: "핫초보리",
+    ja: "八丁堀",
+  },
+
+  kayabacho: {
+    ko: "가야바초",
+    ja: "茅場町",
+  },
+
+  ningyocho: {
+    ko: "닌교초",
+    ja: "人形町",
+  },
+
+  kodemmacho: {
+    ko: "고덴마초",
+    ja: "小伝馬町",
+  },
+
+  akihabara: {
+    ko: "아키하바라",
+    ja: "秋葉原",
+  },
+
+  nakaokachimachi: {
+    ko: "나카오카치마치",
+    ja: "仲御徒町",
+  },
+
+  iriya: {
+    ko: "이리야",
+    ja: "入谷",
+  },
+
+  minowa: {
+    ko: "미노와",
+    ja: "三ノ輪",
+  },
+
+  minamisenju: {
+    ko: "미나미센주",
+    ja: "南千住",
+  },
+
+  kitasenju: {
+    ko: "기타센주",
+    ja: "北千住",
+  },
+
+  /*
+   * =======================================================
+   * 히비야선 ↔ 도부 스카이트리라인 직통 행선지
+   * =======================================================
+   */
+
+  takenotsuka: {
+    ko: "다케노쓰카",
+    ja: "竹ノ塚",
+  },
+
+  kitakoshigaya: {
+    ko: "기타코시가야",
+    ja: "北越谷",
+  },
+
+  kitakasukabe: {
+    ko: "기타카스카베",
+    ja: "北春日部",
+  },
+
+  tobutsudobutsukoen: {
+    ko: "도부도부쓰코엔",
+    ja: "東武動物公園",
+  },
+
+  minamikurihashi: {
+    ko: "미나미쿠리하시",
+    ja: "南栗橋",
+  },
 };
 
 /*
