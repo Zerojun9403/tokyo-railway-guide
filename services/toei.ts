@@ -230,7 +230,49 @@ const MITA_STATION_MAP: Record<string, string> = {
  * =========================================================
  */
 
-const SHINJUKU_STATION_MAP: Record<string, string> = {};
+const SHINJUKU_STATION_MAP: Record<string, string> = {
+  S01: "Shinjuku",
+
+  S02: "ShinjukuSanchome",
+
+  S03: "Akebonobashi",
+
+  S04: "Ichigaya",
+
+  S05: "Kudanshita",
+
+  S06: "Jimbocho",
+
+  S07: "Ogawamachi",
+
+  S08: "Iwamotocho",
+
+  S09: "BakuroYokoyama",
+
+  S10: "Hamacho",
+
+  S11: "Morishita",
+
+  S12: "Kikukawa",
+
+  S13: "Sumiyoshi",
+
+  S14: "NishiOjima",
+
+  S15: "Ojima",
+
+  S16: "HigashiOjima",
+
+  S17: "Funabori",
+
+  S18: "Ichinoe",
+
+  S19: "Mizue",
+
+  S20: "Shinozaki",
+
+  S21: "Motoyawata",
+};
 
 /*
  * =========================================================

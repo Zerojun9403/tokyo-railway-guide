@@ -335,13 +335,22 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
       },
 
       {
-  id: "mita",
-  code: "I",
-  nameKo: "도에이 미타선",
-  nameJa: "都営三田線",
-  color: "#0079C2",
-  description: "메구로 · 미타 · 히비야 · 오테마치 · 스가모 · 니시타카시마다이라",
-},
+      id: "mita",
+      code: "I",
+      nameKo: "도에이 미타선",
+      nameJa: "都営三田線",
+      color: "#0079C2",
+      description: "메구로 · 미타 · 히비야 · 오테마치 · 스가모 · 니시타카시마다이라",
+    },
+    {
+      id: "shinjuku",
+      code: "S",
+      nameKo: "도에이 신주쿠선",
+      nameJa: "都営新宿線",
+      color: "#6CBB5A",
+      description: "신주쿠 · 이치가야 · 진보초 · 모리시타 · 오지마 · 모토야와타",
+    },
+
     ],
   },
 };

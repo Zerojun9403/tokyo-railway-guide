@@ -85,6 +85,12 @@ import {
   mitaTrains,
 } from "./lines/mita";
 
+import {
+  SHINJUKU_COLOR,
+  shinjukuStations,
+  shinjukuTrains,
+} from "./lines/shinjuku";
+
 /*
  * =========================================================
  * 노선 Registry 타입
@@ -437,6 +443,35 @@ mita: {
 
   trains: mitaTrains,
 },
+
+
+/*
+ * =======================================================
+ * 도에이 지하철 - 신주쿠선
+ * =======================================================
+ */
+
+shinjuku: {
+  id: "shinjuku",
+
+  operatorId: "toei",
+
+  nameKo: "도에이 신주쿠선",
+
+  nameJa: "都営新宿線",
+
+  lineCode: "S",
+
+  color: SHINJUKU_COLOR,
+
+  stations: shinjukuStations,
+
+  trains: shinjukuTrains,
+},
+
+
+
+
   oedo: {
     id: "oedo",
 

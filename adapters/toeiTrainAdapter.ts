@@ -361,7 +361,118 @@ const MITA_DESTINATION_MAP: Record<string, DestinationName> = {
     ja: "西高島平",
   },
 };
+/*
+ * =========================================================
+ * Shinjuku Line destinations
+ * =========================================================
+ */
 
+const SHINJUKU_DESTINATION_MAP: Record<string, DestinationName> = {
+  Shinjuku: {
+    ko: "신주쿠",
+    ja: "新宿",
+  },
+
+  ShinjukuSanchome: {
+    ko: "신주쿠산초메",
+    ja: "新宿三丁目",
+  },
+
+  Akebonobashi: {
+    ko: "아케보노바시",
+    ja: "曙橋",
+  },
+
+  Ichigaya: {
+    ko: "이치가야",
+    ja: "市ヶ谷",
+  },
+
+  Kudanshita: {
+    ko: "구단시타",
+    ja: "九段下",
+  },
+
+  Jimbocho: {
+    ko: "진보초",
+    ja: "神保町",
+  },
+
+  Ogawamachi: {
+    ko: "오가와마치",
+    ja: "小川町",
+  },
+
+  Iwamotocho: {
+    ko: "이와모토초",
+    ja: "岩本町",
+  },
+
+  BakuroYokoyama: {
+    ko: "바쿠로요코야마",
+    ja: "馬喰横山",
+  },
+
+  Hamacho: {
+    ko: "하마초",
+    ja: "浜町",
+  },
+
+  Morishita: {
+    ko: "모리시타",
+    ja: "森下",
+  },
+
+  Kikukawa: {
+    ko: "기쿠카와",
+    ja: "菊川",
+  },
+
+  Sumiyoshi: {
+    ko: "스미요시",
+    ja: "住吉",
+  },
+
+  NishiOjima: {
+    ko: "니시오지마",
+    ja: "西大島",
+  },
+
+  Ojima: {
+    ko: "오지마",
+    ja: "大島",
+  },
+
+  HigashiOjima: {
+    ko: "히가시오지마",
+    ja: "東大島",
+  },
+
+  Funabori: {
+    ko: "후나보리",
+    ja: "船堀",
+  },
+
+  Ichinoe: {
+    ko: "이치노에",
+    ja: "一之江",
+  },
+
+  Mizue: {
+    ko: "미즈에",
+    ja: "瑞江",
+  },
+
+  Shinozaki: {
+    ko: "시노자키",
+    ja: "篠崎",
+  },
+
+  Motoyawata: {
+    ko: "모토야와타",
+    ja: "本八幡",
+  },
+};
 
 /*
  * =========================================================
@@ -373,7 +484,7 @@ const TOEI_DESTINATION_MAP: Record<string, DestinationName> = {
   ...OEDO_DESTINATION_MAP,
   ...ASAKUSA_DESTINATION_MAP,
   ...MITA_DESTINATION_MAP,
-
+  ...SHINJUKU_DESTINATION_MAP,
 };
 
 /*
