@@ -323,6 +323,16 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
 
         description: "신주쿠 · 롯폰기 · 다이몬 · 료고쿠",
       },
+
+
+      {
+        id: "asakusa",
+        code: "A",
+        nameKo: "도에이 아사쿠사선",
+        nameJa: "都営浅草線",
+        color: "#E85298",
+        description: "니시마고메 · 센가쿠지 · 신바시 · 아사쿠사 · 오시아게",
+      },
     ],
   },
 };

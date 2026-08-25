@@ -1,64 +1,63 @@
 import type { Train } from "../types/train";
-
 import type { ToeiUpcomingTrain } from "../services/toei";
 
 /*
  * =========================================================
+ * Tokyo Railway Guide
  * Toei Train Adapter
  * =========================================================
  *
- * 도에이 서버 응답
- *
- * {
- *   departureTime,
- *   minutesUntilDeparture,
- *   trainNumber,
- *   trainType,
- *   destinationStations
- * }
- *
+ * Toei API response
  *      ↓
+ * Common Train type
  *
- * Tokyo Railway Guide 공통 Train
+ * Supports:
+ * A Asakusa Line
+ * E Oedo Line
  *
+ * Mita / Shinjuku can be added to the same destination map
+ * structure later.
  * =========================================================
  */
 
 /*
  * =========================================================
- * 열차 종류 번역
+ * Train type translation
  * =========================================================
  */
 
 const TRAIN_TYPE_MAP: Record<string, string> = {
   Local: "보통",
-
   Express: "급행",
-
   Rapid: "쾌속",
-
   LimitedExpress: "특급",
+
+  AirportLimitedExpress: "에어포트 쾌특",
+  AirportExpress: "에어포트 급행",
+
+  AccessExpress: "액세스 특급",
+  RapidLimitedExpress: "쾌특",
+  CommuterLimitedExpress: "통근특급",
 };
 
 /*
  * =========================================================
- * 오에도선 역 이름 번역
- * =========================================================
- *
- * 우선 현재 테스트하는 역부터 등록.
- *
- * E01~E38 전체 확장할 때
- * 이 Map도 같이 늘릴 수 있다.
+ * Destination type
  * =========================================================
  */
 
-const OEDO_DESTINATION_MAP: Record<
-  string,
-  {
-    ko: string;
-    ja: string;
-  }
-> = {
+type DestinationName = {
+  ko: string;
+  ja: string;
+};
+
+/*
+ * =========================================================
+ * Oedo Line destinations
+ * =========================================================
+ */
+
+const OEDO_DESTINATION_MAP: Record<string, DestinationName> = {
   ShinjukuNishiguchi: {
     ko: "신주쿠니시구치",
     ja: "新宿西口",
@@ -100,18 +99,146 @@ const OEDO_DESTINATION_MAP: Record<
   },
 
   Iidabashi: {
-    ko: "이이다바시",
+    ko: "이다바시",
     ja: "飯田橋",
   },
 };
 
 /*
  * =========================================================
- * 종별 번역
+ * Asakusa Line destinations
+ * =========================================================
+ *
+ * First map the 20 stations inside the Asakusa Line.
+ *
+ * Through-service destinations on Keikyu / Keisei /
+ * Hokuso / Shibayama Railway can be added after checking
+ * the actual API destinationStation values.
  * =========================================================
  */
 
-const translateTrainType = (value: string | null): string | undefined => {
+const ASAKUSA_DESTINATION_MAP: Record<string, DestinationName> = {
+  NishiMagome: {
+    ko: "니시마고메",
+    ja: "西馬込",
+  },
+
+  Magome: {
+    ko: "마고메",
+    ja: "馬込",
+  },
+
+  Nakanobu: {
+    ko: "나카노부",
+    ja: "中延",
+  },
+
+  Togoshi: {
+    ko: "도고시",
+    ja: "戸越",
+  },
+
+  Gotanda: {
+    ko: "고탄다",
+    ja: "五反田",
+  },
+
+  Takanawadai: {
+    ko: "다카나와다이",
+    ja: "高輪台",
+  },
+
+  Sengakuji: {
+    ko: "센가쿠지",
+    ja: "泉岳寺",
+  },
+
+  Mita: {
+    ko: "미타",
+    ja: "三田",
+  },
+
+  Daimon: {
+    ko: "다이몬",
+    ja: "大門",
+  },
+
+  Shimbashi: {
+    ko: "신바시",
+    ja: "新橋",
+  },
+
+  HigashiGinza: {
+    ko: "히가시긴자",
+    ja: "東銀座",
+  },
+
+  Takaracho: {
+    ko: "다카라초",
+    ja: "宝町",
+  },
+
+  Nihombashi: {
+    ko: "니혼바시",
+    ja: "日本橋",
+  },
+
+  Ningyocho: {
+    ko: "닌교초",
+    ja: "人形町",
+  },
+
+  HigashiNihombashi: {
+    ko: "히가시니혼바시",
+    ja: "東日本橋",
+  },
+
+  Asakusabashi: {
+    ko: "아사쿠사바시",
+    ja: "浅草橋",
+  },
+
+  Kuramae: {
+    ko: "구라마에",
+    ja: "蔵前",
+  },
+
+  Asakusa: {
+    ko: "아사쿠사",
+    ja: "浅草",
+  },
+
+  HonjoAzumabashi: {
+    ko: "혼조아즈마바시",
+    ja: "本所吾妻橋",
+  },
+
+  Oshiage: {
+    ko: "오시아게",
+    ja: "押上",
+  },
+};
+
+/*
+ * =========================================================
+ * Common destination map
+ * =========================================================
+ */
+
+const TOEI_DESTINATION_MAP: Record<string, DestinationName> = {
+  ...OEDO_DESTINATION_MAP,
+  ...ASAKUSA_DESTINATION_MAP,
+};
+
+/*
+ * =========================================================
+ * Train type
+ * =========================================================
+ */
+
+const translateTrainType = (
+  value: string | null,
+): string | undefined => {
   if (!value) {
     return undefined;
   }
@@ -121,57 +248,88 @@ const translateTrainType = (value: string | null): string | undefined => {
 
 /*
  * =========================================================
- * 행선지
+ * Normalize ODPT destination ID
+ * =========================================================
+ *
+ * The current backend normally returns values such as:
+ *
+ * Roppongi
+ * Oshiage
+ * NishiMagome
+ *
+ * If a future backend returns a full ODPT identifier such as
+ * odpt.Station:Toei.Asakusa.Oshiage,
+ * using the last segment still allows the map to work.
  * =========================================================
  */
 
-const getDestination = (destinationStations: string[]) => {
-  /*
-   * ODPT destinationStation은 배열
-   *
-   * 일반적으로 첫 번째 값을 사용
-   */
+const normalizeDestinationId = (
+  value: string,
+): string => {
+  const colonPart =
+    value.split(":").pop() ?? value;
 
-  const stationId = destinationStations[0];
+  const dotParts =
+    colonPart.split(".");
 
-  if (!stationId) {
+  return (
+    dotParts[dotParts.length - 1] ??
+    colonPart
+  );
+};
+
+/*
+ * =========================================================
+ * Destination translation
+ * =========================================================
+ */
+
+const getDestination = (
+  destinationStations: string[],
+) => {
+  const rawStationId =
+    destinationStations[0];
+
+  if (!rawStationId) {
     return {
       destinationKo: undefined,
-
       destinationJa: undefined,
     };
   }
 
-  const station = OEDO_DESTINATION_MAP[stationId];
+  const stationId =
+    normalizeDestinationId(
+      rawStationId,
+    );
 
-  /*
-   * 번역 데이터가 있으면
-   * 한국어 / 일본어 사용
-   */
+  const station =
+    TOEI_DESTINATION_MAP[
+      stationId
+    ];
 
   if (station) {
     return {
       destinationKo: station.ko,
-
       destinationJa: station.ja,
     };
   }
 
   /*
-   * 아직 Map에 등록되지 않은 역이면
-   * ODPT ID라도 표시
+   * Unknown through-service destination:
+   *
+   * Do not discard the API value.
+   * Show the raw destination so it can be checked later.
    */
 
   return {
     destinationKo: stationId,
-
     destinationJa: undefined,
   };
 };
 
 /*
  * =========================================================
- * 열차 하나 변환
+ * One Toei train → common Train
  * =========================================================
  */
 
@@ -180,54 +338,36 @@ export const adaptToeiTrain = (
   index: number,
   directionId: string,
 ): Train => {
-  const { destinationKo, destinationJa } = getDestination(
+  const {
+    destinationKo,
+    destinationJa,
+  } = getDestination(
     train.destinationStations,
   );
 
   return {
-    /*
-     * 열차번호 기반 ID
-     */
-
     id: train.trainNumber
       ? `toei-${directionId}-${train.trainNumber}-${index}`
       : `toei-${directionId}-${train.departureTime}-${index}`,
 
-    /*
-     * 실제 출발시간
-     */
-
     time: train.departureTime,
 
-    /*
-     * 서버에서 계산된 몇 분 후
-     */
+    minutesUntilDeparture:
+      train.minutesUntilDeparture,
 
-    minutesUntilDeparture: train.minutesUntilDeparture,
-
-    /*
-     * 보통 / 급행 등
-     */
-
-    trainType: translateTrainType(train.trainType),
-
-    /*
-     * 행선지
-     */
+    trainType: translateTrainType(
+      train.trainType,
+    ),
 
     destinationKo,
 
     destinationJa,
 
-    /*
-     * 앱 방향 ID
-     */
+    trainNumber:
+      train.trainNumber ??
+      undefined,
 
     directionId,
-
-    /*
-     * 일반 운행
-     */
 
     status: "normal",
   };
@@ -235,7 +375,7 @@ export const adaptToeiTrain = (
 
 /*
  * =========================================================
- * 배열 전체 변환
+ * Toei train array → common Train[]
  * =========================================================
  */
 
@@ -243,7 +383,12 @@ export const adaptToeiTrains = (
   trains: ToeiUpcomingTrain[],
   directionId: string,
 ): Train[] => {
-  return trains.map((train, index) =>
-    adaptToeiTrain(train, index, directionId),
+  return trains.map(
+    (train, index) =>
+      adaptToeiTrain(
+        train,
+        index,
+        directionId,
+      ),
   );
 };

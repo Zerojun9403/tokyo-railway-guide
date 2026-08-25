@@ -4,31 +4,12 @@
  * Toei Service
  * =========================================================
  *
- * 도에이 지하철 실제 시간표 API 연결
+ * 지원 노선
  *
- * Expo
- *   ↓
- * 기존 Next.js Toei API
- *   ↓
- * /api/station-timetable
- *   ↓
- * ODPT StationTimetable
- *
- * =========================================================
- */
-
-/*
- * =========================================================
- * API 서버 주소
- * =========================================================
- *
- * ⚠️ 기존에 사용하던 실제 Toei Vercel 주소를
- * 그대로 넣어주세요.
- *
- * 예:
- *
- * const TOEI_API_BASE_URL =
- *   "https://xxxxx.vercel.app";
+ * A Asakusa
+ * I Mita
+ * S Shinjuku
+ * E Oedo
  *
  * =========================================================
  */
@@ -37,15 +18,19 @@ const TOEI_API_BASE_URL = "https://toei-metro.vercel.app";
 
 /*
  * =========================================================
- * 지원 도에이 노선
+ * 지원 노선
  * =========================================================
  */
 
-export type ToeiRailway = "Asakusa" | "Mita" | "Shinjuku" | "Oedo";
+export type ToeiRailway =
+  | "Asakusa"
+  | "Mita"
+  | "Shinjuku"
+  | "Oedo";
 
 /*
  * =========================================================
- * API 다음 열차
+ * API 열차 타입
  * =========================================================
  */
 
@@ -65,7 +50,7 @@ export type ToeiUpcomingTrain = {
 
 /*
  * =========================================================
- * API 방향
+ * API 방향 타입
  * =========================================================
  */
 
@@ -85,7 +70,7 @@ export type ToeiDirectionData = {
 
 /*
  * =========================================================
- * API 전체 응답
+ * API Response
  * =========================================================
  */
 
@@ -117,23 +102,95 @@ export type ToeiStationTimetableResponse = {
 
 /*
  * =========================================================
- * 오에도선
+ * 아사쿠사선 Station Map
  *
- * 앱 역번호
- *     ↓
- * ODPT Station 이름
+ * A01 니시마고메
+ * ↓
+ * A20 오시아게
+ * =========================================================
+ */
+
+const ASAKUSA_STATION_MAP: Record<string, string> = {
+  A01: "NishiMagome",
+
+  A02: "Magome",
+
+  A03: "Nakanobu",
+
+  A04: "Togoshi",
+
+  A05: "Gotanda",
+
+  A06: "Takanawadai",
+
+  A07: "Sengakuji",
+
+  A08: "Mita",
+
+  A09: "Daimon",
+
+  A10: "Shimbashi",
+
+  A11: "HigashiGinza",
+
+  A12: "Takaracho",
+
+  A13: "Nihombashi",
+
+  A14: "Ningyocho",
+
+  A15: "HigashiNihombashi",
+
+  A16: "Asakusabashi",
+
+  A17: "Kuramae",
+
+  A18: "Asakusa",
+
+  A19: "HonjoAzumabashi",
+
+  A20: "Oshiage",
+};
+
+/*
+ * =========================================================
+ * 미타선 Station Map
+ * =========================================================
  *
- * E01 ~ E38
+ * 아직 미타선 구현 전이므로 비워둔다.
+ *
+ * I01 ~
+ * =========================================================
+ */
+
+const MITA_STATION_MAP: Record<string, string> = {};
+
+/*
+ * =========================================================
+ * 신주쿠선 Station Map
+ * =========================================================
+ *
+ * 아직 신주쿠선 구현 전이므로 비워둔다.
+ *
+ * S01 ~
+ * =========================================================
+ */
+
+const SHINJUKU_STATION_MAP: Record<string, string> = {};
+
+/*
+ * =========================================================
+ * 오에도선 Station Map
+ *
+ * E01 신주쿠니시구치
+ * ↓
+ * E28 도초마에
+ * ↓
+ * E38 히카리가오카
  * =========================================================
  */
 
 const OEDO_STATION_MAP: Record<string, string> = {
-  /*
-   * -------------------------------------------------------
-   * 신주쿠니시구치 → 도초마에 순환부
-   * -------------------------------------------------------
-   */
-
   E01: "ShinjukuNishiguchi",
 
   E02: "HigashiShinjuku",
@@ -188,19 +245,7 @@ const OEDO_STATION_MAP: Record<string, string> = {
 
   E27: "Shinjuku",
 
-  /*
-   * -------------------------------------------------------
-   * 특수역
-   * -------------------------------------------------------
-   */
-
   E28: "Tochomae",
-
-  /*
-   * -------------------------------------------------------
-   * 도초마에 → 히카리가오카
-   * -------------------------------------------------------
-   */
 
   E29: "NishiShinjukuGochome",
 
@@ -225,26 +270,91 @@ const OEDO_STATION_MAP: Record<string, string> = {
 
 /*
  * =========================================================
- * 앱 stationId
- *
- * E01
- * E02
- * ...
- * E38
- *
- *      ↓
- *
- * ODPT station
- *
- * ShinjukuNishiguchi
- * HigashiShinjuku
- * ...
- * Hikarigaoka
+ * 노선별 Station Map
  * =========================================================
  */
 
-export const getOedoOdptStationId = (stationId: string): string | undefined => {
-  return OEDO_STATION_MAP[stationId];
+const STATION_MAPS: Record<
+  ToeiRailway,
+  Record<string, string>
+> = {
+  Asakusa: ASAKUSA_STATION_MAP,
+
+  Mita: MITA_STATION_MAP,
+
+  Shinjuku: SHINJUKU_STATION_MAP,
+
+  Oedo: OEDO_STATION_MAP,
+};
+
+/*
+ * =========================================================
+ * 앱 lineId → Toei Railway
+ * =========================================================
+ *
+ * asakusa
+ *   ↓
+ * Asakusa
+ *
+ * mita
+ *   ↓
+ * Mita
+ *
+ * shinjuku
+ *   ↓
+ * Shinjuku
+ *
+ * oedo
+ *   ↓
+ * Oedo
+ *
+ * =========================================================
+ */
+
+export const resolveToeiRailway = (
+  lineId?: string,
+): ToeiRailway | undefined => {
+  switch (lineId) {
+    case "asakusa":
+      return "Asakusa";
+
+    case "mita":
+      return "Mita";
+
+    case "shinjuku":
+      return "Shinjuku";
+
+    case "oedo":
+      return "Oedo";
+
+    default:
+      return undefined;
+  }
+};
+
+/*
+ * =========================================================
+ * Station ID 변환
+ * =========================================================
+ *
+ * 예:
+ *
+ * Asakusa + A18
+ *      ↓
+ * Asakusa
+ *
+ * Oedo + E23
+ *      ↓
+ * Roppongi
+ *
+ * =========================================================
+ */
+
+export const getToeiStationName = (
+  railway: ToeiRailway,
+  stationId: string,
+): string | undefined => {
+  return STATION_MAPS[railway][stationId];
 };
 
 /*
@@ -253,7 +363,9 @@ export const getOedoOdptStationId = (stationId: string): string | undefined => {
  * =========================================================
  */
 
-const fetchJson = async <T>(url: string): Promise<T> => {
+const fetchJson = async <T>(
+  url: string,
+): Promise<T> => {
   const response = await fetch(url, {
     method: "GET",
 
@@ -262,24 +374,22 @@ const fetchJson = async <T>(url: string): Promise<T> => {
     },
   });
 
-  /*
-   * HTTP 오류
-   */
-
   if (!response.ok) {
-    let message = `도에이 API 요청 실패 (${response.status})`;
+    let message =
+      `도에이 API 요청 실패 (${response.status})`;
 
     try {
-      const errorData = (await response.json()) as {
-        error?: string;
-      };
+      const errorData =
+        (await response.json()) as {
+          error?: string;
+        };
 
       if (errorData.error) {
         message = errorData.error;
       }
     } catch {
       /*
-       * JSON이 아닌 오류 응답이면
+       * JSON 형식이 아닌 오류 응답이면
        * 기본 메시지를 사용한다.
        */
     }
@@ -292,19 +402,16 @@ const fetchJson = async <T>(url: string): Promise<T> => {
 
 /*
  * =========================================================
- * 도에이 역 시간표
+ * 공통 도에이 역 시간표
  * =========================================================
  *
- * 예:
+ * railway = Asakusa
+ * station = Asakusa
+ *
+ * 또는
  *
  * railway = Oedo
  * station = Roppongi
- *
- * ↓
- *
- * /api/station-timetable
- * ?railway=Oedo
- * &station=Roppongi
  *
  * =========================================================
  */
@@ -314,24 +421,26 @@ export const fetchToeiStationTimetable = async (
   station: string,
 ): Promise<ToeiStationTimetableResponse> => {
   if (!station) {
-    throw new Error("도에이 역 ID가 없습니다.");
+    throw new Error(
+      "도에이 역 ID가 없습니다.",
+    );
   }
 
   const params = new URLSearchParams({
     railway,
+
     station,
   });
 
   const url =
-    `${TOEI_API_BASE_URL}` + `/api/station-timetable?${params.toString()}`;
+    `${TOEI_API_BASE_URL}` +
+    `/api/station-timetable?${params.toString()}`;
 
   try {
-    const data = await fetchJson<ToeiStationTimetableResponse>(url);
-
-    /*
-     * 서버가 200으로
-     * error를 반환하는 경우까지 대응
-     */
+    const data =
+      await fetchJson<ToeiStationTimetableResponse>(
+        url,
+      );
 
     if (data.error) {
       throw new Error(data.error);
@@ -339,11 +448,16 @@ export const fetchToeiStationTimetable = async (
 
     return data;
   } catch (error) {
-    console.error("fetchToeiStationTimetable 오류:", {
-      railway,
-      station,
-      error,
-    });
+    console.error(
+      "fetchToeiStationTimetable 오류:",
+      {
+        railway,
+
+        station,
+
+        error,
+      },
+    );
 
     throw error;
   }
@@ -351,47 +465,171 @@ export const fetchToeiStationTimetable = async (
 
 /*
  * =========================================================
- * 오에도선 역 시간표
+ * 공통 노선별 시간표
  * =========================================================
  *
- * Expo에서는 ODPT 영문명을 몰라도 된다.
+ * 앱에서는 ODPT 역 이름을 몰라도 된다.
  *
- * fetchOedoTimetable("E23")
+ * fetchToeiTimetable(
+ *   "Asakusa",
+ *   "A18"
+ * )
  *
- * ↓
+ *      ↓
  *
- * Roppongi
+ * Asakusa
  *
- * ↓
+ *      ↓
  *
- * 실제 시간표
+ * 실제 API 요청
  *
+ * =========================================================
+ */
+
+export const fetchToeiTimetable = async (
+  railway: ToeiRailway,
+  stationId: string,
+): Promise<ToeiStationTimetableResponse> => {
+  const station =
+    getToeiStationName(
+      railway,
+      stationId,
+    );
+
+  if (!station) {
+    throw new Error(
+      `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+    );
+  }
+
+  return fetchToeiStationTimetable(
+    railway,
+    station,
+  );
+};
+
+/*
+ * =========================================================
+ * 방향 정규화
+ * =========================================================
+ */
+
+const normalizeDirection = (
+  value?: string | null,
+) => {
+  return (
+    value
+      ?.trim()
+      .toLowerCase() ?? ""
+  );
+};
+
+/*
+ * =========================================================
+ * 공통 방향별 다음 열차
+ * =========================================================
+ *
+ * Tokyo Metro와 같은 역할
+ *
+ * railway
+ * stationId
+ * directionId
+ *
+ *      ↓
+ *
+ * Train[]
+ *
+ * =========================================================
+ */
+
+export const fetchToeiTrains = async (
+  railway: ToeiRailway,
+  stationId: string,
+  directionId: string,
+): Promise<ToeiUpcomingTrain[]> => {
+  const data =
+    await fetchToeiTimetable(
+      railway,
+      stationId,
+    );
+
+  const requested =
+    normalizeDirection(
+      directionId,
+    );
+
+  const matchingDirection =
+    data.directions.find(
+      (direction) =>
+        normalizeDirection(
+          direction.direction,
+        ) === requested,
+    );
+
+  if (!matchingDirection) {
+    const directions =
+      data.directions
+        .map(
+          (item) =>
+            item.direction,
+        )
+        .filter(Boolean)
+        .join(", ");
+
+    throw new Error(
+      `${railway} ${stationId}에서 ${directionId} 방향을 찾을 수 없습니다. API 방향: ${
+        directions || "없음"
+      }`,
+    );
+  }
+
+  return (
+    matchingDirection.upcoming ??
+    []
+  );
+};
+
+/*
+ * =========================================================
+ * 기존 오에도선 호환 API
+ * =========================================================
+ *
+ * 기존 useOedoTrains.ts 등이 바로 깨지지 않도록
+ * 기존 함수 이름을 유지한다.
+ *
+ * 새 공통 Hook으로 전환 완료 후에도
+ * 필요하면 그대로 유지할 수 있다.
+ *
+ * =========================================================
+ */
+
+export const getOedoOdptStationId = (
+  stationId: string,
+): string | undefined => {
+  return getToeiStationName(
+    "Oedo",
+    stationId,
+  );
+};
+
+/*
+ * =========================================================
+ * 기존 오에도선 시간표
  * =========================================================
  */
 
 export const fetchOedoTimetable = async (
   stationId: string,
 ): Promise<ToeiStationTimetableResponse> => {
-  const odptStation = getOedoOdptStationId(stationId);
-
-  if (!odptStation) {
-    throw new Error(`오에도선 역 매핑을 찾을 수 없습니다: ${stationId}`);
-  }
-
-  return fetchToeiStationTimetable("Oedo", odptStation);
+  return fetchToeiTimetable(
+    "Oedo",
+    stationId,
+  );
 };
 
 /*
  * =========================================================
- * 특정 ODPT 방향 열차
- * =========================================================
- *
- * 예:
- *
- * InnerLoop
- * OuterLoop
- * Hikarigaoka
- *
+ * 기존 오에도선 방향별 열차
  * =========================================================
  */
 
@@ -399,43 +637,65 @@ export const fetchOedoDirectionTrains = async (
   stationId: string,
   apiDirection: string,
 ): Promise<ToeiUpcomingTrain[]> => {
-  const data = await fetchOedoTimetable(stationId);
+  const data =
+    await fetchOedoTimetable(
+      stationId,
+    );
 
-  const direction = data.directions.find(
-    (item) => item.direction === apiDirection,
-  );
+  const direction =
+    data.directions.find(
+      (item) =>
+        item.direction ===
+        apiDirection,
+    );
 
   if (!direction) {
     return [];
   }
 
-  return direction.upcoming ?? [];
+  return (
+    direction.upcoming ?? []
+  );
 };
 
 /*
  * =========================================================
- * Debug / Test
- * =========================================================
- *
- * 필요하면 stationId가 실제로 어떤 ODPT ID로
- * 변환되는지 확인할 때 사용할 수 있다.
- *
- * getOedoStationMapping("E23")
- *
- * →
- *
- * {
- *   stationId: "E23",
- *   odptStation: "Roppongi"
- * }
- *
+ * 기존 오에도선 Debug / Test
  * =========================================================
  */
 
-export const getOedoStationMapping = (stationId: string) => {
+export const getOedoStationMapping = (
+  stationId: string,
+) => {
   return {
     stationId,
 
-    odptStation: getOedoOdptStationId(stationId) ?? null,
+    odptStation:
+      getOedoOdptStationId(
+        stationId,
+      ) ?? null,
+  };
+};
+
+/*
+ * =========================================================
+ * 공통 Debug / Test
+ * =========================================================
+ */
+
+export const getToeiStationMapping = (
+  railway: ToeiRailway,
+  stationId: string,
+) => {
+  return {
+    railway,
+
+    stationId,
+
+    odptStation:
+      getToeiStationName(
+        railway,
+        stationId,
+      ) ?? null,
   };
 };

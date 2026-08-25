@@ -29,7 +29,7 @@ import {
   type JrEastRailway,
 } from "../../hooks/useJrEastTrains";
 
-import { useOedoTrains } from "../../hooks/useOedoTrains";
+import { useToeiTrains } from "../../hooks/useToeiTrains";
 
 import { useTokyoMetroTrains } from "../../hooks/useTokyoMetroTrains";
 
@@ -322,7 +322,7 @@ export default function StationScreen() {
 
   const isJrEast = station?.operatorId === "jr-east";
 
-  const isOedo = station?.lineId === "oedo";
+ const isToei = station?.operatorId === "toei";
 
   /*
    * Tokyo Metro
@@ -411,22 +411,29 @@ export default function StationScreen() {
 
   /*
    * =======================================================
-   * 도에이 오에도선 실제 시간표
+   * 도에이 실제 시간표
+   *
+   * A 아사쿠사선
+   * I 미타선
+   * S 신주쿠선
+   * E 오에도선
    * =======================================================
    */
 
   const {
-    trains: oedoTrains,
+    trains: toeiTrains,
 
-    loading: oedoLoading,
+    loading: toeiLoading,
 
-    error: oedoError,
+    error: toeiError,
 
-    reload: reloadOedo,
-  } = useOedoTrains(
-    isOedo ? (station?.id ?? "") : "",
+    reload: reloadToei,
+  } = useToeiTrains(
+    isToei ? (station?.lineId ?? "") : "",
 
-    isOedo ? (selectedDirection?.id ?? "") : "",
+    isToei ? (station?.id ?? "") : "",
+
+    isToei ? (selectedDirection?.id ?? "") : "",
   );
 
   /*
@@ -491,8 +498,8 @@ export default function StationScreen() {
         await reloadKeisei();
       } else if (isJrEast) {
         await reloadJr();
-      } else if (isOedo) {
-        await reloadOedo();
+      } else if (isToei) {
+        await reloadToei();
       } else if (isTokyoMetro) {
         await reloadTokyoMetro();
       }
@@ -514,7 +521,7 @@ export default function StationScreen() {
 
     isJrEast,
 
-    isOedo,
+    isToei,
 
     isTokyoMetro,
 
@@ -522,7 +529,7 @@ export default function StationScreen() {
 
     reloadJr,
 
-    reloadOedo,
+    reloadToei,
 
     reloadTokyoMetro,
   ]);
@@ -609,8 +616,8 @@ export default function StationScreen() {
    * 도에이
    */
 
-  if (isOedo) {
-    trains = oedoTrains;
+  if (isToei) {
+    trains = toeiTrains;
   }
 
   /*
@@ -695,7 +702,7 @@ export default function StationScreen() {
   const loading =
     (isKeisei && keiseiLoading) ||
     (isJrEast && jrLoading) ||
-    (isOedo && oedoLoading) ||
+    (isToei && toeiLoading) ||
     (isTokyoMetro && tokyoMetroLoading);
 
   /*
@@ -708,8 +715,8 @@ export default function StationScreen() {
     ? keiseiError
     : isJrEast
       ? jrError
-      : isOedo
-        ? oedoError
+      : isToei
+        ? toeiError
         : isTokyoMetro
           ? tokyoMetroError
           : null;

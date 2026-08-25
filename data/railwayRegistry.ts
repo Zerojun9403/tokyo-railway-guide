@@ -73,6 +73,12 @@ import {
 
 import { OEDO_COLOR, oedoStations, oedoTrains } from "./lines/oedo";
 
+import {
+  ASAKUSA_COLOR,
+  asakusaStations,
+  asakusaTrains,
+} from "./lines/asakusa";
+
 /*
  * =========================================================
  * 노선 Registry 타입
@@ -356,12 +362,6 @@ namboku: {
 
   trains: nambokuTrains,
 },
-
-
-
-
-
-
   /*
    * =======================================================
    * 게이세이 전철 - 게이세이 본선
@@ -390,7 +390,23 @@ namboku: {
    * 도에이 지하철 - 오에도선
    * =======================================================
    */
+  asakusa: {
+    id: "asakusa",
 
+    operatorId: "toei",
+
+    nameKo: "도에이 아사쿠사선",
+
+    nameJa: "都営浅草線",
+
+    lineCode: "A",
+
+    color: ASAKUSA_COLOR,
+
+    stations: asakusaStations,
+
+    trains: asakusaTrains,
+  },
   oedo: {
     id: "oedo",
 
