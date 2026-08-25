@@ -879,6 +879,8 @@ export default function StationScreen() {
               stationNameJa={nextStation.nameJa}
               color={nextStation.color}
               showLineName={nextStations.length > 1}
+              onPress={() => {
+                router.push(`/station/${nextStation.id}`);}}
             />
           ))}
         </View>

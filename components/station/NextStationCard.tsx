@@ -1,4 +1,9 @@
-import { StyleSheet, Text, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { LineBadge } from "../common/LineBadge";
 
@@ -13,6 +18,8 @@ type NextStationCardProps = {
   color: string;
 
   showLineName?: boolean;
+
+  onPress?: () => void;
 };
 
 export const NextStationCard = ({
@@ -23,9 +30,15 @@ export const NextStationCard = ({
   stationNameJa,
   color,
   showLineName = false,
+  onPress,
 }: NextStationCardProps) => {
   return (
-    <View style={styles.card}>
+    <TouchableOpacity
+      style={styles.card}
+      activeOpacity={0.75}
+      onPress={onPress}
+      disabled={!onPress}
+    >
       {/* 분기역처럼 노선명이 필요한 경우에만 표시 */}
       {showLineName && lineNameKo ? (
         <Text style={styles.lineName}>{lineNameKo}</Text>
@@ -46,12 +59,16 @@ export const NextStationCard = ({
             {stationCode}
           </Text>
 
-          <Text style={styles.stationNameKo}>{stationNameKo}</Text>
+          <Text style={styles.stationNameKo}>
+            {stationNameKo}
+          </Text>
 
-          <Text style={styles.stationNameJa}>{stationNameJa}</Text>
+          <Text style={styles.stationNameJa}>
+            {stationNameJa}
+          </Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
