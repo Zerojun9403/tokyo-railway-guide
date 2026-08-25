@@ -17,7 +17,8 @@ export type TokyoMetroRailway =
   | "Ginza"
   | "Marunouchi"
   | "Hibiya"
-  | "Tozai";
+  | "Tozai"
+  | "Chiyoda";
 
 /*
  * =========================================================
@@ -219,6 +220,41 @@ const TOZAI_STATION_MAP: Record<string, string> = {
   T23: "NishiFunabashi",
 };
 
+
+/*
+ * =========================================================
+ * 치요다선 Station Map
+ * =========================================================
+ *
+ * C01 요요기우에하라
+ * ↓
+ * C20 기타아야세
+ * =========================================================
+ */
+
+const CHIYODA_STATION_MAP: Record<string, string> = {
+  C01: "YoyogiUehara",
+  C02: "YoyogiKoen",
+  C03: "MeijiJingumae",
+  C04: "OmoteSando",
+  C05: "Nogizaka",
+  C06: "Akasaka",
+  C07: "KokkaiGijidomae",
+  C08: "Kasumigaseki",
+  C09: "Hibiya",
+  C10: "Nijubashimae",
+  C11: "Otemachi",
+  C12: "ShinOchanomizu",
+  C13: "Yushima",
+  C14: "Nezu",
+  C15: "Sendagi",
+  C16: "NishiNippori",
+  C17: "Machiya",
+  C18: "KitaSenju",
+  C19: "Ayase",
+  C20: "KitaAyase",
+};
+
 /*
  * =========================================================
  * 노선별 Station Map
@@ -233,6 +269,8 @@ const STATION_MAPS: Record<TokyoMetroRailway, Record<string, string>> = {
   Hibiya: HIBIYA_STATION_MAP,
 
   Tozai: TOZAI_STATION_MAP,
+
+  Chiyoda: CHIYODA_STATION_MAP,
 };
 
 /*
@@ -256,6 +294,9 @@ export const resolveTokyoMetroRailway = (
 
     case "tozai":
       return "Tozai";
+
+    case "chiyoda":
+      return "Chiyoda";
 
     default:
       return undefined;

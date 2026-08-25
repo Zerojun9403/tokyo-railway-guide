@@ -33,6 +33,11 @@ import {
 } from "./lines/marunouchi";
 
 import { HIBIYA_COLOR, hibiyaStations, hibiyaTrains } from "./lines/hibiya";
+import {
+  CHIYODA_COLOR,
+  chiyodaStations,
+  chiyodaTrains,
+} from "./lines/chiyoda";
 
 import {
   TOZAI_COLOR,
@@ -193,7 +198,7 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
 
   /*
    * =======================================================
-   * 도쿄메트로 - 긴자선
+   * 도쿄메트로 
    * =======================================================
    */
 
@@ -213,12 +218,7 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
 
     trains: ginzaTrains,
   },
-  /*
-   * =======================================================
-   * 도쿄메트로 - 마루노우치선
-   * =======================================================
-   */
-
+  
   marunouchi: {
     id: "marunouchi",
 
@@ -264,7 +264,23 @@ tozai: {
 
   trains: tozaiTrains,
 },
+chiyoda: {
+  id: "chiyoda",
 
+  operatorId: "tokyo-metro",
+
+  nameKo: "치요다선",
+
+  nameJa: "千代田線",
+
+  lineCode: "C",
+
+  color: CHIYODA_COLOR,
+
+  stations: chiyodaStations,
+
+  trains: chiyodaTrains,
+},
 
 
   /*

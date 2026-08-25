@@ -209,7 +209,14 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
         color: "#009BBF",
         description: "나카노 · 다카다노바바 · 오테마치 · 니시후나바시",
       },
-
+      {
+        id: "chiyoda",
+        code: "C",
+        nameKo: "치요다선",
+        nameJa: "千代田線",
+        color: "#00BB85",
+        description: "요요기우에하라 · 오모테산도 · 오테마치 · 기타센주 · 기타아야세",
+      },
       /*
        * 다음에 추가
        *
