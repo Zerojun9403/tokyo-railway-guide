@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-
+import { StationTopActions } from "../../components/station/StationTopActions";
 import {
   ActivityIndicator,
   RefreshControl,
@@ -773,41 +773,31 @@ export default function StationScreen() {
             상단
         ================================================= */}
 
-        <View style={styles.topArea}>
-          <TouchableOpacity
-            style={styles.backArea}
-            activeOpacity={0.7}
-            onPress={() => router.back()}
-          >
-            <Text style={styles.backArrow}>‹</Text>
-
-            <Text style={styles.backText}>{station.lineNameKo}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.favoriteButton,
-
-              isFavorite && styles.favoriteButtonActive,
-            ]}
-            activeOpacity={0.7}
-            disabled={favoriteLoading}
-            onPress={() => {
-              void toggleFavorite();
-            }}
-          >
-            <Text
-              style={[
-                styles.favoriteIcon,
-
-                isFavorite && styles.favoriteIconActive,
-              ]}
+          <View style={styles.topArea}>
+            <TouchableOpacity
+              style={styles.backArea}
+              activeOpacity={0.7}
+              onPress={() => router.back()}
             >
-              {isFavorite ? "★" : "☆"}
-            </Text>
-          </TouchableOpacity>
-        </View>
+              <Text style={styles.backArrow}>‹</Text>
 
+              
+            </TouchableOpacity>
+
+            <StationTopActions
+                isFavorite={isFavorite}
+                favoriteLoading={favoriteLoading}
+                onPressLine={() => {
+                  router.push(`/line/${station.lineId}`);
+                }}
+                onPressHome={() => {
+                  router.replace("/");
+                }}
+                onPressFavorite={() => {
+                  void toggleFavorite();
+                }}
+              />
+          </View>
         {/* =================================================
             역 Header
         ================================================= */}
@@ -821,6 +811,7 @@ export default function StationScreen() {
           hasTransfer={(station.transfers?.length ?? 0) > 0}
           onPressTransfer={() => setTransferVisible(true)}
         />
+      
 
         {/* =================================================
             운행상태
