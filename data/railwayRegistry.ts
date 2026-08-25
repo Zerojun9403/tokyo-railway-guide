@@ -45,6 +45,15 @@ import {
   tozaiTrains,
 } from "./lines/tozai";
 
+
+import {
+  YURAKUCHO_COLOR,
+  yurakuchoStations,
+  yurakuchoTrains,
+} from "./lines/yurakucho";
+
+
+
 import {
   KEISEI_COLOR,
   keiseiMainStations,
@@ -264,6 +273,7 @@ tozai: {
 
   trains: tozaiTrains,
 },
+
 chiyoda: {
   id: "chiyoda",
 
@@ -280,6 +290,24 @@ chiyoda: {
   stations: chiyodaStations,
 
   trains: chiyodaTrains,
+},
+
+yurakucho: {
+  id: "yurakucho",
+
+  operatorId: "tokyo-metro",
+
+  nameKo: "유라쿠초선",
+
+  nameJa: "有楽町線",
+
+  lineCode: "Y",
+
+  color: YURAKUCHO_COLOR,
+
+  stations: yurakuchoStations,
+
+  trains: yurakuchoTrains,
 },
 
 

@@ -18,7 +18,9 @@ export type TokyoMetroRailway =
   | "Marunouchi"
   | "Hibiya"
   | "Tozai"
-  | "Chiyoda";
+  | "Chiyoda"
+  | "Yurakucho"
+  ;
 
 /*
  * =========================================================
@@ -254,6 +256,46 @@ const CHIYODA_STATION_MAP: Record<string, string> = {
   C19: "Ayase",
   C20: "KitaAyase",
 };
+
+/*
+ * =========================================================
+ * 유라쿠초선 Station Map
+ * =========================================================
+ *
+ * Y01 와코시
+ * ↓
+ * Y24 신키바
+ * =========================================================
+ */
+
+const YURAKUCHO_STATION_MAP: Record<string, string> = {
+  Y01: "Wakoshi",
+  Y02: "ChikatetsuNarimasu",
+  Y03: "ChikatetsuAkatsuka",
+  Y04: "Heiwadai",
+  Y05: "Hikawadai",
+  Y06: "KotakeMukaihara",
+  Y07: "Senkawa",
+  Y08: "Kanamecho",
+  Y09: "Ikebukuro",
+  Y10: "HigashiIkebukuro",
+  Y11: "Gokokuji",
+  Y12: "Edogawabashi",
+  Y13: "Iidabashi",
+  Y14: "Ichigaya",
+  Y15: "Kojimachi",
+  Y16: "Nagatacho",
+  Y17: "Sakuradamon",
+  Y18: "Yurakucho",
+  Y19: "GinzaItchome",
+  Y20: "Shintomicho",
+  Y21: "Tsukishima",
+  Y22: "Toyosu",
+  Y23: "Tatsumi",
+  Y24: "ShinKiba",
+};
+
+
 
 /*
  * =========================================================
