@@ -35,6 +35,12 @@ import {
 import { HIBIYA_COLOR, hibiyaStations, hibiyaTrains } from "./lines/hibiya";
 
 import {
+  TOZAI_COLOR,
+  tozaiStations,
+  tozaiTrains,
+} from "./lines/tozai";
+
+import {
   KEISEI_COLOR,
   keiseiMainStations,
   keiseiMainTrains,
@@ -240,6 +246,26 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
     stations: hibiyaStations,
     trains: hibiyaTrains,
   },
+
+tozai: {
+  id: "tozai",
+
+  operatorId: "tokyo-metro",
+
+  nameKo: "도자이선",
+
+  nameJa: "東西線",
+
+  lineCode: "T",
+
+  color: TOZAI_COLOR,
+
+  stations: tozaiStations,
+
+  trains: tozaiTrains,
+},
+
+
 
   /*
    * =======================================================

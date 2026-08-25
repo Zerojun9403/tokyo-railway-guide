@@ -13,7 +13,11 @@ const TOKYO_METRO_API_BASE_URL = "https://tokyo-metro-app.vercel.app";
  * =========================================================
  */
 
-export type TokyoMetroRailway = "Ginza" | "Marunouchi" | "Hibiya";
+export type TokyoMetroRailway =
+  | "Ginza"
+  | "Marunouchi"
+  | "Hibiya"
+  | "Tozai";
 
 /*
  * =========================================================
@@ -30,7 +34,7 @@ export type TokyoMetroUpcomingTrain = {
 
   trainType: string | null;
 
-  destinationStations: (string | null)[];
+  destinationStations: Array<string | null>;
 
   train: string | null;
 };
@@ -151,14 +155,6 @@ const MARUNOUCHI_STATION_MAP: Record<string, string> = {
  * =========================================================
  * 히비야선 Station Map
  * =========================================================
- *
- * H01 나카메구로
- * ↓
- * H22 기타센주
- *
- * 앱에서는 H01, H02 같은 역번호를 사용하고
- * API 요청 시 ODPT Station ID의 영문 역명으로 변환한다.
- * =========================================================
  */
 
 const HIBIYA_STATION_MAP: Record<string, string> = {
@@ -188,6 +184,43 @@ const HIBIYA_STATION_MAP: Record<string, string> = {
 
 /*
  * =========================================================
+ * 도자이선 Station Map
+ * =========================================================
+ *
+ * T01 나카노
+ * ↓
+ * T23 니시후나바시
+ * =========================================================
+ */
+
+const TOZAI_STATION_MAP: Record<string, string> = {
+  T01: "Nakano",
+  T02: "Ochiai",
+  T03: "Takadanobaba",
+  T04: "Waseda",
+  T05: "Kagurazaka",
+  T06: "Iidabashi",
+  T07: "Kudanshita",
+  T08: "Takebashi",
+  T09: "Otemachi",
+  T10: "Nihombashi",
+  T11: "Kayabacho",
+  T12: "MonzenNakacho",
+  T13: "Kiba",
+  T14: "Toyocho",
+  T15: "MinamiSunamachi",
+  T16: "NishiKasai",
+  T17: "Kasai",
+  T18: "Urayasu",
+  T19: "MinamiGyotoku",
+  T20: "Gyotoku",
+  T21: "Myoden",
+  T22: "BarakiNakayama",
+  T23: "NishiFunabashi",
+};
+
+/*
+ * =========================================================
  * 노선별 Station Map
  * =========================================================
  */
@@ -198,6 +231,8 @@ const STATION_MAPS: Record<TokyoMetroRailway, Record<string, string>> = {
   Marunouchi: MARUNOUCHI_STATION_MAP,
 
   Hibiya: HIBIYA_STATION_MAP,
+
+  Tozai: TOZAI_STATION_MAP,
 };
 
 /*
@@ -218,6 +253,9 @@ export const resolveTokyoMetroRailway = (
 
     case "hibiya":
       return "Hibiya";
+
+    case "tozai":
+      return "Tozai";
 
     default:
       return undefined;
@@ -282,7 +320,9 @@ export const fetchTokyoMetroTimetable = async (
   );
 
   if (!station) {
-    throw new Error(`${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`);
+    throw new Error(
+      `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+    );
   }
 
   const params = new URLSearchParams({
@@ -330,7 +370,7 @@ export const fetchTokyoMetroTrains = async (
   const requested = normalizeDirection(directionId);
 
   /*
-   * 앱 directionId:
+   * 앱 directionId
    *
    * 긴자선
    * asakusa
@@ -344,7 +384,11 @@ export const fetchTokyoMetroTrains = async (
    * nakameguro
    * kitasenju
    *
-   * API:
+   * 도자이선
+   * nakano
+   * nishifunabashi
+   *
+   * API direction
    *
    * Asakusa
    * Shibuya
@@ -352,17 +396,16 @@ export const fetchTokyoMetroTrains = async (
    * Ikebukuro
    * NakaMeguro
    * KitaSenju
+   * Nakano
+   * NishiFunabashi
    *
-   * normalizeDirection()을 거치므로
-   *
-   * NakaMeguro → nakameguro
-   * KitaSenju  → kitasenju
-   *
-   * 로 정상 비교된다.
+   * normalizeDirection()을 통해
+   * 대소문자 차이를 제거한다.
    */
 
   const matchingDirection = data.directions.find(
-    (direction) => normalizeDirection(direction.direction) === requested,
+    (direction) =>
+      normalizeDirection(direction.direction) === requested,
   );
 
   if (!matchingDirection) {

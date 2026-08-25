@@ -201,6 +201,14 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
         color: "#B5B5AC",
         description: "나카메구로 · 긴자 · 우에노 · 기타센주",
       },
+      {
+        id: "tozai",
+        code: "T",
+        nameKo: "도자이선",
+        nameJa: "東西線",
+        color: "#009BBF",
+        description: "나카노 · 다카다노바바 · 오테마치 · 니시후나바시",
+      },
 
       /*
        * 다음에 추가
