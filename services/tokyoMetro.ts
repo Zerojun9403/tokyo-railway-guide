@@ -21,8 +21,8 @@ export type TokyoMetroRailway =
   | "Chiyoda"
   | "Yurakucho"
   | "Hanzomon"
-  | "Namboku";
-  ;
+  | "Namboku"
+  | "Fukutoshin";
 
 /*
  * =========================================================
@@ -39,7 +39,7 @@ export type TokyoMetroUpcomingTrain = {
 
   trainType: string | null;
 
-  destinationStations: Array<string | null>;
+  destinationStations: (string | null)[];
 
   train: string | null;
 };
@@ -224,7 +224,6 @@ const TOZAI_STATION_MAP: Record<string, string> = {
   T23: "NishiFunabashi",
 };
 
-
 /*
  * =========================================================
  * 치요다선 Station Map
@@ -325,7 +324,6 @@ const HANZOMON_STATION_MAP: Record<string, string> = {
   Z14: "Oshiage",
 };
 
-
 /*
  * =========================================================
  * 난보쿠선 Station Map
@@ -361,6 +359,36 @@ const NAMBOKU_STATION_MAP: Record<string, string> = {
 
 /*
  * =========================================================
+ * 후쿠토신선 Station Map
+ * =========================================================
+ *
+ * F01 와코시
+ * ~
+ * F16 시부야
+ * =========================================================
+ */
+
+const FUKUTOSHIN_STATION_MAP: Record<string, string> = {
+  F01: "Wakoshi",
+  F02: "ChikatetsuNarimasu",
+  F03: "ChikatetsuAkatsuka",
+  F04: "Heiwadai",
+  F05: "Hikawadai",
+  F06: "KotakeMukaihara",
+  F07: "Senkawa",
+  F08: "Kanamecho",
+  F09: "Ikebukuro",
+  F10: "Zoshigaya",
+  F11: "NishiWaseda",
+  F12: "HigashiShinjuku",
+  F13: "ShinjukuSanchome",
+  F14: "KitaSando",
+  F15: "MeijiJingumae",
+  F16: "Shibuya",
+};
+
+/*
+ * =========================================================
  * 노선별 Station Map
  * =========================================================
  */
@@ -375,14 +403,14 @@ const STATION_MAPS: Record<TokyoMetroRailway, Record<string, string>> = {
   Tozai: TOZAI_STATION_MAP,
 
   Chiyoda: CHIYODA_STATION_MAP,
-  
+
   Yurakucho: YURAKUCHO_STATION_MAP,
 
   Hanzomon: HANZOMON_STATION_MAP,
 
   Namboku: NAMBOKU_STATION_MAP,
 
-  
+  Fukutoshin: FUKUTOSHIN_STATION_MAP,
 };
 
 /*
@@ -416,8 +444,11 @@ export const resolveTokyoMetroRailway = (
     case "hanzomon":
       return "Hanzomon";
 
-   case "namboku":
-    return "Namboku";
+    case "namboku":
+      return "Namboku";
+
+    case "fukutoshin":
+      return "Fukutoshin";
 
     default:
       return undefined;
@@ -482,9 +513,7 @@ export const fetchTokyoMetroTimetable = async (
   );
 
   if (!station) {
-    throw new Error(
-      `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
-    );
+    throw new Error(`${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`);
   }
 
   const params = new URLSearchParams({
@@ -566,8 +595,7 @@ export const fetchTokyoMetroTrains = async (
    */
 
   const matchingDirection = data.directions.find(
-    (direction) =>
-      normalizeDirection(direction.direction) === requested,
+    (direction) => normalizeDirection(direction.direction) === requested,
   );
 
   if (!matchingDirection) {

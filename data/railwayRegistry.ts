@@ -32,19 +32,10 @@ import {
   marunouchiTrains,
 } from "./lines/marunouchi";
 
+import { CHIYODA_COLOR, chiyodaStations, chiyodaTrains } from "./lines/chiyoda";
 import { HIBIYA_COLOR, hibiyaStations, hibiyaTrains } from "./lines/hibiya";
-import {
-  CHIYODA_COLOR,
-  chiyodaStations,
-  chiyodaTrains,
-} from "./lines/chiyoda";
 
-import {
-  TOZAI_COLOR,
-  tozaiStations,
-  tozaiTrains,
-} from "./lines/tozai";
-
+import { TOZAI_COLOR, tozaiStations, tozaiTrains } from "./lines/tozai";
 
 import {
   YURAKUCHO_COLOR,
@@ -58,12 +49,13 @@ import {
   hanzomonTrains,
 } from "./lines/hanzomon";
 
+import { NAMBOKU_COLOR, nambokuStations, nambokuTrains } from "./lines/namboku";
 
 import {
-  NAMBOKU_COLOR,
-  nambokuStations,
-  nambokuTrains,
-} from "./lines/namboku";
+  FUKUTOSHIN_COLOR,
+  fukutoshinStations,
+  fukutoshinTrains,
+} from "./lines/fukutoshin";
 
 import {
   KEISEI_COLOR,
@@ -73,17 +65,9 @@ import {
 
 import { OEDO_COLOR, oedoStations, oedoTrains } from "./lines/oedo";
 
-import {
-  ASAKUSA_COLOR,
-  asakusaStations,
-  asakusaTrains,
-} from "./lines/asakusa";
+import { ASAKUSA_COLOR, asakusaStations, asakusaTrains } from "./lines/asakusa";
 
-import {
-  MITA_COLOR,
-  mitaStations,
-  mitaTrains,
-} from "./lines/mita";
+import { MITA_COLOR, mitaStations, mitaTrains } from "./lines/mita";
 
 import {
   SHINJUKU_COLOR,
@@ -236,7 +220,7 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
 
   /*
    * =======================================================
-   * 도쿄메트로 
+   * 도쿄메트로
    * =======================================================
    */
 
@@ -256,7 +240,7 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
 
     trains: ginzaTrains,
   },
-  
+
   marunouchi: {
     id: "marunouchi",
 
@@ -285,95 +269,113 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
     trains: hibiyaTrains,
   },
 
-tozai: {
-  id: "tozai",
+  tozai: {
+    id: "tozai",
 
-  operatorId: "tokyo-metro",
+    operatorId: "tokyo-metro",
 
-  nameKo: "도자이선",
+    nameKo: "도자이선",
 
-  nameJa: "東西線",
+    nameJa: "東西線",
 
-  lineCode: "T",
+    lineCode: "T",
 
-  color: TOZAI_COLOR,
+    color: TOZAI_COLOR,
 
-  stations: tozaiStations,
+    stations: tozaiStations,
 
-  trains: tozaiTrains,
-},
+    trains: tozaiTrains,
+  },
 
-chiyoda: {
-  id: "chiyoda",
+  chiyoda: {
+    id: "chiyoda",
 
-  operatorId: "tokyo-metro",
+    operatorId: "tokyo-metro",
 
-  nameKo: "치요다선",
+    nameKo: "치요다선",
 
-  nameJa: "千代田線",
+    nameJa: "千代田線",
 
-  lineCode: "C",
+    lineCode: "C",
 
-  color: CHIYODA_COLOR,
+    color: CHIYODA_COLOR,
 
-  stations: chiyodaStations,
+    stations: chiyodaStations,
 
-  trains: chiyodaTrains,
-},
+    trains: chiyodaTrains,
+  },
 
-yurakucho: {
-  id: "yurakucho",
+  yurakucho: {
+    id: "yurakucho",
 
-  operatorId: "tokyo-metro",
+    operatorId: "tokyo-metro",
 
-  nameKo: "유라쿠초선",
+    nameKo: "유라쿠초선",
 
-  nameJa: "有楽町線",
+    nameJa: "有楽町線",
 
-  lineCode: "Y",
+    lineCode: "Y",
 
-  color: YURAKUCHO_COLOR,
+    color: YURAKUCHO_COLOR,
 
-  stations: yurakuchoStations,
+    stations: yurakuchoStations,
 
-  trains: yurakuchoTrains,
-},
+    trains: yurakuchoTrains,
+  },
 
-hanzomon: {
-  id: "hanzomon",
+  hanzomon: {
+    id: "hanzomon",
 
-  operatorId: "tokyo-metro",
+    operatorId: "tokyo-metro",
 
-  nameKo: "한조몬선",
+    nameKo: "한조몬선",
 
-  nameJa: "半蔵門線",
+    nameJa: "半蔵門線",
 
-  lineCode: "Z",
+    lineCode: "Z",
 
-  color: HANZOMON_COLOR,
+    color: HANZOMON_COLOR,
 
-  stations: hanzomonStations,
+    stations: hanzomonStations,
 
-  trains: hanzomonTrains,
-},
+    trains: hanzomonTrains,
+  },
 
-namboku: {
-  id: "namboku",
+  namboku: {
+    id: "namboku",
 
-  operatorId: "tokyo-metro",
+    operatorId: "tokyo-metro",
 
-  nameKo: "난보쿠선",
+    nameKo: "난보쿠선",
 
-  nameJa: "南北線",
+    nameJa: "南北線",
 
-  lineCode: "N",
+    lineCode: "N",
 
-  color: NAMBOKU_COLOR,
+    color: NAMBOKU_COLOR,
 
-  stations: nambokuStations,
+    stations: nambokuStations,
 
-  trains: nambokuTrains,
-},
+    trains: nambokuTrains,
+  },
+
+  fukutoshin: {
+    id: "fukutoshin",
+
+    operatorId: "tokyo-metro",
+
+    nameKo: "후쿠토신선",
+
+    nameJa: "副都心線",
+
+    lineCode: "F",
+
+    color: FUKUTOSHIN_COLOR,
+
+    stations: fukutoshinStations,
+
+    trains: fukutoshinTrains,
+  },
   /*
    * =======================================================
    * 게이세이 전철 - 게이세이 본선
@@ -420,57 +422,53 @@ namboku: {
     trains: asakusaTrains,
   },
 
-/*
- * =======================================================
- * 도에이 지하철 - 미타선
- * =======================================================
- */
+  /*
+   * =======================================================
+   * 도에이 지하철 - 미타선
+   * =======================================================
+   */
 
-mita: {
-  id: "mita",
+  mita: {
+    id: "mita",
 
-  operatorId: "toei",
+    operatorId: "toei",
 
-  nameKo: "도에이 미타선",
+    nameKo: "도에이 미타선",
 
-  nameJa: "都営三田線",
+    nameJa: "都営三田線",
 
-  lineCode: "I",
+    lineCode: "I",
 
-  color: MITA_COLOR,
+    color: MITA_COLOR,
 
-  stations: mitaStations,
+    stations: mitaStations,
 
-  trains: mitaTrains,
-},
+    trains: mitaTrains,
+  },
 
+  /*
+   * =======================================================
+   * 도에이 지하철 - 신주쿠선
+   * =======================================================
+   */
 
-/*
- * =======================================================
- * 도에이 지하철 - 신주쿠선
- * =======================================================
- */
+  shinjuku: {
+    id: "shinjuku",
 
-shinjuku: {
-  id: "shinjuku",
+    operatorId: "toei",
 
-  operatorId: "toei",
+    nameKo: "도에이 신주쿠선",
 
-  nameKo: "도에이 신주쿠선",
+    nameJa: "都営新宿線",
 
-  nameJa: "都営新宿線",
+    lineCode: "S",
 
-  lineCode: "S",
+    color: SHINJUKU_COLOR,
 
-  color: SHINJUKU_COLOR,
+    stations: shinjukuStations,
 
-  stations: shinjukuStations,
-
-  trains: shinjukuTrains,
-},
-
-
-
+    trains: shinjukuTrains,
+  },
 
   oedo: {
     id: "oedo",

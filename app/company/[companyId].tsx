@@ -215,7 +215,8 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
         nameKo: "치요다선",
         nameJa: "千代田線",
         color: "#00BB85",
-        description: "요요기우에하라 · 오모테산도 · 오테마치 · 기타센주 · 기타아야세",
+        description:
+          "요요기우에하라 · 오모테산도 · 오테마치 · 기타센주 · 기타아야세",
       },
 
       {
@@ -240,7 +241,16 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
         nameKo: "난보쿠선",
         nameJa: "南北線",
         color: "#00AC9B",
-        description: "메구로 · 아자부주반 · 나가타초 · 고마고메 · 아카바네이와부치",
+        description:
+          "메구로 · 아자부주반 · 나가타초 · 고마고메 · 아카바네이와부치",
+      },
+      {
+        id: "fukutoshin",
+        code: "F",
+        nameKo: "후쿠토신선",
+        nameJa: "副都心線",
+        color: "#9C5E31",
+        description: "와코시 · 이케부쿠로 · 신주쿠산초메 · 시부야",
       },
 
       /*
@@ -324,7 +334,6 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
         description: "신주쿠 · 롯폰기 · 다이몬 · 료고쿠",
       },
 
-
       {
         id: "asakusa",
         code: "A",
@@ -335,22 +344,23 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
       },
 
       {
-      id: "mita",
-      code: "I",
-      nameKo: "도에이 미타선",
-      nameJa: "都営三田線",
-      color: "#0079C2",
-      description: "메구로 · 미타 · 히비야 · 오테마치 · 스가모 · 니시타카시마다이라",
-    },
-    {
-      id: "shinjuku",
-      code: "S",
-      nameKo: "도에이 신주쿠선",
-      nameJa: "都営新宿線",
-      color: "#6CBB5A",
-      description: "신주쿠 · 이치가야 · 진보초 · 모리시타 · 오지마 · 모토야와타",
-    },
-
+        id: "mita",
+        code: "I",
+        nameKo: "도에이 미타선",
+        nameJa: "都営三田線",
+        color: "#0079C2",
+        description:
+          "메구로 · 미타 · 히비야 · 오테마치 · 스가모 · 니시타카시마다이라",
+      },
+      {
+        id: "shinjuku",
+        code: "S",
+        nameKo: "도에이 신주쿠선",
+        nameJa: "都営新宿線",
+        color: "#6CBB5A",
+        description:
+          "신주쿠 · 이치가야 · 진보초 · 모리시타 · 오지마 · 모토야와타",
+      },
     ],
   },
 };
