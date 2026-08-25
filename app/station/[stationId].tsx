@@ -20,7 +20,11 @@ import { StationHeader } from "../../components/station/StationHeader";
 import { TrainCard } from "../../components/station/TrainCard";
 import { TransferBottomSheet } from "../../components/station/TransferBottomSheet";
 
-import { getStation, getTrains } from "../../data/railwayRegistry";
+import {
+  getStation,
+  getTrains,
+  getStationsByLine,
+} from "../../data/railwayRegistry";
 
 import { useKeiseiTrains } from "../../hooks/useKeiseiTrains";
 
@@ -998,15 +1002,69 @@ export default function StationScreen() {
       =================================================== */}
 
       <TransferBottomSheet
-        visible={transferVisible}
-        transfers={station.transfers ?? []}
-        onClose={() => setTransferVisible(false)}
-        onPressTransfer={(transfer) => {
-          console.log("환승노선:", transfer.nameKo);
+  visible={transferVisible}
+  transfers={station.transfers ?? []}
+  onClose={() => setTransferVisible(false)}
+  onPressTransfer={(transfer) => {
+    /*
+     * 선택한 환승 노선의 전체 역
+     */
+    const targetStations =
+      getStationsByLine(transfer.id);
+      console.log("=== 환승 DEBUG ===");
+console.log("transfer.id:", transfer.id);
+console.log("현재역:", station.id, station.nameJa);
+console.log(
+  "대상역:",
+  targetStations.map((item) => ({
+    id: item.id,
+    nameJa: item.nameJa,
+  })),
+);
 
-          setTransferVisible(false);
-        }}
-      />
+    /*
+     * 현재 역과 같은 역명을 가진
+     * 환승 대상 역 찾기
+     */
+    const targetStation =
+      targetStations.find(
+        (item) =>
+          item.nameJa === station.nameJa,
+      );
+
+    /*
+     * 환승역을 찾지 못한 경우
+     */
+    if (!targetStation) {
+      console.warn(
+        "환승역을 찾을 수 없습니다.",
+        {
+          currentStation:
+            station.nameJa,
+
+          transferLine:
+            transfer.id,
+        },
+      );
+
+      setTransferVisible(false);
+
+      return;
+    }
+
+    /*
+     * Bottom Sheet 닫기
+     */
+    setTransferVisible(false);
+
+    /*
+     * 환승 노선의 같은 역으로 이동
+     */
+    router.push(
+      `/station/${targetStation.id}`,
+    );
+  }}
+/>
     </SafeAreaView>
   );
 }

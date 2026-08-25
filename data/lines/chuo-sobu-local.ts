@@ -1,4 +1,4 @@
-import type { Station } from "../../types/station";
+﻿import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 /*
@@ -429,7 +429,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#F62E36",
     ),
 
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
 
     transfer("oedo", "E", "도에이 오에도선", "都営大江戸線", "#CE045B"),
   ],
@@ -489,7 +489,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#00AC9B",
     ),
 
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
   ],
 
   /*
@@ -635,7 +635,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   JB28: [
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
   ],
 
   /*
@@ -968,3 +968,4 @@ export const chuoSobuLocalStations: Station[] =
  */
 
 export const chuoSobuLocalTrains: Record<string, Train[]> = {};
+

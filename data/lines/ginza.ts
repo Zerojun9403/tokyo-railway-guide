@@ -1,4 +1,4 @@
-import type { Station } from "../../types/station";
+﻿import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 /*
@@ -624,3 +624,4 @@ export const ginzaStations: Station[] = GINZA_STATION_BASE.map(
  */
 
 export const ginzaTrains: Record<string, Train[]> = {};
+

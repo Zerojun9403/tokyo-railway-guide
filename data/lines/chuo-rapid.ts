@@ -1,4 +1,4 @@
-import type { Station } from "../../types/station";
+﻿import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 export const CHUO_RAPID_COLOR = "#F15A22";
@@ -314,7 +314,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "東京メトロ丸ノ内線",
       "#F62E36",
     ),
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
     transfer("oedo", "E", "도에이 오에도선", "都営大江戸線", "#CE045B"),
     transfer("keio", "KO", "게이오선", "京王線", "#DD0077"),
     transfer("odakyu", "OH", "오다큐선", "小田急線", "#2288CC"),
@@ -746,3 +746,4 @@ export const chuoRapidStations: Station[] = CHUO_RAPID_STATION_BASE.map(
  */
 
 export const chuoRapidTrains: Record<string, Train[]> = {};
+

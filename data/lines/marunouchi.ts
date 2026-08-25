@@ -1,4 +1,4 @@
-import type { Station } from "../../types/station";
+﻿import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 /*
@@ -263,7 +263,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#E21F26",
     ),
 
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
 
     transfer("oedo", "E", "도에이 오에도선", "都営大江戸線", "#CE045B"),
 
@@ -287,7 +287,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
   M09: [
     transfer("fukutoshin", "F", "후쿠토신선", "副都心線", "#9C5E31"),
 
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
   ],
 
   /*
@@ -403,7 +403,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
   M19: [
     transfer("chiyoda", "C", "지요다선", "千代田線", "#00BB85"),
 
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
   ],
 
   /*
@@ -714,3 +714,4 @@ export const marunouchiStations: Station[] = MARUNOUCHI_STATION_BASE.map(
  */
 
 export const marunouchiTrains: Record<string, Train[]> = {};
+

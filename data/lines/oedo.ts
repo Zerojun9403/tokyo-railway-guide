@@ -1,4 +1,4 @@
-import type { Station } from "../../types/station";
+﻿import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 export const OEDO_COLOR = "#CE045B";
@@ -440,7 +440,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   E13: [
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
   ],
 
   /*
@@ -576,7 +576,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   E27: [
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
 
     transfer("yamanote", "JY", "JR 야마노테선", "JR山手線", "#80C41C"),
 
@@ -957,3 +957,4 @@ export const oedoStations: Station[] = [
  */
 
 export const oedoTrains: Record<string, Train[]> = {};
+

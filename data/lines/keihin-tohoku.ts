@@ -1,4 +1,4 @@
-import type { Station } from "../../types/station";
+﻿import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 /*
@@ -1035,3 +1035,4 @@ export const keihinTohokuStations: Station[] = KEIHIN_TOHOKU_STATION_BASE.map(
  */
 
 export const keihinTohokuTrains: Record<string, Train[]> = {};
+

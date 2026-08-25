@@ -1,4 +1,4 @@
-import type { Station } from "../../types/station";
+﻿import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 export const KEISEI_COLOR = "#005AAA";
@@ -896,7 +896,7 @@ export const keiseiMainStations: Station[] = [
 
     transfers: [
       {
-        id: "toei-shinjuku",
+        id: "shinjuku",
 
         code: "S",
 
@@ -2259,3 +2259,4 @@ export const keiseiMainTrains: Record<string, Train[]> = {
     },
   ],
 };
+

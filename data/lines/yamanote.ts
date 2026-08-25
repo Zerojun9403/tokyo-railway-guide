@@ -1,4 +1,4 @@
-import type { Station } from "../../types/station";
+﻿import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 export const YAMANOTE_COLOR = "#80C41C";
@@ -626,7 +626,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
     },
 
     {
-      id: "toei-shinjuku",
+      id: "shinjuku",
 
       code: "S",
 
@@ -1165,3 +1165,4 @@ export const yamanoteTrains: Record<string, Train[]> = {
     },
   ],
 };
+

@@ -1,4 +1,4 @@
-import type { Station } from "../../types/station";
+﻿import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 /*
@@ -352,7 +352,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#C1A470",
     ),
     transfer(
-      "toei-shinjuku",
+      "shinjuku",
       "S",
       "도에이 신주쿠선",
       "都営新宿線",
