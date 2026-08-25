@@ -333,6 +333,15 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
         color: "#E85298",
         description: "니시마고메 · 센가쿠지 · 신바시 · 아사쿠사 · 오시아게",
       },
+
+      {
+  id: "mita",
+  code: "I",
+  nameKo: "도에이 미타선",
+  nameJa: "都営三田線",
+  color: "#0079C2",
+  description: "메구로 · 미타 · 히비야 · 오테마치 · 스가모 · 니시타카시마다이라",
+},
     ],
   },
 };

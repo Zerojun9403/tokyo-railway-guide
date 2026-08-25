@@ -163,7 +163,61 @@ const ASAKUSA_STATION_MAP: Record<string, string> = {
  * =========================================================
  */
 
-const MITA_STATION_MAP: Record<string, string> = {};
+const MITA_STATION_MAP: Record<string, string> = {
+  I01: "Meguro",
+
+  I02: "Shirokanedai",
+
+  I03: "ShirokaneTakanawa",
+
+  I04: "Mita",
+
+  I05: "Shibakoen",
+
+  I06: "Onarimon",
+
+  I07: "Uchisaiwaicho",
+
+  I08: "Hibiya",
+
+  I09: "Otemachi",
+
+  I10: "Jimbocho",
+
+  I11: "Suidobashi",
+
+  I12: "Kasuga",
+
+  I13: "Hakusan",
+
+  I14: "Sengoku",
+
+  I15: "Sugamo",
+
+  I16: "NishiSugamo",
+
+  I17: "ShinItabashi",
+
+  I18: "Itabashikuyakushomae",
+
+  I19: "Itabashihoncho",
+
+  I20: "Motohasunuma",
+
+  I21: "ShimuraSakaue",
+
+  I22: "ShimuraSanchome",
+
+  I23: "Hasune",
+
+  I24: "Nishidai",
+
+  I25: "Takashimadaira",
+
+  I26: "ShinTakashimadaira",
+
+  I27: "NishiTakashimadaira",
+};
 
 /*
  * =========================================================

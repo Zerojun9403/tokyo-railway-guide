@@ -221,6 +221,150 @@ const ASAKUSA_DESTINATION_MAP: Record<string, DestinationName> = {
 
 /*
  * =========================================================
+ * Mita Line destinations
+ * =========================================================
+ */
+
+const MITA_DESTINATION_MAP: Record<string, DestinationName> = {
+  Meguro: {
+    ko: "메구로",
+    ja: "目黒",
+  },
+
+  Shirokanedai: {
+    ko: "시로카네다이",
+    ja: "白金台",
+  },
+
+  ShirokaneTakanawa: {
+    ko: "시로카네타카나와",
+    ja: "白金高輪",
+  },
+
+  Mita: {
+    ko: "미타",
+    ja: "三田",
+  },
+
+  Shibakoen: {
+    ko: "시바코엔",
+    ja: "芝公園",
+  },
+
+  Onarimon: {
+    ko: "오나리몬",
+    ja: "御成門",
+  },
+
+  Uchisaiwaicho: {
+    ko: "우치사이와이초",
+    ja: "内幸町",
+  },
+
+  Hibiya: {
+    ko: "히비야",
+    ja: "日比谷",
+  },
+
+  Otemachi: {
+    ko: "오테마치",
+    ja: "大手町",
+  },
+
+  Jimbocho: {
+    ko: "진보초",
+    ja: "神保町",
+  },
+
+  Suidobashi: {
+    ko: "스이도바시",
+    ja: "水道橋",
+  },
+
+  Kasuga: {
+    ko: "가스가",
+    ja: "春日",
+  },
+
+  Hakusan: {
+    ko: "하쿠산",
+    ja: "白山",
+  },
+
+  Sengoku: {
+    ko: "센고쿠",
+    ja: "千石",
+  },
+
+  Sugamo: {
+    ko: "스가모",
+    ja: "巣鴨",
+  },
+
+  NishiSugamo: {
+    ko: "니시스가모",
+    ja: "西巣鴨",
+  },
+
+  ShinItabashi: {
+    ko: "신이타바시",
+    ja: "新板橋",
+  },
+
+  Itabashikuyakushomae: {
+    ko: "이타바시쿠야쿠쇼마에",
+    ja: "板橋区役所前",
+  },
+
+  Itabashihoncho: {
+    ko: "이타바시혼초",
+    ja: "板橋本町",
+  },
+
+  Motohasunuma: {
+    ko: "모토하스누마",
+    ja: "本蓮沼",
+  },
+
+  ShimuraSakaue: {
+    ko: "시무라사카우에",
+    ja: "志村坂上",
+  },
+
+  ShimuraSanchome: {
+    ko: "시무라산초메",
+    ja: "志村三丁目",
+  },
+
+  Hasune: {
+    ko: "하스네",
+    ja: "蓮根",
+  },
+
+  Nishidai: {
+    ko: "니시다이",
+    ja: "西台",
+  },
+
+  Takashimadaira: {
+    ko: "다카시마다이라",
+    ja: "高島平",
+  },
+
+  ShinTakashimadaira: {
+    ko: "신타카시마다이라",
+    ja: "新高島平",
+  },
+
+  NishiTakashimadaira: {
+    ko: "니시타카시마다이라",
+    ja: "西高島平",
+  },
+};
+
+
+/*
+ * =========================================================
  * Common destination map
  * =========================================================
  */
@@ -228,6 +372,8 @@ const ASAKUSA_DESTINATION_MAP: Record<string, DestinationName> = {
 const TOEI_DESTINATION_MAP: Record<string, DestinationName> = {
   ...OEDO_DESTINATION_MAP,
   ...ASAKUSA_DESTINATION_MAP,
+  ...MITA_DESTINATION_MAP,
+
 };
 
 /*

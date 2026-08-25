@@ -79,6 +79,12 @@ import {
   asakusaTrains,
 } from "./lines/asakusa";
 
+import {
+  MITA_COLOR,
+  mitaStations,
+  mitaTrains,
+} from "./lines/mita";
+
 /*
  * =========================================================
  * 노선 Registry 타입
@@ -407,6 +413,30 @@ namboku: {
 
     trains: asakusaTrains,
   },
+
+/*
+ * =======================================================
+ * 도에이 지하철 - 미타선
+ * =======================================================
+ */
+
+mita: {
+  id: "mita",
+
+  operatorId: "toei",
+
+  nameKo: "도에이 미타선",
+
+  nameJa: "都営三田線",
+
+  lineCode: "I",
+
+  color: MITA_COLOR,
+
+  stations: mitaStations,
+
+  trains: mitaTrains,
+},
   oedo: {
     id: "oedo",
 
