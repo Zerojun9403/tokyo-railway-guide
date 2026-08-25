@@ -22,11 +22,7 @@ const TOEI_API_BASE_URL = "https://toei-metro.vercel.app";
  * =========================================================
  */
 
-export type ToeiRailway =
-  | "Asakusa"
-  | "Mita"
-  | "Shinjuku"
-  | "Oedo";
+export type ToeiRailway = "Asakusa" | "Mita" | "Shinjuku" | "Oedo";
 
 /*
  * =========================================================
@@ -370,10 +366,7 @@ const OEDO_STATION_MAP: Record<string, string> = {
  * =========================================================
  */
 
-const STATION_MAPS: Record<
-  ToeiRailway,
-  Record<string, string>
-> = {
+const STATION_MAPS: Record<ToeiRailway, Record<string, string>> = {
   Asakusa: ASAKUSA_STATION_MAP,
 
   Mita: MITA_STATION_MAP,
@@ -459,9 +452,7 @@ export const getToeiStationName = (
  * =========================================================
  */
 
-const fetchJson = async <T>(
-  url: string,
-): Promise<T> => {
+const fetchJson = async <T>(url: string): Promise<T> => {
   const response = await fetch(url, {
     method: "GET",
 
@@ -471,14 +462,12 @@ const fetchJson = async <T>(
   });
 
   if (!response.ok) {
-    let message =
-      `도에이 API 요청 실패 (${response.status})`;
+    let message = `도에이 API 요청 실패 (${response.status})`;
 
     try {
-      const errorData =
-        (await response.json()) as {
-          error?: string;
-        };
+      const errorData = (await response.json()) as {
+        error?: string;
+      };
 
       if (errorData.error) {
         message = errorData.error;
@@ -517,9 +506,7 @@ export const fetchToeiStationTimetable = async (
   station: string,
 ): Promise<ToeiStationTimetableResponse> => {
   if (!station) {
-    throw new Error(
-      "도에이 역 ID가 없습니다.",
-    );
+    throw new Error("도에이 역 ID가 없습니다.");
   }
 
   const params = new URLSearchParams({
@@ -529,14 +516,10 @@ export const fetchToeiStationTimetable = async (
   });
 
   const url =
-    `${TOEI_API_BASE_URL}` +
-    `/api/station-timetable?${params.toString()}`;
+    `${TOEI_API_BASE_URL}` + `/api/station-timetable?${params.toString()}`;
 
   try {
-    const data =
-      await fetchJson<ToeiStationTimetableResponse>(
-        url,
-      );
+    const data = await fetchJson<ToeiStationTimetableResponse>(url);
 
     if (data.error) {
       throw new Error(data.error);
@@ -544,16 +527,13 @@ export const fetchToeiStationTimetable = async (
 
     return data;
   } catch (error) {
-    console.error(
-      "fetchToeiStationTimetable 오류:",
-      {
-        railway,
+    console.error("fetchToeiStationTimetable 오류:", {
+      railway,
 
-        station,
+      station,
 
-        error,
-      },
-    );
+      error,
+    });
 
     throw error;
   }
@@ -586,22 +566,13 @@ export const fetchToeiTimetable = async (
   railway: ToeiRailway,
   stationId: string,
 ): Promise<ToeiStationTimetableResponse> => {
-  const station =
-    getToeiStationName(
-      railway,
-      stationId,
-    );
+  const station = getToeiStationName(railway, stationId);
 
   if (!station) {
-    throw new Error(
-      `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
-    );
+    throw new Error(`${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`);
   }
 
-  return fetchToeiStationTimetable(
-    railway,
-    station,
-  );
+  return fetchToeiStationTimetable(railway, station);
 };
 
 /*
@@ -610,14 +581,8 @@ export const fetchToeiTimetable = async (
  * =========================================================
  */
 
-const normalizeDirection = (
-  value?: string | null,
-) => {
-  return (
-    value
-      ?.trim()
-      .toLowerCase() ?? ""
-  );
+const normalizeDirection = (value?: string | null) => {
+  return value?.trim().toLowerCase() ?? "";
 };
 
 /*
@@ -643,34 +608,71 @@ export const fetchToeiTrains = async (
   stationId: string,
   directionId: string,
 ): Promise<ToeiUpcomingTrain[]> => {
-  const data =
-    await fetchToeiTimetable(
-      railway,
-      stationId,
-    );
+  const data = await fetchToeiTimetable(railway, stationId);
 
-  const requested =
-    normalizeDirection(
-      directionId,
-    );
+  /*
+   * =========================================================
+   * 앱 directionId → Toei API direction
+   * =========================================================
+   */
 
-  const matchingDirection =
-    data.directions.find(
-      (direction) =>
-        normalizeDirection(
-          direction.direction,
-        ) === requested,
-    );
+  let apiDirection = directionId;
+
+  /*
+   * Asakusa Line
+   */
+  if (railway === "Asakusa") {
+    if (directionId === "nishimagome") {
+      apiDirection = "Southbound";
+    } else if (directionId === "oshiage") {
+      apiDirection = "Northbound";
+    }
+  }
+
+  /*
+   * Mita Line
+   */
+  if (railway === "Mita") {
+    if (directionId === "meguro") {
+      apiDirection = "Southbound";
+    } else if (directionId === "nishitakashimadaira") {
+      apiDirection = "Northbound";
+    }
+  }
+
+  /*
+   * Shinjuku Line
+   */
+  if (railway === "Shinjuku") {
+    if (directionId === "shinjuku") {
+      apiDirection = "Westbound";
+    } else if (directionId === "motoyawata") {
+      apiDirection = "Eastbound";
+    }
+  }
+
+  /*
+   * Oedo Line
+   */
+  if (railway === "Oedo") {
+    if (directionId === "inner") {
+      apiDirection = "InnerLoop";
+    } else if (directionId === "outer") {
+      apiDirection = "OuterLoop";
+    }
+  }
+
+  const requested = normalizeDirection(apiDirection);
+
+  const matchingDirection = data.directions.find(
+    (direction) => normalizeDirection(direction.direction) === requested,
+  );
 
   if (!matchingDirection) {
-    const directions =
-      data.directions
-        .map(
-          (item) =>
-            item.direction,
-        )
-        .filter(Boolean)
-        .join(", ");
+    const directions = data.directions
+      .map((item) => item.direction)
+      .filter(Boolean)
+      .join(", ");
 
     throw new Error(
       `${railway} ${stationId}에서 ${directionId} 방향을 찾을 수 없습니다. API 방향: ${
@@ -679,10 +681,7 @@ export const fetchToeiTrains = async (
     );
   }
 
-  return (
-    matchingDirection.upcoming ??
-    []
-  );
+  return matchingDirection.upcoming ?? [];
 };
 
 /*
@@ -699,13 +698,8 @@ export const fetchToeiTrains = async (
  * =========================================================
  */
 
-export const getOedoOdptStationId = (
-  stationId: string,
-): string | undefined => {
-  return getToeiStationName(
-    "Oedo",
-    stationId,
-  );
+export const getOedoOdptStationId = (stationId: string): string | undefined => {
+  return getToeiStationName("Oedo", stationId);
 };
 
 /*
@@ -717,10 +711,7 @@ export const getOedoOdptStationId = (
 export const fetchOedoTimetable = async (
   stationId: string,
 ): Promise<ToeiStationTimetableResponse> => {
-  return fetchToeiTimetable(
-    "Oedo",
-    stationId,
-  );
+  return fetchToeiTimetable("Oedo", stationId);
 };
 
 /*
@@ -733,25 +724,17 @@ export const fetchOedoDirectionTrains = async (
   stationId: string,
   apiDirection: string,
 ): Promise<ToeiUpcomingTrain[]> => {
-  const data =
-    await fetchOedoTimetable(
-      stationId,
-    );
+  const data = await fetchOedoTimetable(stationId);
 
-  const direction =
-    data.directions.find(
-      (item) =>
-        item.direction ===
-        apiDirection,
-    );
+  const direction = data.directions.find(
+    (item) => item.direction === apiDirection,
+  );
 
   if (!direction) {
     return [];
   }
 
-  return (
-    direction.upcoming ?? []
-  );
+  return direction.upcoming ?? [];
 };
 
 /*
@@ -760,16 +743,11 @@ export const fetchOedoDirectionTrains = async (
  * =========================================================
  */
 
-export const getOedoStationMapping = (
-  stationId: string,
-) => {
+export const getOedoStationMapping = (stationId: string) => {
   return {
     stationId,
 
-    odptStation:
-      getOedoOdptStationId(
-        stationId,
-      ) ?? null,
+    odptStation: getOedoOdptStationId(stationId) ?? null,
   };
 };
 
@@ -788,10 +766,6 @@ export const getToeiStationMapping = (
 
     stationId,
 
-    odptStation:
-      getToeiStationName(
-        railway,
-        stationId,
-      ) ?? null,
+    odptStation: getToeiStationName(railway, stationId) ?? null,
   };
 };

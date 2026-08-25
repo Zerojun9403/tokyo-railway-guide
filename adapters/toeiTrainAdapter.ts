@@ -1,5 +1,5 @@
-import type { Train } from "../types/train";
 import type { ToeiUpcomingTrain } from "../services/toei";
+import type { Train } from "../types/train";
 
 /*
  * =========================================================
@@ -219,12 +219,6 @@ const ASAKUSA_DESTINATION_MAP: Record<string, DestinationName> = {
   },
 };
 
-/*
- * =========================================================
- * Mita Line destinations
- * =========================================================
- */
-
 const MITA_DESTINATION_MAP: Record<string, DestinationName> = {
   Meguro: {
     ko: "메구로",
@@ -352,7 +346,7 @@ const MITA_DESTINATION_MAP: Record<string, DestinationName> = {
   },
 
   ShinTakashimadaira: {
-    ko: "신타카시마다이라",
+    ko: "신다카시마다이라",
     ja: "新高島平",
   },
 
@@ -360,7 +354,24 @@ const MITA_DESTINATION_MAP: Record<string, DestinationName> = {
     ko: "니시타카시마다이라",
     ja: "西高島平",
   },
+
+  /*
+   * =======================================================
+   * Tokyu through service
+   * =======================================================
+   */
+
+  Hiyoshi: {
+    ko: "히요시",
+    ja: "日吉",
+  },
+
+  MusashiKosugi: {
+    ko: "무사시코스기",
+    ja: "武蔵小杉",
+  },
 };
+
 /*
  * =========================================================
  * Shinjuku Line destinations
@@ -472,6 +483,21 @@ const SHINJUKU_DESTINATION_MAP: Record<string, DestinationName> = {
     ko: "모토야와타",
     ja: "本八幡",
   },
+
+  Sasazuka: {
+    ko: "사사즈카",
+    ja: "笹塚",
+  },
+
+  KeioTamaCenter: {
+    ko: "게이오타마센터",
+    ja: "京王多摩センター",
+  },
+
+  Hashimoto: {
+    ko: "하시모토",
+    ja: "橋本",
+  },
 };
 
 /*
@@ -493,9 +519,7 @@ const TOEI_DESTINATION_MAP: Record<string, DestinationName> = {
  * =========================================================
  */
 
-const translateTrainType = (
-  value: string | null,
-): string | undefined => {
+const translateTrainType = (value: string | null): string | undefined => {
   if (!value) {
     return undefined;
   }
@@ -520,19 +544,12 @@ const translateTrainType = (
  * =========================================================
  */
 
-const normalizeDestinationId = (
-  value: string,
-): string => {
-  const colonPart =
-    value.split(":").pop() ?? value;
+const normalizeDestinationId = (value: string): string => {
+  const colonPart = value.split(":").pop() ?? value;
 
-  const dotParts =
-    colonPart.split(".");
+  const dotParts = colonPart.split(".");
 
-  return (
-    dotParts[dotParts.length - 1] ??
-    colonPart
-  );
+  return dotParts[dotParts.length - 1] ?? colonPart;
 };
 
 /*
@@ -541,11 +558,8 @@ const normalizeDestinationId = (
  * =========================================================
  */
 
-const getDestination = (
-  destinationStations: string[],
-) => {
-  const rawStationId =
-    destinationStations[0];
+const getDestination = (destinationStations: string[]) => {
+  const rawStationId = destinationStations[0];
 
   if (!rawStationId) {
     return {
@@ -554,15 +568,9 @@ const getDestination = (
     };
   }
 
-  const stationId =
-    normalizeDestinationId(
-      rawStationId,
-    );
+  const stationId = normalizeDestinationId(rawStationId);
 
-  const station =
-    TOEI_DESTINATION_MAP[
-      stationId
-    ];
+  const station = TOEI_DESTINATION_MAP[stationId];
 
   if (station) {
     return {
@@ -595,10 +603,7 @@ export const adaptToeiTrain = (
   index: number,
   directionId: string,
 ): Train => {
-  const {
-    destinationKo,
-    destinationJa,
-  } = getDestination(
+  const { destinationKo, destinationJa } = getDestination(
     train.destinationStations,
   );
 
@@ -609,20 +614,15 @@ export const adaptToeiTrain = (
 
     time: train.departureTime,
 
-    minutesUntilDeparture:
-      train.minutesUntilDeparture,
+    minutesUntilDeparture: train.minutesUntilDeparture,
 
-    trainType: translateTrainType(
-      train.trainType,
-    ),
+    trainType: translateTrainType(train.trainType),
 
     destinationKo,
 
     destinationJa,
 
-    trainNumber:
-      train.trainNumber ??
-      undefined,
+    trainNumber: train.trainNumber ?? undefined,
 
     directionId,
 
@@ -640,12 +640,7 @@ export const adaptToeiTrains = (
   trains: ToeiUpcomingTrain[],
   directionId: string,
 ): Train[] => {
-  return trains.map(
-    (train, index) =>
-      adaptToeiTrain(
-        train,
-        index,
-        directionId,
-      ),
+  return trains.map((train, index) =>
+    adaptToeiTrain(train, index, directionId),
   );
 };
