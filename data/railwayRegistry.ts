@@ -58,6 +58,13 @@ import {
   hanzomonTrains,
 } from "./lines/hanzomon";
 
+
+import {
+  NAMBOKU_COLOR,
+  nambokuStations,
+  nambokuTrains,
+} from "./lines/namboku";
+
 import {
   KEISEI_COLOR,
   keiseiMainStations,
@@ -332,7 +339,23 @@ hanzomon: {
   trains: hanzomonTrains,
 },
 
+namboku: {
+  id: "namboku",
 
+  operatorId: "tokyo-metro",
+
+  nameKo: "난보쿠선",
+
+  nameJa: "南北線",
+
+  lineCode: "N",
+
+  color: NAMBOKU_COLOR,
+
+  stations: nambokuStations,
+
+  trains: nambokuTrains,
+},
 
 
 

@@ -234,7 +234,14 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
         color: "#8F76D6",
         description: "시부야 · 오모테산도 · 오테마치 · 긴시초 · 오시아게",
       },
-
+      {
+        id: "namboku",
+        code: "N",
+        nameKo: "난보쿠선",
+        nameJa: "南北線",
+        color: "#00AC9B",
+        description: "메구로 · 아자부주반 · 나가타초 · 고마고메 · 아카바네이와부치",
+      },
 
       /*
        * 다음에 추가
