@@ -52,7 +52,11 @@ import {
   yurakuchoTrains,
 } from "./lines/yurakucho";
 
-
+import {
+  HANZOMON_COLOR,
+  hanzomonStations,
+  hanzomonTrains,
+} from "./lines/hanzomon";
 
 import {
   KEISEI_COLOR,
@@ -309,6 +313,30 @@ yurakucho: {
 
   trains: yurakuchoTrains,
 },
+
+hanzomon: {
+  id: "hanzomon",
+
+  operatorId: "tokyo-metro",
+
+  nameKo: "한조몬선",
+
+  nameJa: "半蔵門線",
+
+  lineCode: "Z",
+
+  color: HANZOMON_COLOR,
+
+  stations: hanzomonStations,
+
+  trains: hanzomonTrains,
+},
+
+
+
+
+
+
 
 
   /*

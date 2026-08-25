@@ -226,6 +226,15 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
         color: "#C1A470",
         description: "와코시 · 이케부쿠로 · 유라쿠초 · 도요스 · 신키바",
       },
+      {
+        id: "hanzomon",
+        code: "Z",
+        nameKo: "한조몬선",
+        nameJa: "半蔵門線",
+        color: "#8F76D6",
+        description: "시부야 · 오모테산도 · 오테마치 · 긴시초 · 오시아게",
+      },
+
 
       /*
        * 다음에 추가

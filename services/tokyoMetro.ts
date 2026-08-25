@@ -20,6 +20,7 @@ export type TokyoMetroRailway =
   | "Tozai"
   | "Chiyoda"
   | "Yurakucho"
+  | "Hanzomon"
   ;
 
 /*
@@ -295,7 +296,33 @@ const YURAKUCHO_STATION_MAP: Record<string, string> = {
   Y24: "ShinKiba",
 };
 
+/*
+ * =========================================================
+ * 한조몬선 Station Map
+ * =========================================================
+ *
+ * Z01 시부야
+ * ↓
+ * Z14 오시아게
+ * =========================================================
+ */
 
+const HANZOMON_STATION_MAP: Record<string, string> = {
+  Z01: "Shibuya",
+  Z02: "OmoteSando",
+  Z03: "AoyamaItchome",
+  Z04: "Nagatacho",
+  Z05: "Hanzomon",
+  Z06: "Kudanshita",
+  Z07: "Jimbocho",
+  Z08: "Otemachi",
+  Z09: "Mitsukoshimae",
+  Z10: "Suitengumae",
+  Z11: "KiyosumiShirakawa",
+  Z12: "Sumiyoshi",
+  Z13: "Kinshicho",
+  Z14: "Oshiage",
+};
 
 /*
  * =========================================================
@@ -313,6 +340,11 @@ const STATION_MAPS: Record<TokyoMetroRailway, Record<string, string>> = {
   Tozai: TOZAI_STATION_MAP,
 
   Chiyoda: CHIYODA_STATION_MAP,
+  
+  Yurakucho: YURAKUCHO_STATION_MAP,
+
+   Hanzomon: HANZOMON_STATION_MAP,
+  
 };
 
 /*
@@ -339,6 +371,12 @@ export const resolveTokyoMetroRailway = (
 
     case "chiyoda":
       return "Chiyoda";
+
+    case "yurakucho":
+      return "Yurakucho";
+      
+    case "hanzomon":
+      return "Hanzomon";
 
     default:
       return undefined;
