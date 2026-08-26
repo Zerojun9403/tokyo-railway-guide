@@ -217,6 +217,63 @@ const ASAKUSA_DESTINATION_MAP: Record<string, DestinationName> = {
     ko: "오시아게",
     ja: "押上",
   },
+
+
+/*
+ * =========================================================
+ * 아사쿠사선 직통 행선지
+ * =========================================================
+ *
+ * 게이큐 / 게이세이 / 호쿠소 계통
+ * 실제 API에서 반환되는 값 기준으로 계속 확장
+ * =========================================================
+ */
+
+  Shinagawa: {
+    ko: "시나가와",
+    ja: "品川",
+  },
+
+  HanedaAirportTerminal3: {
+    ko: "하네다공항 제3터미널",
+    ja: "羽田空港第3ターミナル",
+  },
+
+  HanedaAirportTerminal1And2: {
+    ko: "하네다공항 제1·제2터미널",
+    ja: "羽田空港第1・第2ターミナル",
+  },
+
+  Aoto: {
+    ko: "아오토",
+    ja: "青砥",
+  },
+
+  KeiseiTakasago: {
+    ko: "게이세이다카사고",
+    ja: "京成高砂",
+  },
+
+  InzaiMakinohara: {
+    ko: "인자이마키노하라",
+    ja: "印西牧の原",
+  },
+
+  InbaNihonIdai: {
+    ko: "인바니혼이다이",
+    ja: "印旛日本医大",
+  },
+
+  NaritaAirportTerminal1: {
+    ko: "나리타공항 제1터미널",
+    ja: "成田空港",
+  },
+
+  AirportTerminal2: {
+    ko: "공항 제2빌딩",
+    ja: "空港第2ビル",
+  },
+
 };
 
 const MITA_DESTINATION_MAP: Record<string, DestinationName> = {
@@ -572,24 +629,29 @@ const getDestination = (destinationStations: string[]) => {
 
   const station = TOEI_DESTINATION_MAP[stationId];
 
-  if (station) {
-    return {
-      destinationKo: station.ko,
-      destinationJa: station.ja,
-    };
-  }
-
-  /*
-   * Unknown through-service destination:
-   *
-   * Do not discard the API value.
-   * Show the raw destination so it can be checked later.
-   */
-
+ if (station) {
   return {
-    destinationKo: stationId,
-    destinationJa: undefined,
+    destinationKo: station.ko,
+    destinationJa: station.ja,
   };
+}
+
+/*
+ * Unknown through-service destination:
+ *
+ * Do not discard the API value.
+ * Show the raw destination so it can be checked later.
+ */
+
+console.warn(
+  "등록되지 않은 Toei 직통 행선지:",
+  rawStationId,
+);
+
+return {
+  destinationKo: stationId,
+  destinationJa: undefined,
+};
 };
 
 /*

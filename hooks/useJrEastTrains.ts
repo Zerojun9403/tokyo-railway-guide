@@ -26,8 +26,7 @@ export type JrEastRailway =
   | "Yamanote"
   | "ChuoRapid"
   | "ChuoSobuLocal"
-  | "KeihinTohokuNegishi"
-  | "SaikyoKawagoe";
+  | "KeihinTohokuNegishi";
 
 /*
  * =========================================================
@@ -125,21 +124,8 @@ const resolveJrEastDirection = (
     }
   }
 
-  /*
-   * =======================================================
-   * 사이쿄·가와고에선
-   * =======================================================
-   */
 
-  if (railway === "SaikyoKawagoe") {
-    if (normalized === "northbound" || normalized === "kawagoe") {
-      return "northbound";
-    }
-
-    if (normalized === "southbound" || normalized === "osaki") {
-      return "southbound";
-    }
-  }
+ 
 
   /*
    * 이미 API 방향 형식이라면 그대로 사용

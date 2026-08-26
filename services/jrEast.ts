@@ -27,7 +27,11 @@ const JR_EAST_API_BASE_URL = "https://tokyo-metro-sigma.vercel.app";
  * =========================================================
  */
 
-export type JrRailway = "Yamanote" | "ChuoRapid" | "ChuoSobuLocal";
+export type JrRailway =
+  | "Yamanote"
+  | "ChuoRapid"
+  | "ChuoSobuLocal"
+  | "KeihinTohokuNegishi";
 
 /*
  * =========================================================
@@ -244,6 +248,72 @@ const CHUO_SOBU_LOCAL_STATION_MAP: Record<string, string> = {
 
 /*
  * =========================================================
+ * 게이힌도호쿠·네기시선 Station Map
+ * =========================================================
+ *
+ * JK47 오미야
+ * ↓
+ * JK26 도쿄
+ * ↓
+ * JK12 요코하마
+ * ↓
+ * JK01 오후나
+ *
+ * =========================================================
+ */
+
+const KEIHIN_TOHOKU_NEGISHI_STATION_MAP: Record<string, string> = {
+  JK47: "Omiya",
+  JK46: "SaitamaShintoshin",
+  JK45: "Yono",
+  JK44: "KitaUrawa",
+  JK43: "Urawa",
+  JK42: "MinamiUrawa",
+  JK41: "Warabi",
+  JK40: "NishiKawaguchi",
+  JK39: "Kawaguchi",
+  JK38: "Akabane",
+  JK37: "HigashiJujo",
+  JK36: "Oji",
+  JK35: "Kaminakazato",
+  JK34: "Tabata",
+  JK33: "NishiNippori",
+  JK32: "Nippori",
+  JK31: "Uguisudani",
+  JK30: "Ueno",
+  JK29: "Okachimachi",
+  JK28: "Akihabara",
+  JK27: "Kanda",
+  JK26: "Tokyo",
+  JK25: "Yurakucho",
+  JK24: "Shimbashi",
+  JK23: "Hamamatsucho",
+  JK22: "Tamachi",
+  JK21: "TakanawaGateway",
+  JK20: "Shinagawa",
+  JK19: "Oimachi",
+  JK18: "Omori",
+  JK17: "Kamata",
+  JK16: "Kawasaki",
+  JK15: "Tsurumi",
+  JK14: "ShinKoyasu",
+  JK13: "HigashiKanagawa",
+  JK12: "Yokohama",
+  JK11: "Sakuragicho",
+  JK10: "Kannai",
+  JK09: "Ishikawacho",
+  JK08: "Yamate",
+  JK07: "Negishi",
+  JK06: "Isogo",
+  JK05: "ShinSugita",
+  JK04: "Yokodai",
+  JK03: "Konandai",
+  JK02: "Hongodai",
+  JK01: "Ofuna",
+};
+
+/*
+ * =========================================================
  * 노선별 Station Map
  * =========================================================
  */
@@ -254,6 +324,7 @@ const JR_STATION_MAPS: Record<JrRailway, Record<string, string>> = {
   ChuoRapid: CHUO_RAPID_STATION_MAP,
 
   ChuoSobuLocal: CHUO_SOBU_LOCAL_STATION_MAP,
+  KeihinTohokuNegishi: KEIHIN_TOHOKU_NEGISHI_STATION_MAP,
 };
 
 /*

@@ -1240,6 +1240,7 @@ export const adaptTokyoMetroTrain = (
       train.train ??
       train.trainNumber ??
       ["tokyo-metro", directionId, train.departureTime].join("-"),
+        directionId,
 
     time: train.departureTime,
 

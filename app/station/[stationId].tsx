@@ -191,9 +191,6 @@ const resolveJrRailway = (lineId?: string): JrEastRailway => {
     case "keihin-tohoku":
       return "KeihinTohokuNegishi";
 
-    case "saikyo":
-      return "SaikyoKawagoe";
-
     case "yamanote":
     default:
       return "Yamanote";

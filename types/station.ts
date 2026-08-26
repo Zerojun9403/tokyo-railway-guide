@@ -3,7 +3,8 @@ export type StationType =
   | "terminal"
   | "branch"
   | "loop"
-  | "multi-direction";
+  | "multi-direction"
+  | "special";
 
 export type NextStation = {
   id: string;
