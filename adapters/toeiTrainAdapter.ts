@@ -218,28 +218,31 @@ const ASAKUSA_DESTINATION_MAP: Record<string, DestinationName> = {
     ja: "押上",
   },
 
-
-/*
- * =========================================================
- * 아사쿠사선 직통 행선지
- * =========================================================
- *
- * 게이큐 / 게이세이 / 호쿠소 계통
- * 실제 API에서 반환되는 값 기준으로 계속 확장
- * =========================================================
- */
+  /*
+   * =========================================================
+   * 아사쿠사선 직통 행선지
+   * =========================================================
+   *
+   * 게이큐 / 게이세이 / 호쿠소 계통
+   * 실제 API에서 반환되는 값 기준으로 계속 확장
+   * =========================================================
+   */
 
   Shinagawa: {
     ko: "시나가와",
     ja: "品川",
   },
 
+  KeikyuKurihama: {
+    ko: "게이큐쿠리하마",
+    ja: "京急久里浜",
+  },
   HanedaAirportTerminal3: {
     ko: "하네다공항 제3터미널",
     ja: "羽田空港第3ターミナル",
   },
 
-  HanedaAirportTerminal1And2: {
+  HanedaAirportTerminal1and2: {
     ko: "하네다공항 제1·제2터미널",
     ja: "羽田空港第1・第2ターミナル",
   },
@@ -269,11 +272,19 @@ const ASAKUSA_DESTINATION_MAP: Record<string, DestinationName> = {
     ja: "成田空港",
   },
 
+  KeiseiSakura: {
+    ko: "게이세이사쿠라",
+    ja: "京成佐倉",
+  },
+
+  ImbaNihonIdai: {
+    ko: "인바니혼이다이",
+    ja: "印旛日本医大",
+  },
   AirportTerminal2: {
     ko: "공항 제2빌딩",
     ja: "空港第2ビル",
   },
-
 };
 
 const MITA_DESTINATION_MAP: Record<string, DestinationName> = {
@@ -426,6 +437,11 @@ const MITA_DESTINATION_MAP: Record<string, DestinationName> = {
   MusashiKosugi: {
     ko: "무사시코스기",
     ja: "武蔵小杉",
+  },
+
+  ShinYokohama: {
+    ko: "신요코하마",
+    ja: "新横浜",
   },
 };
 
@@ -629,29 +645,26 @@ const getDestination = (destinationStations: string[]) => {
 
   const station = TOEI_DESTINATION_MAP[stationId];
 
- if (station) {
+  if (station) {
+    return {
+      destinationKo: station.ko,
+      destinationJa: station.ja,
+    };
+  }
+
+  /*
+   * Unknown through-service destination:
+   *
+   * Do not discard the API value.
+   * Show the raw destination so it can be checked later.
+   */
+
+  console.warn("등록되지 않은 Toei 직통 행선지:", rawStationId);
+
   return {
-    destinationKo: station.ko,
-    destinationJa: station.ja,
+    destinationKo: stationId,
+    destinationJa: undefined,
   };
-}
-
-/*
- * Unknown through-service destination:
- *
- * Do not discard the API value.
- * Show the raw destination so it can be checked later.
- */
-
-console.warn(
-  "등록되지 않은 Toei 직통 행선지:",
-  rawStationId,
-);
-
-return {
-  destinationKo: stationId,
-  destinationJa: undefined,
-};
 };
 
 /*
