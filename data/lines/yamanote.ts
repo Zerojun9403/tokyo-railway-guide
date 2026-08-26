@@ -1,4 +1,4 @@
-﻿import type { Station } from "../../types/station";
+import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 export const YAMANOTE_COLOR = "#80C41C";
@@ -743,7 +743,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
     },
 
     {
-      id: "toei-mita",
+      id: "mita",
 
       code: "I",
 
@@ -760,7 +760,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
 
   JY23: [
     {
-      id: "toei-asakusa",
+      id: "asakusa",
 
       code: "A",
 
@@ -911,7 +911,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
     },
 
     {
-      id: "toei-asakusa",
+      id: "asakusa",
 
       code: "A",
 

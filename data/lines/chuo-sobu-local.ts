@@ -1,4 +1,4 @@
-﻿import type { Station } from "../../types/station";
+import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 /*
@@ -571,7 +571,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   JB20: [
-    transfer("toei-asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
+    transfer("asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
   ],
 
   /*

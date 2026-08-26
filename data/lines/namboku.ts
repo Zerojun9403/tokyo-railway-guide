@@ -1,4 +1,4 @@
-﻿import type { Station } from "../../types/station";
+import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 /*
@@ -196,7 +196,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#009CD2",
     ),
     transfer(
-      "toei-mita",
+      "mita",
       "I",
       "도에이 미타선",
       "都営三田線",
@@ -210,7 +210,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
   N02: [
     transfer(
-      "toei-mita",
+      "mita",
       "I",
       "도에이 미타선",
       "都営三田線",
@@ -224,7 +224,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
   N03: [
     transfer(
-      "toei-mita",
+      "mita",
       "I",
       "도에이 미타선",
       "都営三田線",
@@ -415,7 +415,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#F62E36",
     ),
     transfer(
-      "toei-mita",
+      "mita",
       "I",
       "도에이 미타선",
       "都営三田線",

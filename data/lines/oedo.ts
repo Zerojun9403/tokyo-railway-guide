@@ -1,4 +1,4 @@
-﻿import type { Station } from "../../types/station";
+import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 export const OEDO_COLOR = "#CE045B";

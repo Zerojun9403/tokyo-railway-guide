@@ -1,4 +1,4 @@
-﻿import type { Station } from "../../types/station";
+import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 /*
@@ -298,7 +298,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#00A7DB",
     ),
 
-    transfer("toei-asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
+    transfer("asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
   ],
 
   /*
@@ -322,7 +322,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
   G11: [
     transfer("tozai", "T", "도자이선", "東西線", "#009BBF"),
 
-    transfer("toei-asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
+    transfer("asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
   ],
 
   /*
@@ -388,7 +388,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   G19: [
-    transfer("toei-asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
+    transfer("asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
   ],
 };
 

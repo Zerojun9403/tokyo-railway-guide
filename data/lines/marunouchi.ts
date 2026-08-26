@@ -1,4 +1,4 @@
-﻿import type { Station } from "../../types/station";
+import type { Station } from "../../types/station";
 import type { Train } from "../../types/train";
 
 /*
@@ -391,7 +391,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
     transfer("hanzomon", "Z", "한조몬선", "半蔵門線", "#8F76D6"),
 
-    transfer("toei-mita", "I", "도에이 미타선", "都営三田線", "#0079C2"),
+    transfer("mita", "I", "도에이 미타선", "都営三田線", "#0079C2"),
   ],
 
   /*
@@ -435,7 +435,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
   M22: [
     transfer("namboku", "N", "난보쿠선", "南北線", "#00AC9B"),
 
-    transfer("toei-mita", "I", "도에이 미타선", "都営三田線", "#0079C2"),
+    transfer("mita", "I", "도에이 미타선", "都営三田線", "#0079C2"),
 
     transfer("oedo", "E", "도에이 오에도선", "都営大江戸線", "#CE045B"),
   ],
