@@ -1,5 +1,7 @@
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { useAppTheme } from "../../hooks/useAppTheme";
+
 type TransferLine = {
   id: string;
   code: string;
@@ -21,23 +23,60 @@ export const TransferBottomSheet = ({
   onClose,
   onPressTransfer,
 }: TransferBottomSheetProps) => {
+  const { colors, isDark } = useAppTheme();
+
   return (
     <Modal
       visible={visible}
       transparent
       animationType="slide"
       onRequestClose={onClose}
+      statusBarTranslucent
     >
       <View style={styles.root}>
         {/* 어두운 배경 */}
-        <Pressable style={styles.overlay} onPress={onClose} />
+        <Pressable
+          style={[
+            styles.overlay,
+            {
+              backgroundColor: isDark
+                ? "rgba(0, 0, 0, 0.58)"
+                : "rgba(0, 0, 0, 0.35)",
+            },
+          ]}
+          onPress={onClose}
+        />
 
         {/* Bottom Sheet */}
-        <View style={styles.sheet}>
+        <View
+          style={[
+            styles.sheet,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
+        >
           {/* 드래그 핸들 */}
-          <View style={styles.handle} />
+          <View
+            style={[
+              styles.handle,
+              {
+                backgroundColor: colors.textMuted,
+              },
+            ]}
+          />
 
-          <Text style={styles.title}>환승노선</Text>
+          <Text
+            style={[
+              styles.title,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
+            환승노선
+          </Text>
 
           <View style={styles.list}>
             {transfers.map((transfer) => (
@@ -45,6 +84,9 @@ export const TransferBottomSheet = ({
                 key={transfer.id}
                 style={({ pressed }) => [
                   styles.item,
+                  {
+                    borderBottomColor: colors.border,
+                  },
                   pressed && styles.itemPressed,
                 ]}
                 onPress={() => onPressTransfer?.(transfer)}
@@ -63,22 +105,58 @@ export const TransferBottomSheet = ({
 
                 {/* 노선 이름 */}
                 <View style={styles.lineInfo}>
-                  <Text style={styles.lineNameKo}>{transfer.nameKo}</Text>
+                  <Text
+                    style={[
+                      styles.lineNameKo,
+                      {
+                        color: colors.text,
+                      },
+                    ]}
+                  >
+                    {transfer.nameKo}
+                  </Text>
 
                   {transfer.nameJa ? (
-                    <Text style={styles.lineNameJa}>{transfer.nameJa}</Text>
+                    <Text
+                      style={[
+                        styles.lineNameJa,
+                        {
+                          color: colors.textSecondary,
+                        },
+                      ]}
+                    >
+                      {transfer.nameJa}
+                    </Text>
                   ) : null}
                 </View>
 
                 {/* 화살표 */}
-                <Text style={styles.chevron}>›</Text>
+                <Text
+                  style={[
+                    styles.chevron,
+                    {
+                      color: colors.textMuted,
+                    },
+                  ]}
+                >
+                  ›
+                </Text>
               </Pressable>
             ))}
           </View>
 
           {transfers.length === 0 ? (
             <View style={styles.emptyArea}>
-              <Text style={styles.emptyText}>환승 가능한 노선이 없습니다.</Text>
+              <Text
+                style={[
+                  styles.emptyText,
+                  {
+                    color: colors.textSecondary,
+                  },
+                ]}
+              >
+                환승 가능한 노선이 없습니다.
+              </Text>
             </View>
           ) : null}
         </View>
@@ -95,16 +173,16 @@ const styles = StyleSheet.create({
 
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.35)",
   },
 
   sheet: {
     width: "100%",
 
-    backgroundColor: "#FFFFFF",
-
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
+
+    borderWidth: 1,
+    borderBottomWidth: 0,
 
     paddingTop: 10,
     paddingHorizontal: 24,
@@ -117,11 +195,11 @@ const styles = StyleSheet.create({
 
     borderRadius: 999,
 
-    backgroundColor: "#D5D9E0",
-
     alignSelf: "center",
 
     marginBottom: 22,
+
+    opacity: 0.55,
   },
 
   title: {
@@ -129,8 +207,6 @@ const styles = StyleSheet.create({
     lineHeight: 28,
 
     fontWeight: "800",
-
-    color: "#17191D",
 
     marginBottom: 18,
   },
@@ -146,6 +222,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
 
     paddingVertical: 10,
+
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 
   itemPressed: {
@@ -182,8 +260,6 @@ const styles = StyleSheet.create({
     lineHeight: 21,
 
     fontWeight: "700",
-
-    color: "#17191D",
   },
 
   lineNameJa: {
@@ -191,8 +267,6 @@ const styles = StyleSheet.create({
 
     fontSize: 12,
     lineHeight: 16,
-
-    color: "#8C96A5",
   },
 
   chevron: {
@@ -200,8 +274,6 @@ const styles = StyleSheet.create({
 
     fontSize: 30,
     lineHeight: 32,
-
-    color: "#A6AFBC",
   },
 
   emptyArea: {
@@ -210,7 +282,5 @@ const styles = StyleSheet.create({
 
   emptyText: {
     fontSize: 14,
-
-    color: "#8C96A5",
   },
 });

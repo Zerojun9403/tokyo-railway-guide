@@ -1,5 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { useAppTheme } from "../../hooks/useAppTheme";
+
 type DirectionItem = {
   id: string;
 
@@ -24,9 +26,20 @@ export const DirectionSelector = ({
   color,
   onChangeDirection,
 }: DirectionSelectorProps) => {
+  const { colors } = useAppTheme();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionLabel}>운행방향</Text>
+      <Text
+        style={[
+          styles.sectionLabel,
+          {
+            color: colors.textMuted,
+          },
+        ]}
+      >
+        운행방향
+      </Text>
 
       <View style={styles.list}>
         {directions.map((direction) => {
@@ -37,18 +50,16 @@ export const DirectionSelector = ({
               key={direction.id}
               style={({ pressed }) => [
                 styles.card,
-
-                isActive && {
-                  borderColor: color,
-                  borderWidth: 2,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: isActive ? color : colors.border,
                 },
-
+                isActive && styles.activeCard,
                 pressed && styles.cardPressed,
               ]}
               onPress={() => onChangeDirection(direction.id)}
             >
               {/* 왼쪽 노선 아이콘 */}
-
               <View
                 style={[
                   styles.badge,
@@ -61,14 +72,12 @@ export const DirectionSelector = ({
               </View>
 
               {/* 방향 정보 */}
-
               <View style={styles.directionInfo}>
                 <Text
                   style={[
                     styles.directionLabel,
-
-                    isActive && {
-                      color,
+                    {
+                      color: isActive ? color : colors.text,
                     },
                   ]}
                 >
@@ -76,20 +85,25 @@ export const DirectionSelector = ({
                 </Text>
 
                 {direction.description ? (
-                  <Text style={styles.description}>
+                  <Text
+                    style={[
+                      styles.description,
+                      {
+                        color: colors.textSecondary,
+                      },
+                    ]}
+                  >
                     {direction.description}
                   </Text>
                 ) : null}
               </View>
 
               {/* 화살표 */}
-
               <Text
                 style={[
                   styles.chevron,
-
-                  isActive && {
-                    color,
+                  {
+                    color: isActive ? color : colors.textMuted,
                   },
                 ]}
               >
@@ -118,8 +132,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
 
     fontWeight: "700",
-
-    color: "#9AA4B3",
   },
 
   list: {
@@ -131,18 +143,19 @@ const styles = StyleSheet.create({
 
     minHeight: 76,
 
-    backgroundColor: "#FFFFFF",
-
     borderRadius: 20,
 
-    borderWidth: 2,
-    borderColor: "transparent",
+    borderWidth: 1,
 
     paddingHorizontal: 16,
     paddingVertical: 14,
 
     flexDirection: "row",
     alignItems: "center",
+  },
+
+  activeCard: {
+    borderWidth: 2,
   },
 
   cardPressed: {
@@ -179,8 +192,6 @@ const styles = StyleSheet.create({
     lineHeight: 21,
 
     fontWeight: "800",
-
-    color: "#17191D",
   },
 
   description: {
@@ -188,8 +199,6 @@ const styles = StyleSheet.create({
 
     fontSize: 12,
     lineHeight: 16,
-
-    color: "#8C96A5",
   },
 
   chevron: {
@@ -197,7 +206,5 @@ const styles = StyleSheet.create({
 
     fontSize: 30,
     lineHeight: 32,
-
-    color: "#A6AFBC",
   },
 });

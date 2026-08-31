@@ -9,11 +9,27 @@ import {
 
 import { router } from "expo-router";
 
+import { useAppTheme } from "../hooks/useAppTheme";
+
 export default function SettingsScreen() {
+  const { colors, isDark } = useAppTheme();
+
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        {
+          backgroundColor: colors.background,
+        },
+      ]}
+    >
       <ScrollView
-        style={styles.screen}
+        style={[
+          styles.screen,
+          {
+            backgroundColor: colors.background,
+          },
+        ]}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
@@ -23,17 +39,48 @@ export default function SettingsScreen() {
 
         <View style={styles.header}>
           <TouchableOpacity
-            style={styles.backButton}
+            style={[
+              styles.backButton,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+            ]}
             activeOpacity={0.7}
             onPress={() => router.back()}
           >
-            <Text style={styles.backArrow}>‹</Text>
+            <Text
+              style={[
+                styles.backArrow,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              ‹
+            </Text>
           </TouchableOpacity>
 
           <View style={styles.headerTextArea}>
-            <Text style={styles.headerTitle}>설정</Text>
+            <Text
+              style={[
+                styles.headerTitle,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              설정
+            </Text>
 
-            <Text style={styles.headerDescription}>
+            <Text
+              style={[
+                styles.headerDescription,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
               앱 정보와 저장 데이터를 관리합니다.
             </Text>
           </View>
@@ -44,24 +91,89 @@ export default function SettingsScreen() {
         ======================================== */}
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>언어</Text>
+          <Text
+            style={[
+              styles.sectionTitle,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            언어
+          </Text>
 
-          <View style={styles.card}>
+          <View
+            style={[
+              styles.card,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+            ]}
+          >
             <View style={styles.settingRow}>
-              <View style={styles.settingIcon}>
-                <Text style={styles.settingIconText}>가</Text>
+              <View
+                style={[
+                  styles.settingIcon,
+                  {
+                    backgroundColor: colors.surfaceSecondary,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.settingIconText,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  가
+                </Text>
               </View>
 
               <View style={styles.settingInfo}>
-                <Text style={styles.settingTitle}>표시 언어</Text>
+                <Text
+                  style={[
+                    styles.settingTitle,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                >
+                  표시 언어
+                </Text>
 
-                <Text style={styles.settingDescription}>
+                <Text
+                  style={[
+                    styles.settingDescription,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
                   현재 한국어를 기본으로 사용합니다.
                 </Text>
               </View>
 
-              <View style={styles.valueBadge}>
-                <Text style={styles.valueText}>한국어</Text>
+              <View
+                style={[
+                  styles.valueBadge,
+                  {
+                    backgroundColor: colors.surfaceSecondary,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.valueText,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  한국어
+                </Text>
               </View>
             </View>
           </View>
@@ -72,49 +184,146 @@ export default function SettingsScreen() {
         ======================================== */}
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>저장 데이터</Text>
+          <Text
+            style={[
+              styles.sectionTitle,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            저장 데이터
+          </Text>
 
-          <View style={styles.card}>
+          <View
+            style={[
+              styles.card,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+            ]}
+          >
             <TouchableOpacity
               style={styles.settingRow}
               activeOpacity={0.7}
               onPress={() => router.push("/favorite-stations")}
             >
-              <View style={styles.settingIcon}>
-                <Text style={styles.settingIconText}>★</Text>
+              <View
+                style={[
+                  styles.settingIcon,
+                  {
+                    backgroundColor: colors.surfaceSecondary,
+                  },
+                ]}
+              >
+                <Text style={styles.favoriteSettingIcon}>★</Text>
               </View>
 
               <View style={styles.settingInfo}>
-                <Text style={styles.settingTitle}>즐겨찾기 관리</Text>
+                <Text
+                  style={[
+                    styles.settingTitle,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                >
+                  즐겨찾기 관리
+                </Text>
 
-                <Text style={styles.settingDescription}>
+                <Text
+                  style={[
+                    styles.settingDescription,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
                   저장한 역을 확인하고 관리합니다.
                 </Text>
               </View>
 
-              <Text style={styles.chevron}>›</Text>
+              <Text
+                style={[
+                  styles.chevron,
+                  {
+                    color: colors.textMuted,
+                  },
+                ]}
+              >
+                ›
+              </Text>
             </TouchableOpacity>
 
-            <View style={styles.divider} />
+            <View
+              style={[
+                styles.divider,
+                {
+                  backgroundColor: colors.border,
+                },
+              ]}
+            />
 
             <TouchableOpacity
               style={styles.settingRow}
               activeOpacity={0.7}
               onPress={() => router.push("/recent-stations")}
             >
-              <View style={styles.settingIcon}>
-                <Text style={styles.settingIconText}>↻</Text>
+              <View
+                style={[
+                  styles.settingIcon,
+                  {
+                    backgroundColor: colors.surfaceSecondary,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.settingIconText,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  ↻
+                </Text>
               </View>
 
               <View style={styles.settingInfo}>
-                <Text style={styles.settingTitle}>최근 본 역 관리</Text>
+                <Text
+                  style={[
+                    styles.settingTitle,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                >
+                  최근 본 역 관리
+                </Text>
 
-                <Text style={styles.settingDescription}>
+                <Text
+                  style={[
+                    styles.settingDescription,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
                   최근 확인한 역 기록을 관리합니다.
                 </Text>
               </View>
 
-              <Text style={styles.chevron}>›</Text>
+              <Text
+                style={[
+                  styles.chevron,
+                  {
+                    color: colors.textMuted,
+                  },
+                ]}
+              >
+                ›
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -124,29 +333,114 @@ export default function SettingsScreen() {
         ======================================== */}
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>데이터 출처</Text>
+          <Text
+            style={[
+              styles.sectionTitle,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            데이터 출처
+          </Text>
 
-          <View style={styles.card}>
+          <View
+            style={[
+              styles.card,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+            ]}
+          >
             <View style={styles.sourceRow}>
-              <Text style={styles.sourceName}>JR동일본</Text>
+              <Text
+                style={[
+                  styles.sourceName,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+              >
+                JR동일본
+              </Text>
 
-              <Text style={styles.sourceValue}>ODPT</Text>
+              <Text
+                style={[
+                  styles.sourceValue,
+                  {
+                    color: colors.textSecondary,
+                  },
+                ]}
+              >
+                ODPT
+              </Text>
             </View>
 
-            <View style={styles.divider} />
+            <View
+              style={[
+                styles.divider,
+                {
+                  backgroundColor: colors.border,
+                },
+              ]}
+            />
 
             <View style={styles.sourceRow}>
-              <Text style={styles.sourceName}>도에이 지하철</Text>
+              <Text
+                style={[
+                  styles.sourceName,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+              >
+                도에이 지하철
+              </Text>
 
-              <Text style={styles.sourceValue}>ODPT</Text>
+              <Text
+                style={[
+                  styles.sourceValue,
+                  {
+                    color: colors.textSecondary,
+                  },
+                ]}
+              >
+                ODPT
+              </Text>
             </View>
 
-            <View style={styles.divider} />
+            <View
+              style={[
+                styles.divider,
+                {
+                  backgroundColor: colors.border,
+                },
+              ]}
+            />
 
             <View style={styles.sourceRow}>
-              <Text style={styles.sourceName}>게이세이 전철</Text>
+              <Text
+                style={[
+                  styles.sourceName,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+              >
+                게이세이 전철
+              </Text>
 
-              <Text style={styles.sourceValue}>공식 시간표 데이터</Text>
+              <Text
+                style={[
+                  styles.sourceValue,
+                  {
+                    color: colors.textSecondary,
+                  },
+                ]}
+              >
+                공식 시간표 데이터
+              </Text>
             </View>
           </View>
         </View>
@@ -156,27 +450,101 @@ export default function SettingsScreen() {
         ======================================== */}
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>앱 정보</Text>
+          <Text
+            style={[
+              styles.sectionTitle,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            앱 정보
+          </Text>
 
-          <View style={styles.card}>
+          <View
+            style={[
+              styles.card,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+            ]}
+          >
             <View style={styles.appInfoRow}>
-              <View style={styles.appLogo}>
-                <Text style={styles.appLogoText}>TR</Text>
+              <View
+                style={[
+                  styles.appLogo,
+                  {
+                    backgroundColor: isDark ? "#F5F6F8" : "#17191D",
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.appLogoText,
+                    {
+                      color: isDark ? "#111827" : "#FFFFFF",
+                    },
+                  ]}
+                >
+                  TR
+                </Text>
               </View>
 
               <View style={styles.appInfoTextArea}>
-                <Text style={styles.appName}>Tokyo Railway Guide</Text>
+                <Text
+                  style={[
+                    styles.appName,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                >
+                  Tokyo Railway Guide
+                </Text>
 
-                <Text style={styles.appVersion}>Version 1.0.0</Text>
+                <Text
+                  style={[
+                    styles.appVersion,
+                    {
+                      color: colors.textMuted,
+                    },
+                  ]}
+                >
+                  Version 1.0.0
+                </Text>
               </View>
             </View>
 
-            <View style={styles.divider} />
+            <View
+              style={[
+                styles.divider,
+                {
+                  backgroundColor: colors.border,
+                },
+              ]}
+            />
 
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>목적</Text>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  {
+                    color: colors.textMuted,
+                  },
+                ]}
+              >
+                목적
+              </Text>
 
-              <Text style={styles.infoValue}>
+              <Text
+                style={[
+                  styles.infoValue,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+              >
                 한국인 도쿄 여행객을 위한 철도 안내
               </Text>
             </View>
@@ -187,10 +555,34 @@ export default function SettingsScreen() {
             Notice
         ======================================== */}
 
-        <View style={styles.noticeCard}>
-          <Text style={styles.noticeTitle}>이용 안내</Text>
+        <View
+          style={[
+            styles.noticeCard,
+            {
+              backgroundColor: isDark ? "#2B271B" : "#FFF8E8",
+              borderColor: isDark ? "#494027" : "#F4E5BD",
+            },
+          ]}
+        >
+          <Text
+            style={[
+              styles.noticeTitle,
+              {
+                color: isDark ? "#E8C86A" : "#8B6508",
+              },
+            ]}
+          >
+            이용 안내
+          </Text>
 
-          <Text style={styles.noticeText}>
+          <Text
+            style={[
+              styles.noticeText,
+              {
+                color: isDark ? "#CDBB83" : "#92752B",
+              },
+            ]}
+          >
             표시되는 시간표와 운행정보는 실제 상황과 차이가 발생할 수 있습니다.
             열차 이용 전 각 철도사업자의 공식 안내도 함께 확인해 주세요.
           </Text>
@@ -201,9 +593,27 @@ export default function SettingsScreen() {
         ======================================== */}
 
         <View style={styles.footer}>
-          <Text style={styles.footerTitle}>TOKYO RAILWAY GUIDE</Text>
+          <Text
+            style={[
+              styles.footerTitle,
+              {
+                color: colors.textMuted,
+              },
+            ]}
+          >
+            TOKYO RAILWAY GUIDE
+          </Text>
 
-          <Text style={styles.footerText}>Made for travelers in Tokyo</Text>
+          <Text
+            style={[
+              styles.footerText,
+              {
+                color: colors.textMuted,
+              },
+            ]}
+          >
+            Made for travelers in Tokyo
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -213,18 +623,16 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#F5F6F8",
   },
 
   screen: {
     flex: 1,
-    backgroundColor: "#F5F6F8",
   },
 
   container: {
     paddingHorizontal: 22,
     paddingTop: 22,
-    paddingBottom: 70,
+    paddingBottom: 120,
   },
 
   header: {
@@ -237,7 +645,7 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 14,
-    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 13,
@@ -247,7 +655,6 @@ const styles = StyleSheet.create({
     marginTop: -3,
     fontSize: 31,
     lineHeight: 34,
-    color: "#17191D",
   },
 
   headerTextArea: {
@@ -258,14 +665,12 @@ const styles = StyleSheet.create({
     fontSize: 25,
     lineHeight: 31,
     fontWeight: "900",
-    color: "#17191D",
   },
 
   headerDescription: {
     marginTop: 2,
     fontSize: 12,
     lineHeight: 17,
-    color: "#8C96A5",
   },
 
   section: {
@@ -277,12 +682,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 20,
     fontWeight: "800",
-    color: "#6F7886",
   },
 
   card: {
     borderRadius: 22,
-    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
     overflow: "hidden",
   },
 
@@ -298,7 +702,6 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 15,
-    backgroundColor: "#F1F3F6",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 13,
@@ -307,7 +710,12 @@ const styles = StyleSheet.create({
   settingIconText: {
     fontSize: 18,
     fontWeight: "900",
-    color: "#596474",
+  },
+
+  favoriteSettingIcon: {
+    fontSize: 18,
+    lineHeight: 22,
+    color: "#F5B800",
   },
 
   settingInfo: {
@@ -318,39 +726,33 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 20,
     fontWeight: "800",
-    color: "#17191D",
   },
 
   settingDescription: {
     marginTop: 3,
     fontSize: 11,
     lineHeight: 16,
-    color: "#929BA8",
   },
 
   valueBadge: {
     paddingHorizontal: 11,
     paddingVertical: 7,
     borderRadius: 11,
-    backgroundColor: "#F1F3F6",
   },
 
   valueText: {
     fontSize: 11,
     fontWeight: "800",
-    color: "#657080",
   },
 
   chevron: {
     marginLeft: 10,
     fontSize: 29,
     lineHeight: 32,
-    color: "#B0B7C2",
   },
 
   divider: {
     height: 1,
-    backgroundColor: "#EEF0F3",
     marginLeft: 75,
   },
 
@@ -365,13 +767,11 @@ const styles = StyleSheet.create({
   sourceName: {
     fontSize: 13,
     fontWeight: "700",
-    color: "#30343A",
   },
 
   sourceValue: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#8C96A5",
   },
 
   appInfoRow: {
@@ -385,7 +785,6 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 17,
-    backgroundColor: "#17191D",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 14,
@@ -394,7 +793,6 @@ const styles = StyleSheet.create({
   appLogoText: {
     fontSize: 16,
     fontWeight: "900",
-    color: "#FFFFFF",
   },
 
   appInfoTextArea: {
@@ -405,13 +803,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 21,
     fontWeight: "900",
-    color: "#17191D",
   },
 
   appVersion: {
     marginTop: 3,
     fontSize: 11,
-    color: "#9AA4B3",
   },
 
   infoRow: {
@@ -422,7 +818,6 @@ const styles = StyleSheet.create({
   infoLabel: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#9AA4B3",
   },
 
   infoValue: {
@@ -430,28 +825,25 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
     fontWeight: "700",
-    color: "#454B54",
   },
 
   noticeCard: {
     paddingHorizontal: 18,
     paddingVertical: 18,
     borderRadius: 20,
-    backgroundColor: "#FFF8E8",
+    borderWidth: 1,
   },
 
   noticeTitle: {
     fontSize: 13,
     lineHeight: 18,
     fontWeight: "900",
-    color: "#8B6508",
   },
 
   noticeText: {
     marginTop: 7,
     fontSize: 11,
     lineHeight: 18,
-    color: "#92752B",
   },
 
   footer: {
@@ -463,12 +855,10 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "900",
     letterSpacing: 1.1,
-    color: "#9AA4B3",
   },
 
   footerText: {
     marginTop: 4,
     fontSize: 10,
-    color: "#B4BBC5",
   },
 });

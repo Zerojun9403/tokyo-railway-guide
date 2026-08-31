@@ -9,6 +9,8 @@ import {
 
 import { router, useLocalSearchParams } from "expo-router";
 
+import { useAppTheme } from "../../hooks/useAppTheme";
+
 /*
  * =========================================================
  * 노선 타입
@@ -420,6 +422,8 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
  */
 
 export default function CompanyScreen() {
+  const { colors } = useAppTheme();
+
   /*
    * =======================================================
    * URL
@@ -446,20 +450,57 @@ export default function CompanyScreen() {
 
   if (!company) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView
+        style={[
+          styles.safeArea,
+          {
+            backgroundColor: colors.background,
+          },
+        ]}
+      >
         <View style={styles.notFoundContainer}>
-          <Text style={styles.notFoundTitle}>철도회사를 찾을 수 없습니다.</Text>
+          <Text
+            style={[
+              styles.notFoundTitle,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
+            철도회사를 찾을 수 없습니다.
+          </Text>
 
-          <Text style={styles.notFoundDescription}>
+          <Text
+            style={[
+              styles.notFoundDescription,
+              {
+                color: colors.textMuted,
+              },
+            ]}
+          >
             companyId: {String(companyId)}
           </Text>
 
           <TouchableOpacity
-            style={styles.notFoundButton}
+            style={[
+              styles.notFoundButton,
+              {
+                backgroundColor: colors.surface,
+              },
+            ]}
             activeOpacity={0.7}
             onPress={() => router.back()}
           >
-            <Text style={styles.notFoundButtonText}>이전 화면으로</Text>
+            <Text
+              style={[
+                styles.notFoundButtonText,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              이전 화면으로
+            </Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -483,9 +524,21 @@ export default function CompanyScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        {
+          backgroundColor: colors.background,
+        },
+      ]}
+    >
       <ScrollView
-        style={styles.screen}
+        style={[
+          styles.screen,
+          {
+            backgroundColor: colors.background,
+          },
+        ]}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
@@ -498,9 +551,11 @@ export default function CompanyScreen() {
           activeOpacity={0.7}
           onPress={() => router.back()}
         >
-          <Text style={styles.backArrow}>‹</Text>
+          <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
 
-          <Text style={styles.backText}>철도회사</Text>
+          <Text style={[styles.backText, { color: colors.textSecondary }]}>
+            철도회사
+          </Text>
         </TouchableOpacity>
 
         {/* =================================================
@@ -521,22 +576,34 @@ export default function CompanyScreen() {
           </View>
 
           <View style={styles.headerTextArea}>
-            <Text style={styles.companyNameKo}>{company.nameKo}</Text>
+            <Text style={[styles.companyNameKo, { color: colors.text }]}>
+              {company.nameKo}
+            </Text>
 
-            <Text style={styles.companyNameJa}>{company.nameJa}</Text>
+            <Text style={[styles.companyNameJa, { color: colors.textMuted }]}>
+              {company.nameJa}
+            </Text>
           </View>
         </View>
 
-        <Text style={styles.companyDescription}>{company.description}</Text>
+        <Text
+          style={[styles.companyDescription, { color: colors.textSecondary }]}
+        >
+          {company.description}
+        </Text>
 
         {/* =================================================
             노선 선택
         ================================================= */}
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>노선 선택</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            노선 선택
+          </Text>
 
-          <Text style={styles.sectionDescription}>
+          <Text
+            style={[styles.sectionDescription, { color: colors.textMuted }]}
+          >
             이용할 노선을 선택하세요.
           </Text>
         </View>
@@ -549,7 +616,7 @@ export default function CompanyScreen() {
           {company.lines.map((line) => (
             <TouchableOpacity
               key={line.id}
-              style={styles.lineCard}
+              style={[styles.lineCard, { backgroundColor: colors.surface }]}
               activeOpacity={0.7}
               onPress={() => handlePressLine(line.id)}
             >
@@ -566,14 +633,27 @@ export default function CompanyScreen() {
               </View>
 
               <View style={styles.lineInfo}>
-                <Text style={styles.lineNameKo}>{line.nameKo}</Text>
+                <Text style={[styles.lineNameKo, { color: colors.text }]}>
+                  {line.nameKo}
+                </Text>
 
-                <Text style={styles.lineNameJa}>{line.nameJa}</Text>
+                <Text style={[styles.lineNameJa, { color: colors.textMuted }]}>
+                  {line.nameJa}
+                </Text>
 
-                <Text style={styles.lineDescription}>{line.description}</Text>
+                <Text
+                  style={[
+                    styles.lineDescription,
+                    { color: colors.textSecondary },
+                  ]}
+                >
+                  {line.description}
+                </Text>
               </View>
 
-              <Text style={styles.chevron}>›</Text>
+              <Text style={[styles.chevron, { color: colors.textMuted }]}>
+                ›
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -583,9 +663,13 @@ export default function CompanyScreen() {
         ================================================= */}
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>{company.nameKo}</Text>
+          <Text style={[styles.footerText, { color: colors.textMuted }]}>
+            {company.nameKo}
+          </Text>
 
-          <Text style={styles.footerSubText}>Tokyo Railway Guide</Text>
+          <Text style={[styles.footerSubText, { color: colors.textMuted }]}>
+            Tokyo Railway Guide
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -616,7 +700,7 @@ const styles = StyleSheet.create({
 
     paddingTop: 22,
 
-    paddingBottom: 70,
+    paddingBottom: 120,
   },
 
   backArea: {

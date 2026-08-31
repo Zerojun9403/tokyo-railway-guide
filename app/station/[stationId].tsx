@@ -40,6 +40,7 @@ import { useTokyoMetroTrains } from "../../hooks/useTokyoMetroTrains";
 
 import { useFavoriteStations } from "../../hooks/useFavoriteStations";
 
+import { useAppTheme } from "../../hooks/useAppTheme";
 import { useRecentStations } from "../../hooks/useRecentStations";
 
 /*
@@ -205,6 +206,7 @@ const resolveJrRailway = (lineId?: string): JrEastRailway => {
  */
 
 export default function StationScreen() {
+  const { colors, isDark } = useAppTheme();
   /*
    * =======================================================
    * URL
@@ -579,11 +581,17 @@ export default function StationScreen() {
 
   if (!station || !selectedDirection) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView
+        style={[styles.safeArea, { backgroundColor: colors.background }]}
+      >
         <View style={styles.notFoundContainer}>
-          <Text style={styles.notFoundTitle}>역을 찾을 수 없습니다.</Text>
+          <Text style={[styles.notFoundTitle, { color: colors.text }]}>
+            역을 찾을 수 없습니다.
+          </Text>
 
-          <Text style={styles.notFoundDescription}>
+          <Text
+            style={[styles.notFoundDescription, { color: colors.textMuted }]}
+          >
             stationId: {String(stationId)}
           </Text>
 
@@ -786,9 +794,11 @@ export default function StationScreen() {
   const serviceDayLabel = getServiceDayLabel();
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: colors.background }]}
+    >
       <ScrollView
-        style={styles.screen}
+        style={[styles.screen, { backgroundColor: colors.background }]}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -797,9 +807,9 @@ export default function StationScreen() {
             onRefresh={() => {
               void handleRefresh();
             }}
-            tintColor={station.color}
+            tintColor={isDark ? colors.text : station.color}
             colors={[station.color]}
-            progressBackgroundColor="#FFFFFF"
+            progressBackgroundColor={colors.surface}
           />
         }
       >
@@ -813,7 +823,7 @@ export default function StationScreen() {
             activeOpacity={0.7}
             onPress={() => router.back()}
           >
-            <Text style={styles.backArrow}>‹</Text>
+            <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
           </TouchableOpacity>
 
           <StationTopActions
@@ -821,9 +831,6 @@ export default function StationScreen() {
             favoriteLoading={favoriteLoading}
             onPressLine={() => {
               router.push(`/line/${station.lineId}`);
-            }}
-            onPressHome={() => {
-              router.replace("/");
             }}
             onPressFavorite={() => {
               void toggleFavorite();
@@ -851,7 +858,9 @@ export default function StationScreen() {
         <View style={styles.operationStatus}>
           <View style={styles.operationDot} />
 
-          <Text style={styles.operationText}>정상운행</Text>
+          <Text style={[styles.operationText, { color: colors.text }]}>
+            정상운행
+          </Text>
         </View>
 
         {/* =================================================
@@ -888,7 +897,9 @@ export default function StationScreen() {
             다음역
         ================================================= */}
 
-        <Text style={styles.sectionLabel}>다음역</Text>
+        <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>
+          다음역
+        </Text>
 
         <View style={styles.nextStationList}>
           {nextStations.map((nextStation) => (
@@ -920,7 +931,9 @@ export default function StationScreen() {
 
         <View style={styles.nextSection}>
           <View style={styles.nextTitleArea}>
-            <Text style={styles.nextSectionTitle}>다음 도착</Text>
+            <Text style={[styles.nextSectionTitle, { color: colors.text }]}>
+              다음 도착
+            </Text>
 
             <Text
               style={[
@@ -947,14 +960,20 @@ export default function StationScreen() {
                 ]}
               />
 
-              <Text style={styles.weekdayText}>{serviceDayLabel}</Text>
+              <Text
+                style={[styles.weekdayText, { color: colors.textSecondary }]}
+              >
+                {serviceDayLabel}
+              </Text>
             </View>
 
-            <Text style={styles.updatedText}>{lastUpdatedLabel} 기준</Text>
+            <Text style={[styles.updatedText, { color: colors.textMuted }]}>
+              {lastUpdatedLabel} 기준
+            </Text>
           </View>
         </View>
 
-        <Text style={styles.refreshHint}>
+        <Text style={[styles.refreshHint, { color: colors.textMuted }]}>
           화면을 아래로 당기면 최신 시간표로 갱신됩니다.
         </Text>
 
@@ -963,10 +982,12 @@ export default function StationScreen() {
         ================================================= */}
 
         {loading && !refreshing && (
-          <View style={styles.loadingArea}>
+          <View
+            style={[styles.loadingArea, { backgroundColor: colors.surface }]}
+          >
             <ActivityIndicator size="small" color={station.color} />
 
-            <Text style={styles.loadingText}>
+            <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
               열차 정보를 불러오는 중입니다.
             </Text>
           </View>
@@ -977,14 +998,20 @@ export default function StationScreen() {
         ================================================= */}
 
         {!loading && error && (
-          <View style={styles.errorArea}>
+          <View style={[styles.errorArea, { backgroundColor: colors.surface }]}>
             <Text style={styles.errorTitle}>
               열차 정보를 불러오지 못했습니다.
             </Text>
 
-            <Text style={styles.errorDescription}>{error}</Text>
+            <Text
+              style={[styles.errorDescription, { color: colors.textMuted }]}
+            >
+              {error}
+            </Text>
 
-            <Text style={styles.errorRefreshHint}>
+            <Text
+              style={[styles.errorRefreshHint, { color: colors.textSecondary }]}
+            >
               화면을 아래로 당겨 다시 시도해 주세요.
             </Text>
           </View>
@@ -1016,10 +1043,19 @@ export default function StationScreen() {
         ================================================= */}
 
         {!loading && !error && displayTrains.length === 0 && (
-          <View style={styles.emptyTrain}>
-            <Text style={styles.emptyTrainTitle}>표시할 열차가 없습니다.</Text>
+          <View
+            style={[styles.emptyTrain, { backgroundColor: colors.surface }]}
+          >
+            <Text style={[styles.emptyTrainTitle, { color: colors.text }]}>
+              표시할 열차가 없습니다.
+            </Text>
 
-            <Text style={styles.emptyTrainDescription}>
+            <Text
+              style={[
+                styles.emptyTrainDescription,
+                { color: colors.textMuted },
+              ]}
+            >
               현재 방향의 다음 열차가 없습니다.
             </Text>
           </View>
@@ -1120,7 +1156,7 @@ const styles = StyleSheet.create({
 
     paddingTop: 24,
 
-    paddingBottom: 60,
+    paddingBottom: 110,
   },
 
   topArea: {
@@ -1448,7 +1484,7 @@ const styles = StyleSheet.create({
   },
 
   bottomSpace: {
-    height: 70,
+    height: 90,
   },
 
   notFoundContainer: {

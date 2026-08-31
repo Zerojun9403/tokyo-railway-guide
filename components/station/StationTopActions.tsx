@@ -1,12 +1,13 @@
-import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ArrowLeft, Star } from "lucide-react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+
+import { useAppTheme } from "../../hooks/useAppTheme";
 
 type StationTopActionsProps = {
   isFavorite: boolean;
   favoriteLoading?: boolean;
 
   onPressLine: () => void;
-  onPressHome: () => void;
   onPressFavorite: () => void;
 };
 
@@ -14,63 +15,54 @@ export const StationTopActions = ({
   isFavorite,
   favoriteLoading = false,
   onPressLine,
-  onPressHome,
   onPressFavorite,
 }: StationTopActionsProps) => {
+  const { colors, isDark } = useAppTheme();
+
   return (
     <View style={styles.container}>
       {/* 노선으로 돌아가기 */}
       <TouchableOpacity
-        style={styles.actionButton}
+        style={[
+          styles.actionButton,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          },
+        ]}
         activeOpacity={0.7}
         onPress={onPressLine}
         accessibilityRole="button"
         accessibilityLabel="노선으로 돌아가기"
       >
-        <Ionicons
-          name="return-up-back-outline"
-          size={24}
-          color="#14171B"
-        />
-      </TouchableOpacity>
-
-      {/* 홈 */}
-      <TouchableOpacity
-        style={styles.actionButton}
-        activeOpacity={0.7}
-        onPress={onPressHome}
-        accessibilityRole="button"
-        accessibilityLabel="홈으로 이동"
-      >
-        <Ionicons
-          name="home-outline"
-          size={23}
-          color="#14171B"
-        />
+        <ArrowLeft size={23} color={colors.text} strokeWidth={2.2} />
       </TouchableOpacity>
 
       {/* 즐겨찾기 */}
       <TouchableOpacity
         style={[
           styles.actionButton,
-          isFavorite && styles.favoriteButtonActive,
+          {
+            backgroundColor: isFavorite
+              ? isDark
+                ? "#3A3218"
+                : "#FFF8DE"
+              : colors.surface,
+            borderColor: isFavorite ? "#F5B800" : colors.border,
+          },
         ]}
         activeOpacity={0.7}
         disabled={favoriteLoading}
         onPress={onPressFavorite}
         accessibilityRole="button"
-        accessibilityLabel={
-          isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"
-        }
+        accessibilityLabel={isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
       >
-        <Text
-          style={[
-            styles.favoriteIcon,
-            isFavorite && styles.favoriteIconActive,
-          ]}
-        >
-          {isFavorite ? "★" : "☆"}
-        </Text>
+        <Star
+          size={23}
+          color={isFavorite ? "#F5B800" : colors.textSecondary}
+          fill={isFavorite ? "#F5B800" : "transparent"}
+          strokeWidth={2.2}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -87,28 +79,11 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
 
-    borderRadius: 15,
+    borderRadius: 14,
+
+    borderWidth: 1,
 
     alignItems: "center",
     justifyContent: "center",
-
-    backgroundColor: "#FFFFFF",
-  },
-
-  favoriteButtonActive: {
-    backgroundColor: "#FFF8DE",
-  },
-
-  favoriteIcon: {
-    marginTop: -2,
-
-    fontSize: 25,
-    lineHeight: 29,
-
-    color: "#A3ABB6",
-  },
-
-  favoriteIconActive: {
-    color: "#F5B800",
   },
 });

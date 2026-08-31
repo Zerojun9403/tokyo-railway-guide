@@ -13,17 +13,19 @@ import { router, useFocusEffect } from "expo-router";
 
 import { getStation } from "../data/railwayRegistry";
 
+import { useAppTheme } from "../hooks/useAppTheme";
 import { useFavoriteStations } from "../hooks/useFavoriteStations";
 
 export default function FavoriteStationsScreen() {
+  const { colors, isDark } = useAppTheme();
+
   /*
    * =======================================================
    * 즐겨찾기
    * =======================================================
    */
 
-  const { favoriteStationIds, toggleFavorite, reload } =
-    useFavoriteStations("");
+  const { favoriteStationIds, reload } = useFavoriteStations("");
 
   /*
    * =======================================================
@@ -68,25 +70,22 @@ export default function FavoriteStationsScreen() {
     });
   };
 
-  /*
-   * =======================================================
-   * 즐겨찾기 삭제
-   * =======================================================
-   *
-   * 현재 useFavoriteStations는 전달받은 stationId를
-   * toggle하는 구조이므로,
-   *
-   * 관리 화면에서는 역마다 Hook을 호출할 수 없다.
-   *
-   * 따라서 아래 FavoriteStationRow에서
-   * 역별 Hook을 사용한다.
-   * =======================================================
-   */
-
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        {
+          backgroundColor: colors.background,
+        },
+      ]}
+    >
       <ScrollView
-        style={styles.screen}
+        style={[
+          styles.screen,
+          {
+            backgroundColor: colors.background,
+          },
+        ]}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
@@ -96,17 +95,48 @@ export default function FavoriteStationsScreen() {
 
         <View style={styles.header}>
           <TouchableOpacity
-            style={styles.backButton}
+            style={[
+              styles.backButton,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+            ]}
             activeOpacity={0.7}
             onPress={() => router.back()}
           >
-            <Text style={styles.backArrow}>‹</Text>
+            <Text
+              style={[
+                styles.backArrow,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              ‹
+            </Text>
           </TouchableOpacity>
 
           <View style={styles.headerTextArea}>
-            <Text style={styles.headerTitle}>즐겨찾는 역</Text>
+            <Text
+              style={[
+                styles.headerTitle,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              즐겨찾는 역
+            </Text>
 
-            <Text style={styles.headerDescription}>
+            <Text
+              style={[
+                styles.headerDescription,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
               자주 이용하는 역을 관리합니다.
             </Text>
           </View>
@@ -117,7 +147,16 @@ export default function FavoriteStationsScreen() {
         ================================================= */}
 
         <View style={styles.toolbar}>
-          <Text style={styles.resultCount}>총 {favoriteStations.length}개</Text>
+          <Text
+            style={[
+              styles.resultCount,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            총 {favoriteStations.length}개
+          </Text>
         </View>
 
         {/* =================================================
@@ -126,23 +165,61 @@ export default function FavoriteStationsScreen() {
 
         {favoriteStations.length === 0 && (
           <View style={styles.emptyArea}>
-            <View style={styles.emptyIcon}>
+            <View
+              style={[
+                styles.emptyIcon,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
               <Text style={styles.emptyIconText}>☆</Text>
             </View>
 
-            <Text style={styles.emptyTitle}>즐겨찾는 역이 없습니다</Text>
+            <Text
+              style={[
+                styles.emptyTitle,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              즐겨찾는 역이 없습니다
+            </Text>
 
-            <Text style={styles.emptyDescription}>
+            <Text
+              style={[
+                styles.emptyDescription,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
               역 상세 화면의 별을 눌러{"\n"}
               자주 이용하는 역을 저장해 보세요.
             </Text>
 
             <TouchableOpacity
-              style={styles.searchButton}
+              style={[
+                styles.searchButton,
+                {
+                  backgroundColor: colors.text,
+                },
+              ]}
               activeOpacity={0.7}
               onPress={() => router.push("/search")}
             >
-              <Text style={styles.searchButtonText}>역 검색하기</Text>
+              <Text
+                style={[
+                  styles.searchButtonText,
+                  {
+                    color: colors.background,
+                  },
+                ]}
+              >
+                역 검색하기
+              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -161,6 +238,7 @@ export default function FavoriteStationsScreen() {
               stationNameJa={station.nameJa}
               lineNameKo={station.lineNameKo}
               color={station.color}
+              isDark={isDark}
               onPress={() => handlePressStation(station.id)}
               onRemoved={() => {
                 void reload();
@@ -199,6 +277,8 @@ type FavoriteStationRowProps = {
 
   color: string;
 
+  isDark: boolean;
+
   onPress: () => void;
 
   onRemoved: () => void;
@@ -211,9 +291,12 @@ function FavoriteStationRow({
   stationNameJa,
   lineNameKo,
   color,
+  isDark,
   onPress,
   onRemoved,
 }: FavoriteStationRowProps) {
+  const { colors } = useAppTheme();
+
   const { isFavorite, toggleFavorite } = useFavoriteStations(stationId);
 
   /*
@@ -238,7 +321,15 @@ function FavoriteStationRow({
   };
 
   return (
-    <View style={styles.stationCard}>
+    <View
+      style={[
+        styles.stationCard,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+      ]}
+    >
       {/* 역 상세 이동 영역 */}
 
       <TouchableOpacity
@@ -249,7 +340,6 @@ function FavoriteStationRow({
         <View
           style={[
             styles.stationBadge,
-
             {
               borderColor: color,
             },
@@ -258,7 +348,6 @@ function FavoriteStationRow({
           <Text
             style={[
               styles.stationBadgeText,
-
               {
                 color,
               },
@@ -269,22 +358,57 @@ function FavoriteStationRow({
         </View>
 
         <View style={styles.stationInfo}>
-          <Text style={styles.stationNameKo}>{stationNameKo}</Text>
+          <Text
+            style={[
+              styles.stationNameKo,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
+            {stationNameKo}
+          </Text>
 
-          <Text style={styles.stationNameJa}>{stationNameJa}</Text>
+          <Text
+            style={[
+              styles.stationNameJa,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            {stationNameJa}
+          </Text>
 
-          <Text style={styles.stationLine}>{lineNameKo}</Text>
+          <Text
+            style={[
+              styles.stationLine,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            {lineNameKo}
+          </Text>
         </View>
       </TouchableOpacity>
 
       {/* 즐겨찾기 삭제 */}
 
       <TouchableOpacity
-        style={styles.favoriteButton}
+        style={[
+          styles.favoriteButton,
+          {
+            backgroundColor: isDark ? "#3A3218" : "#FFF8DE",
+            borderColor: isDark ? "#5C4D17" : "#FBE9A3",
+          },
+        ]}
         activeOpacity={0.7}
         onPress={() => {
           void handleRemove();
         }}
+        accessibilityRole="button"
+        accessibilityLabel="즐겨찾기 해제"
       >
         <Text style={styles.favoriteIcon}>★</Text>
       </TouchableOpacity>
@@ -301,14 +425,10 @@ function FavoriteStationRow({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-
-    backgroundColor: "#F5F6F8",
   },
 
   screen: {
     flex: 1,
-
-    backgroundColor: "#F5F6F8",
   },
 
   container: {
@@ -316,7 +436,7 @@ const styles = StyleSheet.create({
 
     paddingTop: 22,
 
-    paddingBottom: 70,
+    paddingBottom: 120,
   },
 
   /*
@@ -340,7 +460,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 14,
 
-    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
 
     alignItems: "center",
 
@@ -355,8 +475,6 @@ const styles = StyleSheet.create({
     fontSize: 31,
 
     lineHeight: 34,
-
-    color: "#17191D",
   },
 
   headerTextArea: {
@@ -369,8 +487,6 @@ const styles = StyleSheet.create({
     lineHeight: 30,
 
     fontWeight: "900",
-
-    color: "#17191D",
   },
 
   headerDescription: {
@@ -379,8 +495,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
 
     lineHeight: 17,
-
-    color: "#8C96A5",
   },
 
   /*
@@ -403,8 +517,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
 
     fontWeight: "700",
-
-    color: "#8C96A5",
   },
 
   /*
@@ -426,7 +538,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 20,
 
-    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
 
     flexDirection: "row",
 
@@ -477,8 +589,6 @@ const styles = StyleSheet.create({
     lineHeight: 21,
 
     fontWeight: "900",
-
-    color: "#17191D",
   },
 
   stationNameJa: {
@@ -487,8 +597,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
 
     lineHeight: 14,
-
-    color: "#9AA4B3",
   },
 
   stationLine: {
@@ -497,8 +605,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
 
     lineHeight: 15,
-
-    color: "#747E8C",
   },
 
   /*
@@ -516,7 +622,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 14,
 
-    backgroundColor: "#FFF8DE",
+    borderWidth: 1,
 
     alignItems: "center",
 
@@ -550,7 +656,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 23,
 
-    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
 
     alignItems: "center",
 
@@ -573,8 +679,6 @@ const styles = StyleSheet.create({
     lineHeight: 23,
 
     fontWeight: "900",
-
-    color: "#17191D",
   },
 
   emptyDescription: {
@@ -583,8 +687,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
 
     lineHeight: 20,
-
-    color: "#8C96A5",
 
     textAlign: "center",
   },
@@ -597,8 +699,6 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
 
     borderRadius: 14,
-
-    backgroundColor: "#17191D",
   },
 
   searchButtonText: {
@@ -607,7 +707,5 @@ const styles = StyleSheet.create({
     lineHeight: 18,
 
     fontWeight: "800",
-
-    color: "#FFFFFF",
   },
 });
