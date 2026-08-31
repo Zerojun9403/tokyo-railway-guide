@@ -63,6 +63,18 @@ import {
   keiseiMainTrains,
 } from "./lines/keisei-main";
 
+import {
+  KEIKYU_MAIN_COLOR,
+  keikyuMainStations,
+  keikyuMainTrains,
+} from "./lines/keikyu-main";
+
+import {
+  KEIKYU_AIRPORT_COLOR,
+  keikyuAirportStations,
+  keikyuAirportTrains,
+} from "./lines/keikyu-airport";
+
 import { OEDO_COLOR, oedoStations, oedoTrains } from "./lines/oedo";
 
 import { ASAKUSA_COLOR, asakusaStations, asakusaTrains } from "./lines/asakusa";
@@ -401,6 +413,52 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
 
   /*
    * =======================================================
+   * 게이큐 전철 - 게이큐 본선
+   * =======================================================
+   */
+
+  "keikyu-main": {
+    id: "keikyu-main",
+
+    operatorId: "keikyu",
+
+    nameKo: "게이큐 본선",
+    nameJa: "京急本線",
+
+    lineCode: "KK",
+
+    color: KEIKYU_MAIN_COLOR,
+
+    stations: keikyuMainStations,
+
+    trains: keikyuMainTrains,
+  },
+
+  /*
+   * =======================================================
+   * 게이큐 전철 - 게이큐 공항선
+   * =======================================================
+   */
+
+  "keikyu-airport": {
+    id: "keikyu-airport",
+
+    operatorId: "keikyu",
+
+    nameKo: "게이큐 공항선",
+    nameJa: "京急空港線",
+
+    lineCode: "KK",
+
+    color: KEIKYU_AIRPORT_COLOR,
+
+    stations: keikyuAirportStations,
+
+    trains: keikyuAirportTrains,
+  },
+
+  /*
+   * =======================================================
    * 도에이 지하철 - 오에도선
    * =======================================================
    */
@@ -534,6 +592,37 @@ export const getAllStations = (): Station[] => {
 
 export const getStation = (stationId: string): Station | undefined => {
   return allStations.find((station) => station.id === stationId);
+};
+
+/*
+ * =========================================================
+ * stationId + lineId로 역 찾기
+ * =========================================================
+ *
+ * 동일한 역번호가 여러 노선에 존재하는 경우
+ * lineId를 함께 사용해 정확한 노선의 역을 찾는다.
+ *
+ * 예:
+ *
+ * KK11 + keikyu-main
+ * KK11 + keikyu-airport
+ *
+ * lineId가 없는 기존 URL은
+ * getStation() 방식으로 fallback 한다.
+ * =========================================================
+ */
+
+export const getStationByLine = (
+  stationId: string,
+  lineId?: string,
+): Station | undefined => {
+  if (!lineId) {
+    return getStation(stationId);
+  }
+
+  return railwayRegistry[lineId]?.stations.find(
+    (station) => station.id === stationId,
+  );
 };
 
 /*

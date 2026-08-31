@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { StationTopActions } from "../../components/station/StationTopActions";
 import {
   ActivityIndicator,
   RefreshControl,
@@ -10,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { StationTopActions } from "../../components/station/StationTopActions";
 
 import { router, useLocalSearchParams } from "expo-router";
 
@@ -21,11 +21,12 @@ import { TrainCard } from "../../components/station/TrainCard";
 import { TransferBottomSheet } from "../../components/station/TransferBottomSheet";
 
 import {
-  getStation,
-  getTrains,
+  getStationByLine,
   getStationsByLine,
+  getTrains,
 } from "../../data/railwayRegistry";
 
+import { useKeikyuTrains } from "../../hooks/useKeikyuTrains";
 import { useKeiseiTrains } from "../../hooks/useKeiseiTrains";
 
 import {
@@ -210,8 +211,9 @@ export default function StationScreen() {
    * =======================================================
    */
 
-  const { stationId } = useLocalSearchParams<{
+  const { stationId, lineId } = useLocalSearchParams<{
     stationId: string;
+    lineId?: string;
   }>();
 
   /*
@@ -221,8 +223,8 @@ export default function StationScreen() {
    */
 
   const station = useMemo(() => {
-    return getStation(stationId);
-  }, [stationId]);
+    return getStationByLine(stationId, lineId);
+  }, [stationId, lineId]);
 
   /*
    * =======================================================
@@ -240,7 +242,7 @@ export default function StationScreen() {
 
   useEffect(() => {
     setSelectedDirectionId(station?.directions[0]?.id ?? "");
-  }, [station?.id]);
+  }, [station?.id, station?.lineId]);
 
   /*
    * =======================================================
@@ -321,9 +323,11 @@ export default function StationScreen() {
 
   const isKeisei = station?.operatorId === "keisei";
 
+  const isKeikyu = station?.operatorId === "keikyu";
+
   const isJrEast = station?.operatorId === "jr-east";
 
- const isToei = station?.operatorId === "toei";
+  const isToei = station?.operatorId === "toei";
 
   /*
    * Tokyo Metro
@@ -387,6 +391,28 @@ export default function StationScreen() {
 
     isKeisei ? selectedDirection?.id : undefined,
   );
+
+  /*
+   * =======================================================
+   * 게이큐 실제 시간표
+   * =======================================================
+   */
+
+  const {
+    trains: keikyuTrains,
+
+    loading: keikyuLoading,
+
+    error: keikyuError,
+  } = useKeikyuTrains({
+    lineId: isKeikyu ? station?.lineId : undefined,
+
+    stationId: isKeikyu ? station?.id : undefined,
+
+    directionId: isKeikyu ? selectedDirection?.id : undefined,
+
+    enabled: isKeikyu,
+  });
 
   /*
    * =======================================================
@@ -606,6 +632,14 @@ export default function StationScreen() {
   }
 
   /*
+   * 게이큐
+   */
+
+  if (isKeikyu) {
+    trains = keikyuTrains;
+  }
+
+  /*
    * JR
    */
 
@@ -702,6 +736,7 @@ export default function StationScreen() {
 
   const loading =
     (isKeisei && keiseiLoading) ||
+    (isKeikyu && keikyuLoading) ||
     (isJrEast && jrLoading) ||
     (isToei && toeiLoading) ||
     (isTokyoMetro && tokyoMetroLoading);
@@ -714,13 +749,15 @@ export default function StationScreen() {
 
   const error = isKeisei
     ? keiseiError
-    : isJrEast
-      ? jrError
-      : isToei
-        ? toeiError
-        : isTokyoMetro
-          ? tokyoMetroError
-          : null;
+    : isKeikyu
+      ? keikyuError
+      : isJrEast
+        ? jrError
+        : isToei
+          ? toeiError
+          : isTokyoMetro
+            ? tokyoMetroError
+            : null;
 
   /*
    * =======================================================
@@ -770,31 +807,29 @@ export default function StationScreen() {
             상단
         ================================================= */}
 
-          <View style={styles.topArea}>
-            <TouchableOpacity
-              style={styles.backArea}
-              activeOpacity={0.7}
-              onPress={() => router.back()}
-            >
-              <Text style={styles.backArrow}>‹</Text>
+        <View style={styles.topArea}>
+          <TouchableOpacity
+            style={styles.backArea}
+            activeOpacity={0.7}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.backArrow}>‹</Text>
+          </TouchableOpacity>
 
-              
-            </TouchableOpacity>
-
-            <StationTopActions
-                isFavorite={isFavorite}
-                favoriteLoading={favoriteLoading}
-                onPressLine={() => {
-                  router.push(`/line/${station.lineId}`);
-                }}
-                onPressHome={() => {
-                  router.replace("/");
-                }}
-                onPressFavorite={() => {
-                  void toggleFavorite();
-                }}
-              />
-          </View>
+          <StationTopActions
+            isFavorite={isFavorite}
+            favoriteLoading={favoriteLoading}
+            onPressLine={() => {
+              router.push(`/line/${station.lineId}`);
+            }}
+            onPressHome={() => {
+              router.replace("/");
+            }}
+            onPressFavorite={() => {
+              void toggleFavorite();
+            }}
+          />
+        </View>
         {/* =================================================
             역 Header
         ================================================= */}
@@ -808,7 +843,6 @@ export default function StationScreen() {
           hasTransfer={(station.transfers?.length ?? 0) > 0}
           onPressTransfer={() => setTransferVisible(true)}
         />
-      
 
         {/* =================================================
             운행상태
@@ -868,7 +902,14 @@ export default function StationScreen() {
               color={nextStation.color}
               showLineName={nextStations.length > 1}
               onPress={() => {
-                router.push(`/station/${nextStation.id}`);}}
+                router.push({
+                  pathname: "/station/[stationId]",
+                  params: {
+                    stationId: nextStation.id,
+                    lineId: nextStation.lineId,
+                  },
+                });
+              }}
             />
           ))}
         </View>
@@ -992,69 +1033,65 @@ export default function StationScreen() {
       =================================================== */}
 
       <TransferBottomSheet
-  visible={transferVisible}
-  transfers={station.transfers ?? []}
-  onClose={() => setTransferVisible(false)}
-  onPressTransfer={(transfer) => {
-    /*
-     * 선택한 환승 노선의 전체 역
-     */
-    const targetStations =
-      getStationsByLine(transfer.id);
-      console.log("=== 환승 DEBUG ===");
-console.log("transfer.id:", transfer.id);
-console.log("현재역:", station.id, station.nameJa);
-console.log(
-  "대상역:",
-  targetStations.map((item) => ({
-    id: item.id,
-    nameJa: item.nameJa,
-  })),
-);
+        visible={transferVisible}
+        transfers={station.transfers ?? []}
+        onClose={() => setTransferVisible(false)}
+        onPressTransfer={(transfer) => {
+          /*
+           * 선택한 환승 노선의 전체 역
+           */
+          const targetStations = getStationsByLine(transfer.id);
+          console.log("=== 환승 DEBUG ===");
+          console.log("transfer.id:", transfer.id);
+          console.log("현재역:", station.id, station.nameJa);
+          console.log(
+            "대상역:",
+            targetStations.map((item) => ({
+              id: item.id,
+              nameJa: item.nameJa,
+            })),
+          );
 
-    /*
-     * 현재 역과 같은 역명을 가진
-     * 환승 대상 역 찾기
-     */
-    const targetStation =
-      targetStations.find(
-        (item) =>
-          item.nameJa === station.nameJa,
-      );
+          /*
+           * 현재 역과 같은 역명을 가진
+           * 환승 대상 역 찾기
+           */
+          const targetStation = targetStations.find(
+            (item) => item.nameJa === station.nameJa,
+          );
 
-    /*
-     * 환승역을 찾지 못한 경우
-     */
-    if (!targetStation) {
-      console.warn(
-        "환승역을 찾을 수 없습니다.",
-        {
-          currentStation:
-            station.nameJa,
+          /*
+           * 환승역을 찾지 못한 경우
+           */
+          if (!targetStation) {
+            console.warn("환승역을 찾을 수 없습니다.", {
+              currentStation: station.nameJa,
 
-          transferLine:
-            transfer.id,
-        },
-      );
+              transferLine: transfer.id,
+            });
 
-      setTransferVisible(false);
+            setTransferVisible(false);
 
-      return;
-    }
+            return;
+          }
 
-    /*
-     * Bottom Sheet 닫기
-     */
-    setTransferVisible(false);
+          /*
+           * Bottom Sheet 닫기
+           */
+          setTransferVisible(false);
 
-    /*
-     * 환승 노선의 같은 역으로 이동
-     */
-    router.push(
-      `/station/${targetStation.id}`,
-    );
-  }}
-/>
+          /*
+           * 환승 노선의 같은 역으로 이동
+           */
+          router.push({
+            pathname: "/station/[stationId]",
+            params: {
+              stationId: targetStation.id,
+              lineId: transfer.id,
+            },
+          });
+        }}
+      />
     </SafeAreaView>
   );
 }

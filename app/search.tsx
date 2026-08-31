@@ -65,12 +65,13 @@ export default function SearchScreen() {
    * =======================================================
    */
 
-  const handlePressStation = (stationId: string) => {
+  const handlePressStation = (stationId: string, lineId: string) => {
     router.push({
       pathname: "/station/[stationId]",
 
       params: {
         stationId,
+        lineId,
       },
     });
   };
@@ -220,7 +221,9 @@ export default function SearchScreen() {
                       key={`${result.lineId}-${station.id}`}
                       style={styles.stationCard}
                       activeOpacity={0.7}
-                      onPress={() => handlePressStation(station.id)}
+                      onPress={() =>
+                        handlePressStation(station.id, result.lineId)
+                      }
                     >
                       {/* ===============================
                               역번호

@@ -74,6 +74,19 @@ const RAILWAY_COMPANIES: RailwayCompanyCard[] = [
   },
 
   {
+    id: "toei",
+
+    nameKo: "도에이 지하철",
+    nameJa: "都営地下鉄",
+
+    description: "오에도선 등 도쿄 도심 지하철",
+
+    color: "#CE045B",
+
+    badge: "E",
+  },
+
+  {
     id: "keisei",
 
     nameKo: "게이세이 전철",
@@ -87,16 +100,16 @@ const RAILWAY_COMPANIES: RailwayCompanyCard[] = [
   },
 
   {
-    id: "toei",
+    id: "keikyu",
 
-    nameKo: "도에이 지하철",
-    nameJa: "都営地下鉄",
+    nameKo: "게이큐 전철",
+    nameJa: "京浜急行電鉄",
 
-    description: "오에도선 등 도쿄 도심 지하철",
+    description: "시나가와 · 요코하마 · 하네다공항을 잇는 철도",
 
-    color: "#CE045B",
+    color: "#00BFFF",
 
-    badge: "E",
+    badge: "KK",
   },
 ];
 

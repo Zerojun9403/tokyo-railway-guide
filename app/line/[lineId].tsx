@@ -141,6 +141,7 @@ export default function LineScreen() {
 
                     params: {
                       stationId: station.id,
+                      lineId: line.id,
                     },
                   })
                 }
