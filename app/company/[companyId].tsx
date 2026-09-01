@@ -144,6 +144,99 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
 
         description: "오미야 · 우에노 · 도쿄 · 요코하마 · 오후나",
       },
+            /*
+       * JA 사이쿄선
+       */
+
+      {
+        id: "saikyo",
+
+        nameKo: "사이쿄선",
+        nameJa: "埼京線",
+
+        code: "JA",
+
+        color: "#00AC9A",
+
+        description: "오사키 · 신주쿠 · 이케부쿠로 · 아카바네 · 오미야",
+      },
+
+      /*
+       * JS 쇼난신주쿠라인
+       */
+
+      {
+        id: "shonan-shinjuku",
+
+        nameKo: "쇼난신주쿠라인",
+        nameJa: "湘南新宿ライン",
+
+        code: "JS",
+
+        color: "#E21F26",
+
+        description: "오미야 · 이케부쿠로 · 신주쿠 · 시부야 · 요코하마",
+      },
+
+      /*
+       * JT 도카이도선
+       */
+
+      {
+        id: "tokaido",
+
+        nameKo: "도카이도선",
+        nameJa: "東海道線",
+
+        code: "JT",
+
+        color: "#F68B1E",
+
+        description: "도쿄 · 신바시 · 시나가와 · 요코하마 · 오후나",
+      },
+
+      /*
+       * JO 요코스카선
+       */
+
+    {
+  id: "yokosuka-sobu",
+  nameKo: "요코스카선·소부쾌속선",
+  nameJa: "横須賀線・総武快速線",
+  code: "JO",
+  color: "#0067C0",
+  description: "구리하마 · 요코하마 · 도쿄 · 긴시초 · 지바",
+},
+
+      /*
+       * JE 게이요선
+       */
+
+      {
+        id: "keiyo",
+
+        nameKo: "게이요선",
+        nameJa: "京葉線",
+
+        code: "JE",
+
+        color: "#C9252F",
+
+        description: "도쿄 · 핫초보리 · 신키바 · 마이하마 · 소가",
+      },
+
+      /*
+       * JO 나리타선
+       */
+{
+  id: "narita",
+  nameKo: "나리타선",
+  nameJa: "成田線",
+  code: "JO",
+  color: "#00A85A",
+  description: "지바 · 사쿠라 · 나리타 · 나리타공항",
+},
+
     ],
   },
 

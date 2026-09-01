@@ -198,6 +198,12 @@ const resolveJrRailway = (lineId?: string): JrEastRailway => {
     case "saikyo":
       return "SaikyoKawagoe";
 
+    case "yokosuka-sobu":
+       return "YokosukaSobu";
+
+    case "narita":
+      return "NaritaAirport";
+
     case "yamanote":
     default:
       return "Yamanote";

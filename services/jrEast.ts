@@ -32,7 +32,9 @@ export type JrRailway =
   | "ChuoRapid"
   | "ChuoSobuLocal"
   | "KeihinTohokuNegishi"
-  | "SaikyoKawagoe";
+  | "SaikyoKawagoe"
+  | "YokosukaSobu"
+  | "NaritaAirport";
 
 /*
  * =========================================================
@@ -387,18 +389,84 @@ const SAIKYO_KAWAGOE_STATION_MAP: Record<string, string> = {
 
 /*
  * =========================================================
+ * 요코스카선 · 소부쾌속선 Station Map
+ * =========================================================
+ *
+ * Kurihama
+ * ↓
+ * Yokohama
+ * ↓
+ * Tokyo
+ * ↓
+ * Kinshicho
+ * ↓
+ * Chiba
+ *
+ * ODPT Railway:
+ * Tokyo 서쪽/남쪽 → JR-East.Yokosuka
+ * Tokyo 동쪽       → JR-East.SobuRapid
+ *
+ * =========================================================
+ */
+
+const YOKOSUKA_SOBU_STATION_MAP: Record<string, string> = {
+  JO01: "Kurihama",
+  JO02: "Kinugasa",
+  JO03: "Yokosuka",
+  JO04: "Taura",
+  JO05: "HigashiZushi",
+  JO06: "Zushi",
+  JO07: "Kamakura",
+  JO08: "KitaKamakura",
+  JO09: "Ofuna",
+  JO10: "Totsuka",
+  JO11: "HigashiTotsuka",
+  JO12: "Hodogaya",
+  JO13: "Yokohama",
+  JO14: "ShinKawasaki",
+  JO15: "MusashiKosugi",
+  JO16: "NishiOi",
+  JO17: "Shinagawa",
+  JO18: "Shimbashi",
+  JO19: "Tokyo",
+  JO20: "ShinNihombashi",
+  JO21: "Bakurocho",
+  JO22: "Kinshicho",
+  JO23: "ShinKoiwa",
+  JO24: "Ichikawa",
+  JO25: "Funabashi",
+  JO26: "Tsudanuma",
+  JO27: "Inage",
+  JO28: "Chiba",
+};
+
+
+const NARITA_AIRPORT_STATION_MAP: Record<string, string> = {
+  JO28: "Chiba",
+  JO29: "HigashiChiba",
+  JO30: "Tsuga",
+  JO31: "Yotsukaido",
+  JO32: "Monoi",
+  JO33: "Sakura",
+  JO34: "Shisui",
+  JO35: "Narita",
+  JO36: "NaritaAirportTerminal2and3",
+  JO37: "NaritaAirportTerminal1",
+};
+/*
+ * =========================================================
  * 노선별 Station Map
  * =========================================================
  */
 
 const JR_STATION_MAPS: Record<JrRailway, Record<string, string>> = {
   Yamanote: YAMANOTE_STATION_MAP,
-
   ChuoRapid: CHUO_RAPID_STATION_MAP,
-
   ChuoSobuLocal: CHUO_SOBU_LOCAL_STATION_MAP,
   KeihinTohokuNegishi: KEIHIN_TOHOKU_NEGISHI_STATION_MAP,
   SaikyoKawagoe: SAIKYO_KAWAGOE_STATION_MAP,
+  YokosukaSobu: YOKOSUKA_SOBU_STATION_MAP,
+  NaritaAirport: NARITA_AIRPORT_STATION_MAP,
 };
 
 /*
@@ -719,7 +787,186 @@ export const fetchJrEastTrains = async (
 
     return response.timetable ?? [];
   }
+  /*
+   * =====================================================
+   * 요코스카선 · 소부쾌속선 - Tokyo Railway API
+   * =====================================================
+   *
+   * 앱에서는 하나의 YokosukaSobu 노선으로 취급한다.
+   *
+   * JO01 ~ JO18
+   * → JR-East.Yokosuka
+   *
+   * JO19 Tokyo
+   * → Chiba 방면: JR-East.SobuRapid / Outbound
+   * → Kurihama 방면: JR-East.Yokosuka / Outbound
+   *
+   * JO20 ~ JO28
+   * → JR-East.SobuRapid
+   * =====================================================
+   */
 
+  if (railway === "YokosukaSobu") {
+    const odptStationId = getJrEastOdptStationId(
+      railway,
+      stationId,
+    );
+
+    if (!odptStationId) {
+      throw new Error(
+        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+      );
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    const stationNumber = Number(
+      stationId.replace("JO", ""),
+    );
+
+    const isTokyo = stationId === "JO19";
+
+    let apiLineId: "yokosuka" | "sobu-rapid";
+    let apiDirection: "Inbound" | "Outbound";
+
+    if (isTokyo) {
+      if (
+        normalizedDirection === "northbound" ||
+        normalizedDirection === "chiba"
+      ) {
+        apiLineId = "sobu-rapid";
+        apiDirection = "Outbound";
+      } else {
+        apiLineId = "yokosuka";
+        apiDirection = "Outbound";
+      }
+    } else if (stationNumber < 19) {
+      apiLineId = "yokosuka";
+
+      apiDirection =
+        normalizedDirection === "northbound" ||
+        normalizedDirection === "tokyo"
+          ? "Inbound"
+          : "Outbound";
+    } else {
+      apiLineId = "sobu-rapid";
+
+      apiDirection =
+        normalizedDirection === "northbound" ||
+        normalizedDirection === "chiba"
+          ? "Outbound"
+          : "Inbound";
+    }
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: apiLineId,
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response =
+      await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
+
+
+    /*
+   * =====================================================
+   * 나리타선 · 나리타공항지선 - Tokyo Railway API
+   * =====================================================
+   *
+   * JO28 ~ JO35
+   * → JR-East.Narita
+   *
+   * JO36 ~ JO37
+   * → JR-East.NaritaAirportBranch
+   *
+   * JO35 Narita
+   * → 공항 방면은 NaritaAirportBranch / Outbound
+   * =====================================================
+   */
+
+  if (railway === "NaritaAirport") {
+    const odptStationId = getJrEastOdptStationId(
+      railway,
+      stationId,
+    );
+
+    if (!odptStationId) {
+      throw new Error(
+        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+      );
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    const stationNumber = Number(
+      stationId.replace("JO", ""),
+    );
+
+    const isNarita = stationId === "JO35";
+
+    let apiLineId: "narita" | "narita-airport";
+    let apiDirection: "Inbound" | "Outbound";
+
+    if (isNarita) {
+      if (
+        normalizedDirection === "outbound" ||
+        normalizedDirection === "airport" ||
+        normalizedDirection === "naritaairport"
+      ) {
+        apiLineId = "narita-airport";
+        apiDirection = "Outbound";
+      } else {
+        apiLineId = "narita";
+        apiDirection = "Inbound";
+      }
+    } else if (stationNumber < 35) {
+      apiLineId = "narita";
+
+      apiDirection =
+        normalizedDirection === "outbound" ||
+        normalizedDirection === "airport" ||
+        normalizedDirection === "naritaairport"
+          ? "Outbound"
+          : "Inbound";
+    } else {
+      apiLineId = "narita-airport";
+
+      apiDirection =
+        normalizedDirection === "outbound" ||
+        normalizedDirection === "airport" ||
+        normalizedDirection === "naritaairport"
+          ? "Outbound"
+          : "Inbound";
+    }
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: apiLineId,
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response =
+      await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
 
 
 

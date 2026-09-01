@@ -1,6 +1,11 @@
 import type { Station } from "../types/station";
 import type { Train } from "../types/train";
 
+/*  
+ 
+ JR East
+
+*/
 import {
   YAMANOTE_COLOR,
   yamanoteStations,
@@ -31,6 +36,40 @@ import {
   saikyoTrains,
 } from "./lines/saikyo";
 
+import {
+  SHONAN_SHINJUKU_COLOR,
+  shonanShinjukuStations,
+  shonanShinjukuTrains,
+} from "./lines/shonan-shinjuku";
+
+import {
+  TOKAIDO_COLOR,
+  tokaidoStations,
+  tokaidoTrains,
+} from "./lines/tokaido";
+
+import {
+  KEIYO_COLOR,
+  keiyoStations,
+  keiyoTrains,
+} from "./lines/keiyo";
+
+import {
+  YOKOSUKA_SOBU_COLOR,
+  yokosukaSobuStations,
+  yokosukaSobuTrains,
+} from "./lines/yokosuka-sobu";
+
+import {
+  NARITA_COLOR,
+  naritaStations,
+  naritaTrains,
+} from "./lines/narita";
+/*  
+ 
+ tokyo_metro
+
+*/
 import { GINZA_COLOR, ginzaStations, ginzaTrains } from "./lines/ginza";
 import {
   MARUNOUCHI_COLOR,
@@ -63,11 +102,22 @@ import {
   fukutoshinTrains,
 } from "./lines/fukutoshin";
 
+/*  
+ 
+ keisei
+
+*/
 import {
   KEISEI_COLOR,
   keiseiMainStations,
   keiseiMainTrains,
 } from "./lines/keisei-main";
+
+/*  
+ 
+ keiky
+
+*/
 
 import {
   KEIKYU_MAIN_COLOR,
@@ -81,6 +131,11 @@ import {
   keikyuAirportTrains,
 } from "./lines/keikyu-airport";
 
+/**
+ * 
+ * 
+ * seibu
+ */
 import {
   SEIBU_IKEBUKURO_COLOR,
   seibuIkebukuroStations,
@@ -94,7 +149,11 @@ import {
   seibuShinjukuTrains,
 } from "./lines/seibu-shinjuku";
 
-
+/**
+ * 
+ * 
+ * tokyu
+ */
 import {
   TOKYU_TOYOKO_COLOR,
   tokyuToyokoStations,
@@ -123,6 +182,13 @@ import {
   tokyuDenEnToshiStations,
   tokyuDenEnToshiTrains,
 } from "./lines/tokyu-den-en-toshi";
+
+
+/**
+ * 
+ * 
+ * toei
+ */
 
 import { OEDO_COLOR, oedoStations, oedoTrains } from "./lines/oedo";
 
@@ -301,6 +367,59 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
     trains: saikyoTrains,
   },
 
+  "shonan-shinjuku": {
+  id: "shonan-shinjuku",
+  operatorId: "jr-east",
+  nameKo: "쇼난신주쿠라인",
+  nameJa: "湘南新宿ライン",
+  lineCode: "JS",
+  color: SHONAN_SHINJUKU_COLOR,
+  stations: shonanShinjukuStations,
+  trains: shonanShinjukuTrains,
+},
+tokaido: {
+  id: "tokaido",
+  operatorId: "jr-east",
+  nameKo: "도카이도선",
+  nameJa: "東海道線",
+  lineCode: "JT",
+  color: TOKAIDO_COLOR,
+  stations: tokaidoStations,
+  trains: tokaidoTrains,
+},
+
+keiyo: {
+  id: "keiyo",
+  operatorId: "jr-east",
+  nameKo: "게이요선",
+  nameJa: "京葉線",
+  lineCode: "JE",
+  color: KEIYO_COLOR,
+  stations: keiyoStations,
+  trains: keiyoTrains,
+},
+
+"yokosuka-sobu": {
+  id: "yokosuka-sobu",
+  operatorId: "jr-east",
+  nameKo: "요코스카선·소부쾌속선",
+  nameJa: "横須賀線・総武快速線",
+  lineCode: "JO",
+  color: YOKOSUKA_SOBU_COLOR,
+  stations: yokosukaSobuStations,
+  trains: yokosukaSobuTrains,
+},
+
+narita: {
+  id: "narita",
+  operatorId: "jr-east",
+  nameKo: "나리타선",
+  nameJa: "成田線",
+  lineCode: "JO",
+  color: NARITA_COLOR,
+  stations: naritaStations,
+  trains: naritaTrains,
+},
   
 
   /*

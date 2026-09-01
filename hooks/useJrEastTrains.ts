@@ -27,7 +27,9 @@ export type JrEastRailway =
   | "ChuoRapid"
   | "ChuoSobuLocal"
   | "KeihinTohokuNegishi"
-  | "SaikyoKawagoe";
+  | "SaikyoKawagoe"
+  | "YokosukaSobu"
+  | "NaritaAirport";
 
 /*
  * =========================================================
@@ -147,8 +149,58 @@ const resolveJrEastDirection = (
       return "southbound";
     }
   }
+  /*
+   * =======================================================
+   * 요코스카선 · 소부쾌속선
+   * =======================================================
+   *
+   * northbound
+   * → 도쿄 · 긴시초 · 지바 방면
+   *
+   * southbound
+   * → 시나가와 · 요코하마 · 구리하마 방면
+   * =======================================================
+   */
 
- 
+  if (railway === "YokosukaSobu") {
+    if (
+      normalized === "northbound" ||
+      normalized === "tokyo" ||
+      normalized === "chiba"
+    ) {
+      return "northbound";
+    }
+
+    if (
+      normalized === "southbound" ||
+      normalized === "yokohama" ||
+      normalized === "kurihama"
+    ) {
+      return "southbound";
+    }
+  }
+   /*
+   * =======================================================
+   * 나리타선 · 나리타공항지선
+   * =======================================================
+   */
+
+  if (railway === "NaritaAirport") {
+    if (
+      normalized === "outbound" ||
+      normalized === "airport" ||
+      normalized === "naritaairport"
+    ) {
+      return "outbound";
+    }
+
+    if (
+      normalized === "inbound" ||
+      normalized === "chiba"
+    ) {
+      return "inbound";
+    }
+  }
 
   /*
    * 이미 API 방향 형식이라면 그대로 사용
