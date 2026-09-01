@@ -889,7 +889,7 @@ export const keihinTohokuStations: Station[] = KEIHIN_TOHOKU_STATION_BASE.map(
 
         directions: [
           {
-            id: "southbound",
+            id: "Southbound",
 
             label: "요코하마·오후나 방면",
 
@@ -937,7 +937,7 @@ export const keihinTohokuStations: Station[] = KEIHIN_TOHOKU_STATION_BASE.map(
 
         directions: [
           {
-            id: "northbound",
+            id: "Northbound",
 
             label: "도쿄·오미야 방면",
 
@@ -992,7 +992,7 @@ export const keihinTohokuStations: Station[] = KEIHIN_TOHOKU_STATION_BASE.map(
          */
 
         {
-          id: "southbound",
+          id: "Southbound",
 
           label: "요코하마·오후나 방면",
 
@@ -1008,7 +1008,7 @@ export const keihinTohokuStations: Station[] = KEIHIN_TOHOKU_STATION_BASE.map(
          */
 
         {
-          id: "northbound",
+          id: "Northbound",
 
           label: "우에노·오미야 방면",
 

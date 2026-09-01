@@ -582,6 +582,92 @@ export const fetchJrEastTrains = async (
 
     return response.timetable ?? [];
   }
+
+  /*
+   * =====================================================
+   * 게이힌도호쿠·네기시선 - Tokyo Railway API
+   * =====================================================
+   */
+
+  if (railway === "KeihinTohokuNegishi") {
+    const odptStationId = getJrEastOdptStationId(
+      railway,
+      stationId,
+    );
+
+    if (!odptStationId) {
+      throw new Error(
+        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+      );
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    const apiDirection =
+      normalizedDirection === "northbound"
+        ? "Northbound"
+        : normalizedDirection === "southbound"
+          ? "Southbound"
+          : directionId;
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: "keihin-tohoku",
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response =
+      await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /*
    * =====================================================
    * 기존 JR API
