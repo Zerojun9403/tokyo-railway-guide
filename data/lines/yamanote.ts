@@ -370,7 +370,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
     },
 
     {
-      id: "chuo-sobu",
+      id: "chuo-sobu-local",
 
       code: "JB",
 
@@ -593,7 +593,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
     },
 
     {
-      id: "chuo-sobu",
+      id: "chuo-sobu-local",
 
       code: "JB",
 
