@@ -26,7 +26,8 @@ export type JrEastRailway =
   | "Yamanote"
   | "ChuoRapid"
   | "ChuoSobuLocal"
-  | "KeihinTohokuNegishi";
+  | "KeihinTohokuNegishi"
+  | "SaikyoKawagoe";
 
 /*
  * =========================================================
@@ -123,7 +124,29 @@ const resolveJrEastDirection = (
       return "southbound";
     }
   }
+ /*
+   * =======================================================
+   * 사이쿄선
+   * =======================================================
+   */
 
+  if (railway === "SaikyoKawagoe") {
+    if (
+      normalized === "northbound" ||
+      normalized === "omiya" ||
+      normalized === "kawagoe"
+    ) {
+      return "northbound";
+    }
+
+    if (
+      normalized === "southbound" ||
+      normalized === "shinjuku" ||
+      normalized === "osaki"
+    ) {
+      return "southbound";
+    }
+  }
 
  
 

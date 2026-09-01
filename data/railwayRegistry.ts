@@ -25,6 +25,12 @@ import {
   keihinTohokuTrains,
 } from "./lines/keihin-tohoku";
 
+import {
+  SAIKYO_COLOR,
+  saikyoStations,
+  saikyoTrains,
+} from "./lines/saikyo";
+
 import { GINZA_COLOR, ginzaStations, ginzaTrains } from "./lines/ginza";
 import {
   MARUNOUCHI_COLOR,
@@ -272,6 +278,30 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
 
     trains: keihinTohokuTrains,
   },
+  /*
+   * =======================================================
+   * JR 동일본 - 사이쿄선
+   * =======================================================
+   */
+
+  saikyo: {
+    id: "saikyo",
+
+    operatorId: "jr-east",
+
+    nameKo: "사이쿄선",
+    nameJa: "埼京線",
+
+    lineCode: "JA",
+
+    color: SAIKYO_COLOR,
+
+    stations: saikyoStations,
+
+    trains: saikyoTrains,
+  },
+
+  
 
   /*
    * =======================================================

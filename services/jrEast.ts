@@ -31,7 +31,8 @@ export type JrRailway =
   | "Yamanote"
   | "ChuoRapid"
   | "ChuoSobuLocal"
-  | "KeihinTohokuNegishi";
+  | "KeihinTohokuNegishi"
+  | "SaikyoKawagoe";
 
 /*
  * =========================================================
@@ -341,6 +342,49 @@ const KEIHIN_TOHOKU_NEGISHI_STATION_MAP: Record<string, string> = {
   JK01: "Ofuna",
 };
 
+ /*
+ * =========================================================
+ * 사이쿄선 Station Map
+ * =========================================================
+ *
+ * JA08 오사키
+ * ↓
+ * JA11 신주쿠
+ * ↓
+ * JA15 아카바네
+ * ↓
+ * JA21 무사시우라와
+ * ↓
+ * JA26 오미야
+ *
+ * ODPT Railway:
+ * JR-East.SaikyoKawagoe
+ *
+ * =========================================================
+ */
+
+const SAIKYO_KAWAGOE_STATION_MAP: Record<string, string> = {
+  JA08: "Osaki",
+  JA09: "Ebisu",
+  JA10: "Shibuya",
+  JA11: "Shinjuku",
+  JA12: "Ikebukuro",
+  JA13: "Itabashi",
+  JA14: "Jujo",
+  JA15: "Akabane",
+  JA16: "KitaAkabane",
+  JA17: "Ukimafunado",
+  JA18: "TodaKoen",
+  JA19: "Toda",
+  JA20: "KitaToda",
+  JA21: "MusashiUrawa",
+  JA22: "NakaUrawa",
+  JA23: "MinamiYono",
+  JA24: "YonoHommachi",
+  JA25: "KitaYono",
+  JA26: "Omiya",
+};
+
 /*
  * =========================================================
  * 노선별 Station Map
@@ -354,6 +398,7 @@ const JR_STATION_MAPS: Record<JrRailway, Record<string, string>> = {
 
   ChuoSobuLocal: CHUO_SOBU_LOCAL_STATION_MAP,
   KeihinTohokuNegishi: KEIHIN_TOHOKU_NEGISHI_STATION_MAP,
+  SaikyoKawagoe: SAIKYO_KAWAGOE_STATION_MAP,
 };
 
 /*
@@ -613,6 +658,52 @@ export const fetchJrEastTrains = async (
     const params = new URLSearchParams({
       operator: "jr-east",
       lineId: "keihin-tohoku",
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response =
+      await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
+
+   /*
+   * =====================================================
+   * 사이쿄선 - Tokyo Railway API
+   * =====================================================
+   */
+
+  if (railway === "SaikyoKawagoe") {
+    const odptStationId = getJrEastOdptStationId(
+      railway,
+      stationId,
+    );
+
+    if (!odptStationId) {
+      throw new Error(
+        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+      );
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    const apiDirection =
+      normalizedDirection === "northbound"
+        ? "Northbound"
+        : normalizedDirection === "southbound"
+          ? "Southbound"
+          : directionId;
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: "saikyo",
       stationId: odptStationId,
       directionId: apiDirection,
       upcoming: "true",
