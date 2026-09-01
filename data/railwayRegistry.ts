@@ -88,6 +88,36 @@ import {
   seibuShinjukuTrains,
 } from "./lines/seibu-shinjuku";
 
+
+import {
+  TOKYU_TOYOKO_COLOR,
+  tokyuToyokoStations,
+  tokyuToyokoTrains,
+} from "./lines/tokyu-toyoko";
+
+import {
+  TOKYU_MEGURO_COLOR,
+  tokyuMeguroStations,
+  tokyuMeguroTrains,
+} from "./lines/tokyu-meguro";
+import {
+  TOKYU_OIMACHI_COLOR,
+  tokyuOimachiStations,
+  tokyuOimachiTrains,
+} from "./lines/tokyu-oimachi";
+
+import {
+  TOKYU_SHIN_YOKOHAMA_COLOR,
+  tokyuShinYokohamaStations,
+  tokyuShinYokohamaTrains,
+} from "./lines/tokyu-shin-yokohama";
+
+import {
+  TOKYU_DEN_EN_TOSHI_COLOR,
+  tokyuDenEnToshiStations,
+  tokyuDenEnToshiTrains,
+} from "./lines/tokyu-den-en-toshi";
+
 import { OEDO_COLOR, oedoStations, oedoTrains } from "./lines/oedo";
 
 import { ASAKUSA_COLOR, asakusaStations, asakusaTrains } from "./lines/asakusa";
@@ -493,7 +523,7 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
     trains: seibuIkebukuroTrains,
   },
   
-    /*
+  /*
    * =======================================================
    * 세이부 철도 - 세이부 신주쿠선
    * =======================================================
@@ -516,9 +546,118 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
     trains: seibuShinjukuTrains,
   },
 
+  /*
+   * =======================================================
+   * 도큐 전철 - 도요코선
+   * =======================================================
+   */
 
+  "tokyu-toyoko": {
+    id: "tokyu-toyoko",
 
+    operatorId: "tokyu",
 
+    nameKo: "도큐 도요코선",
+    nameJa: "東急東横線",
+
+    lineCode: "TY",
+
+    color: TOKYU_TOYOKO_COLOR,
+
+    stations: tokyuToyokoStations,
+
+    trains: tokyuToyokoTrains,
+  },
+    /*
+   * =======================================================
+   * 도큐 전철 - 메구로선
+   * =======================================================
+   */
+
+  "tokyu-meguro": {
+    id: "tokyu-meguro",
+
+    operatorId: "tokyu",
+
+    nameKo: "도큐 메구로선",
+    nameJa: "東急目黒線",
+
+    lineCode: "MG",
+
+    color: TOKYU_MEGURO_COLOR,
+
+    stations: tokyuMeguroStations,
+
+    trains: tokyuMeguroTrains,
+  },
+    /*
+   * =======================================================
+   * 도큐 전철 - 덴엔토시선
+   * =======================================================
+   */
+
+  "tokyu-den-en-toshi": {
+    id: "tokyu-den-en-toshi",
+
+    operatorId: "tokyu",
+
+    nameKo: "도큐 덴엔토시선",
+    nameJa: "東急田園都市線",
+
+    lineCode: "DT",
+
+    color: TOKYU_DEN_EN_TOSHI_COLOR,
+
+    stations: tokyuDenEnToshiStations,
+
+    trains: tokyuDenEnToshiTrains,
+  },
+
+    /*
+   * =======================================================
+   * 도큐 전철 - 오이마치선
+   * =======================================================
+   */
+
+  "tokyu-oimachi": {
+    id: "tokyu-oimachi",
+
+    operatorId: "tokyu",
+
+    nameKo: "도큐 오이마치선",
+    nameJa: "東急大井町線",
+
+    lineCode: "OM",
+
+    color: TOKYU_OIMACHI_COLOR,
+
+    stations: tokyuOimachiStations,
+
+    trains: tokyuOimachiTrains,
+  },
+  
+  /*
+   * =======================================================
+   * 도큐 전철 - 신요코하마선
+   * =======================================================
+   */
+
+  "tokyu-shin-yokohama": {
+    id: "tokyu-shin-yokohama",
+
+    operatorId: "tokyu",
+
+    nameKo: "도큐 신요코하마선",
+    nameJa: "東急新横浜線",
+
+    lineCode: "SH",
+
+    color: TOKYU_SHIN_YOKOHAMA_COLOR,
+
+    stations: tokyuShinYokohamaStations,
+
+    trains: tokyuShinYokohamaTrains,
+  },
 
   /*
    * =======================================================

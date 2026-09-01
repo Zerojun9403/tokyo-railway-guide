@@ -29,6 +29,7 @@ import {
 import { useKeikyuTrains } from "../../hooks/useKeikyuTrains";
 import { useKeiseiTrains } from "../../hooks/useKeiseiTrains";
 import { useSeibuTrains } from "../../hooks/useSeibuTrains";
+import { useTokyuTrains } from "../../hooks/useTokyuTrains";
 
 import {
   useJrEastTrains,
@@ -331,6 +332,8 @@ export default function StationScreen() {
 
   const isSeibu = station?.operatorId === "seibu";
 
+  const isTokyu = station?.operatorId === "tokyu";
+
   const isJrEast = station?.operatorId === "jr-east";
 
   const isToei = station?.operatorId === "toei";
@@ -418,6 +421,31 @@ export default function StationScreen() {
     directionId: isKeikyu ? selectedDirection?.id : undefined,
 
     enabled: isKeikyu,
+  });
+
+
+
+
+  /*
+   * =======================================================
+   * 도큐 실제 시간표
+   * =======================================================
+   */
+
+  const {
+    trains: tokyuTrains,
+
+    loading: tokyuLoading,
+
+    error: tokyuError,
+  } = useTokyuTrains({
+    lineId: isTokyu ? station?.lineId : undefined,
+
+    stationId: isTokyu ? station?.id : undefined,
+
+    directionId: isTokyu ? selectedDirection?.id : undefined,
+
+    enabled: isTokyu,
   });
 
 
@@ -676,6 +704,15 @@ export default function StationScreen() {
 
 
   /*
+   * 도큐
+   */
+
+  if (isTokyu) {
+    trains = tokyuTrains;
+  }
+
+
+  /*
    * 세이부
    */
 
@@ -783,6 +820,7 @@ export default function StationScreen() {
     (isKeikyu && keikyuLoading) ||
     (isSeibu && seibuLoading) ||
     (isJrEast && jrLoading) ||
+    (isTokyu && tokyuLoading) ||
     (isToei && toeiLoading) ||
     (isTokyoMetro && tokyoMetroLoading);
 
@@ -800,10 +838,12 @@ export default function StationScreen() {
         ? seibuError
         : isJrEast
          ? jrError
-        : isToei
-          ? toeiError
-          : isTokyoMetro
-            ? tokyoMetroError
+         : isTokyu
+          ? tokyuError
+          : isToei
+            ? toeiError
+            : isTokyoMetro
+              ? tokyoMetroError
             : null;
 
   /*

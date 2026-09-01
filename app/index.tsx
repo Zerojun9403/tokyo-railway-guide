@@ -123,10 +123,18 @@ const RAILWAY_COMPANIES: RailwayCompanyCard[] = [
 
     badge: "SI",
   },
+    {
+    id: "tokyu",
 
+    nameKo: "도큐 전철",
+    nameJa: "東急電鉄",
 
+    description: "시부야 · 요코하마를 잇는 도쿄 남서부의 주요 철도",
 
+    color: "#DA0442",
 
+    badge: "TY",
+  },
 
 ];
 

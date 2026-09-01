@@ -447,7 +447,62 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
   ],
 },
 
+  /*
+   * =======================================================
+   * 도큐 전철
+   * =======================================================
+   */
 
+  tokyu: {
+    id: "tokyu",
+    nameKo: "도큐 전철",
+    nameJa: "東急電鉄",
+    description: "시부야를 중심으로 도쿄 남서부와 요코하마를 연결하는 주요 사철",
+    color: "#DA0442",
+    badge: "TY",
+    lines: [
+      {
+        id: "tokyu-toyoko",
+        nameKo: "도큐 도요코선",
+        nameJa: "東急東横線",
+        code: "TY",
+        color: "#DA0442",
+        description: "시부야 · 나카메구로 · 지유가오카 · 무사시코스기 · 요코하마",
+      },
+       {
+      id: "tokyu-meguro",
+      nameKo: "도큐 메구로선",
+      nameJa: "東急目黒線",
+      code: "MG",
+      color: "#009CD2",
+      description: "메구로 · 오오카야마 · 무사시코스기 · 히요시",
+    },
+    {
+    id: "tokyu-den-en-toshi",
+    nameKo: "도큐 덴엔토시선",
+    nameJa: "東急田園都市線",
+    code: "DT",
+    color: "#20A288",
+    description: "시부야 · 산겐자야 · 후타코타마가와 · 나가쓰타 · 주오린칸",
+    },
+    {
+      id: "tokyu-oimachi",
+      nameKo: "도큐 오이마치선",
+      nameJa: "東急大井町線",
+      code: "OM",
+      color: "#F18C43",
+      description: "오이마치 · 오오카야마 · 지유가오카 · 후타코타마가와 · 미조노쿠치",
+    },
+    {
+      id: "tokyu-shin-yokohama",
+      nameKo: "도큐 신요코하마선",
+      nameJa: "東急新横浜線",
+      code: "SH",
+      color: "#6FBA2C",
+      description: "신요코하마 · 신쓰나시마 · 히요시",
+    },
+  ],
+  },
 
 
 
