@@ -598,7 +598,7 @@ export const chuoRapidStations: Station[] = CHUO_RAPID_STATION_BASE.map(
 
         directions: [
           {
-            id: "outbound",
+            id: "Outbound",
 
             label: "신주쿠·다카오 방면",
 
@@ -649,7 +649,7 @@ export const chuoRapidStations: Station[] = CHUO_RAPID_STATION_BASE.map(
 
         directions: [
           {
-            id: "inbound",
+            id: "Inbound",
 
             label: "신주쿠·도쿄 방면",
 
@@ -704,7 +704,7 @@ export const chuoRapidStations: Station[] = CHUO_RAPID_STATION_BASE.map(
          */
 
         {
-          id: "inbound",
+          id: "Inbound",
 
           label: "도쿄 방면",
 
@@ -720,7 +720,7 @@ export const chuoRapidStations: Station[] = CHUO_RAPID_STATION_BASE.map(
          */
 
         {
-          id: "outbound",
+          id: "Outbound",
 
           label: "다카오 방면",
 

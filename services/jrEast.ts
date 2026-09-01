@@ -19,7 +19,7 @@
  * =========================================================
  */
 
-const JR_EAST_API_BASE_URL = "https://tokyo-metro-sigma.vercel.app";
+const JR_EAST_API_BASE_URL = "https://tokyo-railway-api.vercel.app";
 
 /*
  * =========================================================
@@ -40,15 +40,44 @@ export type JrRailway =
  */
 
 export type JrNextTrain = {
-  trainNumber?: string;
+  id: string;
+
+  operator: "jr-east";
+
+  lineId: string;
+
+  stationId: string;
+
+  directionId: string;
 
   departureTime: string;
 
-  minutesUntilDeparture: number;
+  trainType?: string;
 
-  destination?: string;
+  trainTypeKo?: string;
+
+  trainTypeJa?: string;
+
+  destinationStation?: string;
+
+  destinationKo?: string;
+
+  destinationJa?: string;
 };
 
+export type JrTimetableApiResponse = {
+  operator: "jr-east";
+
+  lineId: string;
+
+  stationId: string;
+
+  directionId: string;
+
+  updatedAt: string;
+
+  timetable: JrNextTrain[];
+};
 /*
  * =========================================================
  * JR 시간표 API 응답
@@ -463,6 +492,61 @@ export const fetchJrEastTrains = async (
   stationId: string,
   directionId: string,
 ): Promise<JrNextTrain[]> => {
+  /*
+   * =====================================================
+   * 주오 쾌속 - Tokyo Railway API
+   * =====================================================
+   */
+
+  if (railway === "ChuoRapid") {
+    const odptStationId = getJrEastOdptStationId(
+      railway,
+      stationId,
+    );
+
+    if (!odptStationId) {
+      throw new Error(
+        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+      );
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    const apiDirection =
+      normalizedDirection === "inbound"
+        ? "Inbound"
+        : normalizedDirection === "outbound"
+          ? "Outbound"
+          : directionId;
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: "chuo-rapid",
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response =
+      await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
+
+  /*
+   * =====================================================
+   * 기존 JR API
+   * =====================================================
+   *
+   * 야마노테 등 기존 정상 동작을 유지한다.
+   * =====================================================
+   */
+
   const data = await fetchJrEastTimetable(railway, stationId);
 
   /*
@@ -478,24 +562,6 @@ export const fetchJrEastTrains = async (
 
     if (directionId === "outer" || directionId === "outerLoop") {
       return data.directions.outerLoop ?? [];
-    }
-
-    return [];
-  }
-
-  /*
-   * =====================================================
-   * 주오 쾌속
-   * =====================================================
-   */
-
-  if (railway === "ChuoRapid") {
-    if (directionId === "inbound") {
-      return data.directions.inbound ?? [];
-    }
-
-    if (directionId === "outbound") {
-      return data.directions.outbound ?? [];
     }
 
     return [];
@@ -521,14 +587,9 @@ export const fetchJrEastTrains = async (
 
   return [];
 };
-
 /*
  * =========================================================
  * 기존 야마노테 API 호환
- * =========================================================
- *
- * 기존 useYamanoteTrains.ts를 당장 삭제하지 않아도
- * 계속 정상 작동하도록 남겨둔다.
  * =========================================================
  */
 
