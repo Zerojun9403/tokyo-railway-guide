@@ -19,7 +19,7 @@
  * =========================================================
  */
 
-const JR_EAST_API_BASE_URL = "https://tokyo-railway-api.vercel.app";
+const JR_EAST_API_BASE_URL = "https://tokyo-metro-sigma.vercel.app";
 
 /*
  * =========================================================
@@ -537,7 +537,51 @@ export const fetchJrEastTrains = async (
 
     return response.timetable ?? [];
   }
+ /*
+   * =====================================================
+   * 주오·소부선 각역정차 - Tokyo Railway API
+   * =====================================================
+   */
 
+  if (railway === "ChuoSobuLocal") {
+    const odptStationId = getJrEastOdptStationId(
+      railway,
+      stationId,
+    );
+
+    if (!odptStationId) {
+      throw new Error(
+        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+      );
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    const apiDirection =
+      normalizedDirection === "eastbound"
+        ? "Eastbound"
+        : normalizedDirection === "westbound"
+          ? "Westbound"
+          : directionId;
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: "chuo-sobu",
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response =
+      await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
   /*
    * =====================================================
    * 기존 JR API
@@ -566,27 +610,9 @@ export const fetchJrEastTrains = async (
 
     return [];
   }
-
-  /*
-   * =====================================================
-   * 주오·소부 완행
-   * =====================================================
-   */
-
-  if (railway === "ChuoSobuLocal") {
-    if (directionId === "eastbound") {
-      return data.directions.eastbound ?? [];
-    }
-
-    if (directionId === "westbound") {
-      return data.directions.westbound ?? [];
-    }
-
-    return [];
-  }
-
-  return [];
+ return [];
 };
+
 /*
  * =========================================================
  * 기존 야마노테 API 호환

@@ -825,7 +825,7 @@ export const chuoSobuLocalStations: Station[] =
 
         directions: [
           {
-            id: "eastbound",
+            id: "Eastbound",
 
             label: "지바 방면",
 
@@ -873,7 +873,7 @@ export const chuoSobuLocalStations: Station[] =
 
         directions: [
           {
-            id: "westbound",
+            id: "Westbound",
 
             label: "미타카 방면",
 
@@ -928,7 +928,7 @@ export const chuoSobuLocalStations: Station[] =
          */
 
         {
-          id: "eastbound",
+          id: "Eastbound",
 
           label: "지바 방면",
 
@@ -944,7 +944,7 @@ export const chuoSobuLocalStations: Station[] =
          */
 
         {
-          id: "westbound",
+          id: "Westbound",
 
           label: "미타카 방면",
 
