@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import { router, useFocusEffect } from "expo-router";
+import { ChevronRight, Search, Settings, Star } from "lucide-react-native";
 
 import { getStation } from "../data/railwayRegistry";
 import { useAppTheme } from "../hooks/useAppTheme";
@@ -284,16 +285,11 @@ export default function HomeScreen() {
               activeOpacity={0.7}
               onPress={handlePressSettings}
             >
-              <Text
-                style={[
-                  styles.settingsIcon,
-                  {
-                    color: colors.textSecondary,
-                  },
-                ]}
-              >
-                ⚙
-              </Text>
+              <Settings
+                size={21}
+                color={colors.textSecondary}
+                strokeWidth={2}
+              />
             </TouchableOpacity>
           </View>
 
@@ -344,16 +340,11 @@ export default function HomeScreen() {
               },
             ]}
           >
-            <Text
-              style={[
-                styles.searchIcon,
-                {
-                  color: colors.textSecondary,
-                },
-              ]}
-            >
-              ⌕
-            </Text>
+            <Search
+              size={24}
+              color={colors.textSecondary}
+              strokeWidth={2}
+            />
           </View>
 
           <View style={styles.searchTextArea}>
@@ -380,16 +371,12 @@ export default function HomeScreen() {
             </Text>
           </View>
 
-          <Text
-            style={[
-              styles.arrow,
-              {
-                color: colors.textMuted,
-              },
-            ]}
-          >
-            ›
-          </Text>
+          <ChevronRight
+            style={styles.trailingIcon}
+            size={24}
+            color={colors.textMuted}
+            strokeWidth={2}
+          />
         </TouchableOpacity>
 
         {/* =================================================
@@ -423,9 +410,17 @@ export default function HomeScreen() {
                 </Text>
               </View>
 
-              <Text style={styles.sectionCount}>
-                ★ {favoriteStations.length}
-              </Text>
+              <View style={styles.sectionCount}>
+                <Star
+                  size={14}
+                  color="#D49B00"
+                  fill="#D49B00"
+                  strokeWidth={2}
+                />
+                <Text style={styles.sectionCountText}>
+                  {favoriteStations.length}
+                </Text>
+              </View>
             </View>
 
             <View style={styles.favoriteList}>
@@ -496,7 +491,13 @@ export default function HomeScreen() {
                     </Text>
                   </View>
 
-                  <Text style={styles.star}>★</Text>
+                  <Star
+                    style={styles.trailingIcon}
+                    size={20}
+                    color="#F5B800"
+                    fill="#F5B800"
+                    strokeWidth={2}
+                  />
                 </TouchableOpacity>
               ))}
             </View>
@@ -694,16 +695,12 @@ export default function HomeScreen() {
                   </Text>
                 </View>
 
-                <Text
-                  style={[
-                    styles.arrow,
-                    {
-                      color: colors.textMuted,
-                    },
-                  ]}
-                >
-                  ›
-                </Text>
+                <ChevronRight
+                  style={styles.trailingIcon}
+                  size={24}
+                  color={colors.textMuted}
+                  strokeWidth={2}
+                />
               </TouchableOpacity>
             ))}
           </View>
@@ -794,11 +791,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  settingsIcon: {
-    fontSize: 21,
-
-    lineHeight: 25,
-  },
 
   title: {
     marginTop: 9,
@@ -852,11 +844,6 @@ const styles = StyleSheet.create({
     marginRight: 13,
   },
 
-  searchIcon: {
-    fontSize: 29,
-
-    lineHeight: 31,
-  },
 
   searchTextArea: {
     flex: 1,
@@ -878,12 +865,9 @@ const styles = StyleSheet.create({
     lineHeight: 15,
   },
 
-  arrow: {
+
+  trailingIcon: {
     marginLeft: 10,
-
-    fontSize: 30,
-
-    lineHeight: 32,
   },
 
   stationSection: {
@@ -921,12 +905,15 @@ const styles = StyleSheet.create({
   },
 
   sectionCount: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+
+  sectionCountText: {
     fontSize: 12,
-
     lineHeight: 17,
-
     fontWeight: "800",
-
     color: "#D49B00",
   },
 
@@ -1004,13 +991,6 @@ const styles = StyleSheet.create({
     lineHeight: 15,
   },
 
-  star: {
-    marginLeft: 10,
-
-    fontSize: 20,
-
-    color: "#F5B800",
-  },
 
   recentList: {
     gap: 10,

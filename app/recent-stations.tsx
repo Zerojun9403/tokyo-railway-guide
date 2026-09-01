@@ -11,12 +11,15 @@ import {
 } from "react-native";
 
 import { router, useFocusEffect } from "expo-router";
+import { ArrowLeft, History } from "lucide-react-native";
 
 import { getStation } from "../data/railwayRegistry";
-
+import { useAppTheme } from "../hooks/useAppTheme";
 import { useRecentStations } from "../hooks/useRecentStations";
 
 export default function RecentStationsScreen() {
+  const { colors, isDark } = useAppTheme();
+
   const { recentStationIds, removeRecent, clearRecent, reload } =
     useRecentStations();
 
@@ -90,9 +93,21 @@ export default function RecentStationsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        {
+          backgroundColor: colors.background,
+        },
+      ]}
+    >
       <ScrollView
-        style={styles.screen}
+        style={[
+          styles.screen,
+          {
+            backgroundColor: colors.background,
+          },
+        ]}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
@@ -100,17 +115,42 @@ export default function RecentStationsScreen() {
 
         <View style={styles.header}>
           <TouchableOpacity
-            style={styles.backButton}
+            style={[
+              styles.backButton,
+              {
+                backgroundColor: colors.surface,
+              },
+            ]}
             activeOpacity={0.7}
             onPress={() => router.back()}
           >
-            <Text style={styles.backArrow}>‹</Text>
+            <ArrowLeft
+              size={22}
+              color={colors.text}
+              strokeWidth={2}
+            />
           </TouchableOpacity>
 
           <View style={styles.headerTextArea}>
-            <Text style={styles.headerTitle}>최근 본 역</Text>
+            <Text
+              style={[
+                styles.headerTitle,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              최근 본 역
+            </Text>
 
-            <Text style={styles.headerDescription}>
+            <Text
+              style={[
+                styles.headerDescription,
+                {
+                  color: colors.textMuted,
+                },
+              ]}
+            >
               최근 확인한 역 기록을 관리합니다.
             </Text>
           </View>
@@ -119,7 +159,16 @@ export default function RecentStationsScreen() {
         {/* Toolbar */}
 
         <View style={styles.toolbar}>
-          <Text style={styles.resultCount}>총 {recentStations.length}개</Text>
+          <Text
+            style={[
+              styles.resultCount,
+              {
+                color: colors.textMuted,
+              },
+            ]}
+          >
+            총 {recentStations.length}개
+          </Text>
 
           {recentStations.length > 0 && (
             <TouchableOpacity activeOpacity={0.7} onPress={handleClearAll}>
@@ -132,13 +181,40 @@ export default function RecentStationsScreen() {
 
         {recentStations.length === 0 && (
           <View style={styles.emptyArea}>
-            <View style={styles.emptyIcon}>
-              <Text style={styles.emptyIconText}>↻</Text>
+            <View
+              style={[
+                styles.emptyIcon,
+                {
+                  backgroundColor: colors.surface,
+                },
+              ]}
+            >
+              <History
+                size={28}
+                color={colors.textMuted}
+                strokeWidth={2}
+              />
             </View>
 
-            <Text style={styles.emptyTitle}>최근 본 역이 없습니다</Text>
+            <Text
+              style={[
+                styles.emptyTitle,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              최근 본 역이 없습니다
+            </Text>
 
-            <Text style={styles.emptyDescription}>
+            <Text
+              style={[
+                styles.emptyDescription,
+                {
+                  color: colors.textMuted,
+                },
+              ]}
+            >
               역 상세 페이지를 확인하면{"\n"}
               최근 본 역에 자동으로 저장됩니다.
             </Text>
@@ -149,7 +225,15 @@ export default function RecentStationsScreen() {
 
         <View style={styles.stationList}>
           {recentStations.map((station) => (
-            <View key={station.id} style={styles.stationCard}>
+            <View
+              key={station.id}
+              style={[
+                styles.stationCard,
+                {
+                  backgroundColor: colors.surface,
+                },
+              ]}
+            >
               <TouchableOpacity
                 style={styles.stationMain}
                 activeOpacity={0.7}
@@ -158,7 +242,6 @@ export default function RecentStationsScreen() {
                 <View
                   style={[
                     styles.stationBadge,
-
                     {
                       backgroundColor: station.color,
                     },
@@ -168,20 +251,61 @@ export default function RecentStationsScreen() {
                 </View>
 
                 <View style={styles.stationInfo}>
-                  <Text style={styles.stationNameKo}>{station.nameKo}</Text>
+                  <Text
+                    style={[
+                      styles.stationNameKo,
+                      {
+                        color: colors.text,
+                      },
+                    ]}
+                  >
+                    {station.nameKo}
+                  </Text>
 
-                  <Text style={styles.stationNameJa}>{station.nameJa}</Text>
+                  <Text
+                    style={[
+                      styles.stationNameJa,
+                      {
+                        color: colors.textMuted,
+                      },
+                    ]}
+                  >
+                    {station.nameJa}
+                  </Text>
 
-                  <Text style={styles.stationLine}>{station.lineNameKo}</Text>
+                  <Text
+                    style={[
+                      styles.stationLine,
+                      {
+                        color: colors.textSecondary,
+                      },
+                    ]}
+                  >
+                    {station.lineNameKo}
+                  </Text>
                 </View>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.deleteButton}
+                style={[
+                  styles.deleteButton,
+                  {
+                    backgroundColor: isDark ? "#3A1F22" : "#FEF2F2",
+                  },
+                ]}
                 activeOpacity={0.7}
                 onPress={() => handleRemove(station.id, station.nameKo)}
               >
-                <Text style={styles.deleteButtonText}>삭제</Text>
+                <Text
+                  style={[
+                    styles.deleteButtonText,
+                    {
+                      color: isDark ? "#FF7B7B" : "#DC2626",
+                    },
+                  ]}
+                >
+                  삭제
+                </Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -194,18 +318,16 @@ export default function RecentStationsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#F5F6F8",
   },
 
   screen: {
     flex: 1,
-    backgroundColor: "#F5F6F8",
   },
 
   container: {
     paddingHorizontal: 22,
     paddingTop: 22,
-    paddingBottom: 70,
+    paddingBottom: 120,
   },
 
   header: {
@@ -218,17 +340,9 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 14,
-    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 13,
-  },
-
-  backArrow: {
-    marginTop: -3,
-    fontSize: 31,
-    lineHeight: 34,
-    color: "#17191D",
   },
 
   headerTextArea: {
@@ -239,14 +353,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     lineHeight: 30,
     fontWeight: "900",
-    color: "#17191D",
   },
 
   headerDescription: {
     marginTop: 2,
     fontSize: 12,
     lineHeight: 17,
-    color: "#8C96A5",
   },
 
   toolbar: {
@@ -259,7 +371,6 @@ const styles = StyleSheet.create({
   resultCount: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#8C96A5",
   },
 
   clearAllText: {
@@ -277,7 +388,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 13,
     borderRadius: 20,
-    backgroundColor: "#FFFFFF",
     flexDirection: "row",
     alignItems: "center",
   },
@@ -312,21 +422,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 21,
     fontWeight: "900",
-    color: "#17191D",
   },
 
   stationNameJa: {
     marginTop: 1,
     fontSize: 10,
     lineHeight: 14,
-    color: "#9AA4B3",
   },
 
   stationLine: {
     marginTop: 5,
     fontSize: 11,
     lineHeight: 15,
-    color: "#747E8C",
   },
 
   deleteButton: {
@@ -334,13 +441,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 9,
     borderRadius: 11,
-    backgroundColor: "#FEF2F2",
   },
 
   deleteButtonText: {
     fontSize: 11,
     fontWeight: "800",
-    color: "#DC2626",
   },
 
   emptyArea: {
@@ -352,15 +457,8 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 23,
-    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
-  },
-
-  emptyIconText: {
-    fontSize: 26,
-    fontWeight: "900",
-    color: "#8C96A5",
   },
 
   emptyTitle: {
@@ -368,14 +466,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 23,
     fontWeight: "900",
-    color: "#17191D",
   },
 
   emptyDescription: {
     marginTop: 8,
     fontSize: 13,
     lineHeight: 20,
-    color: "#8C96A5",
     textAlign: "center",
   },
 });

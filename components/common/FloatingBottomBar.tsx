@@ -1,3 +1,4 @@
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { usePathname, useRouter } from "expo-router";
 import { Home, Map, Search, Settings, Star } from "lucide-react-native";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -41,6 +42,7 @@ const FloatingBottomBar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
+  const { colors } = useAppTheme();
 
   const isActive = (tab: TabItem) => {
     if (tab.id === "home") {
@@ -77,7 +79,14 @@ const FloatingBottomBar = () => {
         },
       ]}
     >
-      <View style={styles.bar}>
+      <View
+        style={[
+          styles.bar,
+          {
+            backgroundColor: colors.bottomBar,
+          },
+        ]}
+      >
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const active = isActive(tab);
@@ -89,13 +98,19 @@ const FloatingBottomBar = () => {
               onPress={() => handlePress(tab)}
               style={({ pressed }) => [
                 styles.button,
-                active && styles.activeButton,
+                active && {
+                  backgroundColor: colors.bottomBarActive,
+                },
                 pressed && styles.pressedButton,
               ]}
             >
               <Icon
                 size={24}
-                color={active ? "#111827" : "#FFFFFF"}
+                color={
+                  active
+                    ? colors.bottomBarActiveIcon
+                    : colors.bottomBarIcon
+                }
                 strokeWidth={2}
               />
             </Pressable>
@@ -129,7 +144,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
 
-    backgroundColor: "rgba(20, 22, 26, 0.94)",
     borderRadius: 24,
 
     shadowColor: "#000000",
@@ -150,10 +164,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
 
     borderRadius: 17,
-  },
-
-  activeButton: {
-    backgroundColor: "#FFFFFF",
   },
 
   pressedButton: {
