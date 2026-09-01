@@ -28,6 +28,7 @@ import {
 
 import { useKeikyuTrains } from "../../hooks/useKeikyuTrains";
 import { useKeiseiTrains } from "../../hooks/useKeiseiTrains";
+import { useSeibuTrains } from "../../hooks/useSeibuTrains";
 
 import {
   useJrEastTrains,
@@ -326,6 +327,9 @@ export default function StationScreen() {
   const isKeisei = station?.operatorId === "keisei";
 
   const isKeikyu = station?.operatorId === "keikyu";
+  
+
+  const isSeibu = station?.operatorId === "seibu";
 
   const isJrEast = station?.operatorId === "jr-east";
 
@@ -414,6 +418,29 @@ export default function StationScreen() {
     directionId: isKeikyu ? selectedDirection?.id : undefined,
 
     enabled: isKeikyu,
+  });
+
+
+   /*
+   * =======================================================
+   * 세이부 실제 시간표
+   * =======================================================
+   */
+
+  const {
+    trains: seibuTrains,
+
+    loading: seibuLoading,
+
+    error: seibuError,
+  } = useSeibuTrains({
+    lineId: isSeibu ? station?.lineId : undefined,
+
+    stationId: isSeibu ? station?.id : undefined,
+
+    directionId: isSeibu ? selectedDirection?.id : undefined,
+
+    enabled: isSeibu,
   });
 
   /*
@@ -647,6 +674,15 @@ export default function StationScreen() {
     trains = keikyuTrains;
   }
 
+
+  /*
+   * 세이부
+   */
+
+  if (isSeibu) {
+    trains = seibuTrains;
+  }
+
   /*
    * JR
    */
@@ -745,6 +781,7 @@ export default function StationScreen() {
   const loading =
     (isKeisei && keiseiLoading) ||
     (isKeikyu && keikyuLoading) ||
+    (isSeibu && seibuLoading) ||
     (isJrEast && jrLoading) ||
     (isToei && toeiLoading) ||
     (isTokyoMetro && tokyoMetroLoading);
@@ -759,8 +796,10 @@ export default function StationScreen() {
     ? keiseiError
     : isKeikyu
       ? keikyuError
-      : isJrEast
-        ? jrError
+      : isSeibu
+        ? seibuError
+        : isJrEast
+         ? jrError
         : isToei
           ? toeiError
           : isTokyoMetro

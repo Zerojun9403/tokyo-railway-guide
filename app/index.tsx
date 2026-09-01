@@ -111,6 +111,23 @@ const RAILWAY_COMPANIES: RailwayCompanyCard[] = [
 
     badge: "KK",
   },
+ {
+    id: "seibu",
+
+    nameKo: "세이부 철도",
+    nameJa: "西武鉄道",
+
+    description: "이케부쿠로 · 네리마 · 토코로자와를 잇는 철도",
+
+    color: "#EF7A00",
+
+    badge: "SI",
+  },
+
+
+
+
+
 ];
 
 export default function HomeScreen() {

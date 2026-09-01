@@ -413,6 +413,44 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
       },
     ],
   },
+
+  /*
+   * =======================================================
+   * 세이부 철도
+   * =======================================================
+   */
+
+  seibu: {
+  id: "seibu",
+  nameKo: "세이부 철도",
+  nameJa: "西武鉄道",
+  description: "이케부쿠로와 도쿄 서북부 · 사이타마 방면을 연결하는 주요 사철",
+  color: "#EF7A00",
+  badge: "SI",
+  lines: [
+    {
+      id: "seibu-ikebukuro",
+      nameKo: "세이부 이케부쿠로선",
+      nameJa: "西武池袋線",
+      code: "SI",
+      color: "#EF7A00",
+      description: "이케부쿠로 · 네리마 · 토코로자와 · 한노 · 아가노",
+    },
+    {
+      id: "seibu-shinjuku",
+      nameKo: "세이부 신주쿠선",
+      nameJa: "西武新宿線",
+      code: "SS",
+      color: "#00A6BF",
+      description: "세이부신주쿠 · 다카다노바바 · 도코로자와 · 혼카와고에",
+    },
+  ],
+},
+
+
+
+
+
 };
 
 /*

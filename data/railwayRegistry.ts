@@ -75,6 +75,19 @@ import {
   keikyuAirportTrains,
 } from "./lines/keikyu-airport";
 
+import {
+  SEIBU_IKEBUKURO_COLOR,
+  seibuIkebukuroStations,
+  seibuIkebukuroTrains,
+} from "./lines/seibu-ikebukuro";
+
+
+import {
+  SEIBU_SHINJUKU_COLOR,
+  seibuShinjukuStations,
+  seibuShinjukuTrains,
+} from "./lines/seibu-shinjuku";
+
 import { OEDO_COLOR, oedoStations, oedoTrains } from "./lines/oedo";
 
 import { ASAKUSA_COLOR, asakusaStations, asakusaTrains } from "./lines/asakusa";
@@ -456,6 +469,56 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
 
     trains: keikyuAirportTrains,
   },
+
+/*
+   * =======================================================
+   * 세이부 철도 - 세이부 이케부쿠로선
+   * =======================================================
+   */
+
+  "seibu-ikebukuro": {
+    id: "seibu-ikebukuro",
+
+    operatorId: "seibu",
+
+    nameKo: "세이부 이케부쿠로선",
+    nameJa: "西武池袋線",
+
+    lineCode: "SI",
+
+    color: SEIBU_IKEBUKURO_COLOR,
+
+    stations: seibuIkebukuroStations,
+
+    trains: seibuIkebukuroTrains,
+  },
+  
+    /*
+   * =======================================================
+   * 세이부 철도 - 세이부 신주쿠선
+   * =======================================================
+   */
+
+  "seibu-shinjuku": {
+    id: "seibu-shinjuku",
+
+    operatorId: "seibu",
+
+    nameKo: "세이부 신주쿠선",
+    nameJa: "西武新宿線",
+
+    lineCode: "SS",
+
+    color: SEIBU_SHINJUKU_COLOR,
+
+    stations: seibuShinjukuStations,
+
+    trains: seibuShinjukuTrains,
+  },
+
+
+
+
 
   /*
    * =======================================================
