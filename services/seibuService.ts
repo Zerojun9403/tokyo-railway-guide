@@ -143,6 +143,39 @@ const STATION_ID_MAP: Record<string, string> = {
   SI29: "MusashiYokote",
   SI30: "HigashiAgano",
   SI31: "Agano",
+
+
+
+// Seibu Shinjuku Line
+  SS01: "SeibuShinjuku",
+  SS02: "Takadanobaba",
+  SS03: "ShimoOchiai",
+  SS04: "Nakai",
+  SS05: "AraiyakushiMae",
+  SS06: "Numabukuro",
+  SS07: "Nogata",
+  SS08: "ToritsuKasei",
+  SS09: "Saginomiya",
+  SS10: "ShimoIgusa",
+  SS11: "Iogi",
+  SS12: "KamiIgusa",
+  SS13: "KamiShakujii",
+  SS14: "MusashiSeki",
+  SS15: "HigashiFushimi",
+  SS16: "SeibuYagisawa",
+  SS17: "Tanashi",
+  SS18: "HanaKoganei",
+  SS19: "Kodaira",
+  SS20: "Kumegawa",
+  SS21: "HigashiMurayama",
+  SS22: "Tokorozawa",
+  SS23: "KokuKoen",
+  SS24: "ShinTokorozawa",
+  SS25: "Iriso",
+  SS26: "Sayamashi",
+  SS27: "ShinSayama",
+  SS28: "MinamiOtsuka",
+  SS29: "HonKawagoe",
 };
 
 /*
