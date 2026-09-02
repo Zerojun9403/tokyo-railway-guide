@@ -816,7 +816,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
     },
 
     {
-      id: "keikyu",
+      id: "keikyu-main",
 
       code: "KK",
 

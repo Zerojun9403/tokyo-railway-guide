@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { normalizeTransfers } from "../../utils/normalizeTransfers";
 
 import {
   SafeAreaView,
@@ -258,7 +259,7 @@ export default function LineScreen() {
                       <Text style={styles.transferLabel}>환승</Text>
 
                       <View style={styles.transferList}>
-                        {transfers.map((transfer) => (
+                        {normalizeTransfers(station.transfers).map((transfer) => (
                           <View
                             key={transfer.id}
                             style={[

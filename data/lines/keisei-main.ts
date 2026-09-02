@@ -1199,7 +1199,7 @@ export const keiseiMainStations: Station[] = [
 
     transfers: [
       {
-        id: "sobu",
+        id: "chuo-sobu-local",
 
         code: "JB",
 
@@ -2139,7 +2139,7 @@ export const keiseiMainStations: Station[] = [
 
     transfers: [
       {
-        id: "jr-narita",
+        id: "narita",
 
         code: "JO",
 
@@ -2193,7 +2193,7 @@ export const keiseiMainStations: Station[] = [
 
     transfers: [
       {
-        id: "jr-narita",
+        id: "narita",
 
         code: "JO",
 

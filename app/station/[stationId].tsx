@@ -1,3 +1,4 @@
+import { normalizeTransfers } from "../../utils/normalizeTransfers";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -1158,7 +1159,7 @@ export default function StationScreen() {
 
       <TransferBottomSheet
         visible={transferVisible}
-        transfers={station.transfers ?? []}
+        transfers={normalizeTransfers(station.transfers)}
         onClose={() => setTransferVisible(false)}
         onPressTransfer={(transfer) => {
           /*

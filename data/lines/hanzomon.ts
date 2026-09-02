@@ -197,7 +197,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#DA0442",
     ),
     transfer(
-      "tokyu-denentoshi",
+      "tokyu-den-en-toshi",
       "DT",
       "도큐 덴엔토시선",
       "東急田園都市線",
@@ -374,7 +374,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#F39700",
     ),
     transfer(
-      "sobu-rapid",
+      "yokosuka-sobu",
       "JO",
       "JR 소부선 쾌속",
       "JR総武線快速",
@@ -446,7 +446,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#FFD400",
     ),
     transfer(
-      "sobu-rapid",
+      "yokosuka-sobu",
       "JO",
       "JR 소부선 쾌속",
       "JR総武線快速",

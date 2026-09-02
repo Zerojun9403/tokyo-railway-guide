@@ -612,7 +612,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
     transfer("tokaido", "JT", "도카이도선", "東海道線", "#F68B1E"),
 
     transfer(
-      "yokosuka-sobu-rapid",
+      "yokosuka-sobu",
       "JO",
       "요코스카·소부 쾌속선",
       "横須賀・総武快速線",
@@ -699,9 +699,9 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
     transfer("tokaido", "JT", "도카이도선", "東海道線", "#F68B1E"),
 
-    transfer("yokosuka", "JO", "요코스카선", "横須賀線", "#1069B4"),
+    transfer("yokosuka-sobu", "JO", "요코스카선", "横須賀線", "#1069B4"),
 
-    transfer("keikyu", "KK", "게이큐 본선", "京急本線", "#00A5DE"),
+    transfer("keikyu-main", "KK", "게이큐 본선", "京急本線", "#00A5DE"),
   ],
 
   /*
@@ -747,7 +747,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
   JK12: [
     transfer("tokaido", "JT", "도카이도선", "東海道線", "#F68B1E"),
 
-    transfer("yokosuka", "JO", "요코스카선", "横須賀線", "#1069B4"),
+    transfer("yokosuka-sobu", "JO", "요코스카선", "横須賀線", "#1069B4"),
 
     transfer(
       "shonan-shinjuku",
@@ -759,7 +759,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
     transfer("tokyu-toyoko", "TY", "도큐 도요코선", "東急東横線", "#DA0442"),
 
-    transfer("keikyu", "KK", "게이큐 본선", "京急本線", "#00A5DE"),
+    transfer("keikyu-main", "KK", "게이큐 본선", "京急本線", "#00A5DE"),
   ],
 
   /*
@@ -783,7 +783,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
   JK01: [
     transfer("tokaido", "JT", "도카이도선", "東海道線", "#F68B1E"),
 
-    transfer("yokosuka", "JO", "요코스카선", "横須賀線", "#1069B4"),
+    transfer("yokosuka-sobu", "JO", "요코스카선", "横須賀線", "#1069B4"),
 
     transfer(
       "shonan-shinjuku",

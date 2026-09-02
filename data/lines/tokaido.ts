@@ -237,17 +237,10 @@ const transfersByStation: Record<string, Transfer[]> = {
       "#F15A22",
     ),
     transfer(
-      "yokosuka",
+      "yokosuka-sobu",
       "JO",
       "요코스카선",
       "横須賀線",
-      "#0067C0",
-    ),
-    transfer(
-      "sobu",
-      "JO",
-      "소부선 쾌속",
-      "総武線快速",
       "#0067C0",
     ),
     transfer(
@@ -282,7 +275,7 @@ const transfersByStation: Record<string, Transfer[]> = {
       "#00A7DB",
     ),
     transfer(
-      "yokosuka",
+      "yokosuka-sobu",
       "JO",
       "요코스카선",
       "横須賀線",
@@ -313,7 +306,7 @@ const transfersByStation: Record<string, Transfer[]> = {
       "#00A7DB",
     ),
     transfer(
-      "yokosuka",
+      "yokosuka-sobu",
       "JO",
       "요코스카선",
       "横須賀線",
@@ -354,7 +347,7 @@ const transfersByStation: Record<string, Transfer[]> = {
       "#E21F26",
     ),
     transfer(
-      "yokosuka",
+      "yokosuka-sobu",
       "JO",
       "요코스카선",
       "横須賀線",
@@ -385,7 +378,7 @@ const transfersByStation: Record<string, Transfer[]> = {
       "#E21F26",
     ),
     transfer(
-      "yokosuka",
+      "yokosuka-sobu",
       "JO",
       "요코스카선",
       "横須賀線",
@@ -402,7 +395,7 @@ const transfersByStation: Record<string, Transfer[]> = {
       "#E21F26",
     ),
     transfer(
-      "yokosuka",
+      "yokosuka-sobu",
       "JO",
       "요코스카선",
       "横須賀線",
