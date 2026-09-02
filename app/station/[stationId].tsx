@@ -1,4 +1,4 @@
-import { normalizeTransfers } from "../../utils/normalizeTransfers";
+import { resolveStationTransfers } from "../../utils/normalizeTransfers";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -882,6 +882,8 @@ export default function StationScreen() {
 
   const serviceDayLabel = getServiceDayLabel();
 
+  const resolvedTransfers = resolveStationTransfers(station);
+
   return (
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: colors.background }]}
@@ -930,16 +932,15 @@ export default function StationScreen() {
             역 Header
         ================================================= */}
 
-        <StationHeader
+       <StationHeader
           lineCode={station.lineCode}
           stationCode={station.code}
           stationNameKo={station.nameKo}
           stationNameJa={station.nameJa}
           color={station.color}
-          hasTransfer={(station.transfers?.length ?? 0) > 0}
+          hasTransfer={resolvedTransfers.length > 0}
           onPressTransfer={() => setTransferVisible(true)}
         />
-
         {/* =================================================
             운행상태
         ================================================= */}
@@ -1159,7 +1160,7 @@ export default function StationScreen() {
 
       <TransferBottomSheet
         visible={transferVisible}
-        transfers={normalizeTransfers(station.transfers)}
+        transfers={resolvedTransfers}
         onClose={() => setTransferVisible(false)}
         onPressTransfer={(transfer) => {
           /*

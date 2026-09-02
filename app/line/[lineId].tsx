@@ -13,6 +13,7 @@ import { router, useLocalSearchParams } from "expo-router";
 
 import { getLine } from "../../data/railwayRegistry";
 import { useAppTheme } from "../../hooks/useAppTheme";
+import { resolveStationTransfers } from "../../utils/normalizeTransfers";
 
 export default function LineScreen() {
   const { colors } = useAppTheme();
@@ -150,7 +151,8 @@ export default function LineScreen() {
 
             const isLast = index === line.stations.length - 1;
 
-            const hasTransfer = (station.transfers?.length ?? 0) > 0;
+            const transfers = resolveStationTransfers(station);
+            const hasTransfer = transfers.length > 0;
 
             return (
               <TouchableOpacity
@@ -279,7 +281,7 @@ export default function LineScreen() {
                       </Text>
 
                       <View style={styles.transferList}>
-                        {station.transfers?.map((transfer) => (
+                        {transfers.map((transfer) => (
                           <View
                             key={transfer.id}
                             style={[
