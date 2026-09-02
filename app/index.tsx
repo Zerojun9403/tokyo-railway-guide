@@ -10,11 +10,11 @@ import {
 } from "react-native";
 
 import { router, useFocusEffect } from "expo-router";
+import { ChevronRight, Search, Settings, Star } from "lucide-react-native";
 
 import { getStation } from "../data/railwayRegistry";
-
+import { useAppTheme } from "../hooks/useAppTheme";
 import { useFavoriteStations } from "../hooks/useFavoriteStations";
-
 import { useRecentStations } from "../hooks/useRecentStations";
 
 /*
@@ -74,6 +74,19 @@ const RAILWAY_COMPANIES: RailwayCompanyCard[] = [
   },
 
   {
+    id: "toei",
+
+    nameKo: "도에이 지하철",
+    nameJa: "都営地下鉄",
+
+    description: "오에도선 등 도쿄 도심 지하철",
+
+    color: "#CE045B",
+
+    badge: "E",
+  },
+
+  {
     id: "keisei",
 
     nameKo: "게이세이 전철",
@@ -87,20 +100,47 @@ const RAILWAY_COMPANIES: RailwayCompanyCard[] = [
   },
 
   {
-    id: "toei",
+    id: "keikyu",
 
-    nameKo: "도에이 지하철",
-    nameJa: "都営地下鉄",
+    nameKo: "게이큐 전철",
+    nameJa: "京浜急行電鉄",
 
-    description: "오에도선 등 도쿄 도심 지하철",
+    description: "시나가와 · 요코하마 · 하네다공항을 잇는 철도",
 
-    color: "#CE045B",
+    color: "#00BFFF",
 
-    badge: "E",
+    badge: "KK",
   },
+ {
+    id: "seibu",
+
+    nameKo: "세이부 철도",
+    nameJa: "西武鉄道",
+
+    description: "이케부쿠로 · 네리마 · 토코로자와를 잇는 철도",
+
+    color: "#EF7A00",
+
+    badge: "SI",
+  },
+    {
+    id: "tokyu",
+
+    nameKo: "도큐 전철",
+    nameJa: "東急電鉄",
+
+    description: "시부야 · 요코하마를 잇는 도쿄 남서부의 주요 철도",
+
+    color: "#DA0442",
+
+    badge: "TY",
+  },
+
 ];
 
 export default function HomeScreen() {
+  const { colors } = useAppTheme();
+
   /*
    * =======================================================
    * 즐겨찾기
@@ -225,9 +265,21 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        {
+          backgroundColor: colors.background,
+        },
+      ]}
+    >
       <ScrollView
-        style={styles.screen}
+        style={[
+          styles.screen,
+          {
+            backgroundColor: colors.background,
+          },
+        ]}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
@@ -237,24 +289,56 @@ export default function HomeScreen() {
 
         <View style={styles.hero}>
           <View style={styles.heroTop}>
-            <Text style={styles.eyebrow}>TOKYO RAILWAY GUIDE</Text>
+            <Text
+              style={[
+                styles.eyebrow,
+                {
+                  color: colors.textMuted,
+                },
+              ]}
+            >
+              TOKYO RAILWAY GUIDE
+            </Text>
 
             <TouchableOpacity
-              style={styles.settingsButton}
+              style={[
+                styles.settingsButton,
+                {
+                  backgroundColor: colors.surface,
+                },
+              ]}
               activeOpacity={0.7}
               onPress={handlePressSettings}
             >
-              <Text style={styles.settingsIcon}>⚙</Text>
+              <Settings
+                size={21}
+                color={colors.textSecondary}
+                strokeWidth={2}
+              />
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.title}>
+          <Text
+            style={[
+              styles.title,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
             도쿄의 철도를
             {"\n"}
             하나의 출발점에서.
           </Text>
 
-          <Text style={styles.description}>
+          <Text
+            style={[
+              styles.description,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
             역을 검색하거나 철도회사를 선택해서 다음 열차를 확인해 보세요.
           </Text>
         </View>
@@ -264,25 +348,60 @@ export default function HomeScreen() {
         ================================================= */}
 
         <TouchableOpacity
-          style={styles.searchButton}
+          style={[
+            styles.searchButton,
+            {
+              backgroundColor: colors.surface,
+            },
+          ]}
           activeOpacity={0.72}
           onPress={() => router.push("/search")}
         >
-          <View style={styles.searchIconArea}>
-            <Text style={styles.searchIcon}>⌕</Text>
+          <View
+            style={[
+              styles.searchIconArea,
+              {
+                backgroundColor: colors.surfaceSecondary,
+              },
+            ]}
+          >
+            <Search
+              size={24}
+              color={colors.textSecondary}
+              strokeWidth={2}
+            />
           </View>
 
           <View style={styles.searchTextArea}>
-            <Text style={styles.searchPlaceholder}>
+            <Text
+              style={[
+                styles.searchPlaceholder,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
               역 이름 또는 역번호 검색
             </Text>
 
-            <Text style={styles.searchExample}>
+            <Text
+              style={[
+                styles.searchExample,
+                {
+                  color: colors.textMuted,
+                },
+              ]}
+            >
               신주쿠 · 新宿 · JY17 · JC05
             </Text>
           </View>
 
-          <Text style={styles.arrow}>›</Text>
+          <ChevronRight
+            style={styles.trailingIcon}
+            size={24}
+            color={colors.textMuted}
+            strokeWidth={2}
+          />
         </TouchableOpacity>
 
         {/* =================================================
@@ -293,30 +412,58 @@ export default function HomeScreen() {
           <View style={styles.stationSection}>
             <View style={styles.sectionHeaderRow}>
               <View>
-                <Text style={styles.sectionTitle}>즐겨찾는 역</Text>
+                <Text
+                  style={[
+                    styles.sectionTitle,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                >
+                  즐겨찾는 역
+                </Text>
 
-                <Text style={styles.sectionDescription}>
+                <Text
+                  style={[
+                    styles.sectionDescription,
+                    {
+                      color: colors.textMuted,
+                    },
+                  ]}
+                >
                   자주 이용하는 역을 바로 확인하세요.
                 </Text>
               </View>
 
-              <Text style={styles.sectionCount}>
-                ★ {favoriteStations.length}
-              </Text>
+              <View style={styles.sectionCount}>
+                <Star
+                  size={14}
+                  color="#D49B00"
+                  fill="#D49B00"
+                  strokeWidth={2}
+                />
+                <Text style={styles.sectionCountText}>
+                  {favoriteStations.length}
+                </Text>
+              </View>
             </View>
 
             <View style={styles.favoriteList}>
               {favoriteStations.map((station) => (
                 <TouchableOpacity
                   key={station.id}
-                  style={styles.favoriteCard}
+                  style={[
+                    styles.favoriteCard,
+                    {
+                      backgroundColor: colors.surface,
+                    },
+                  ]}
                   activeOpacity={0.7}
                   onPress={() => handlePressStation(station.id)}
                 >
                   <View
                     style={[
                       styles.favoriteBadge,
-
                       {
                         borderColor: station.color,
                       },
@@ -325,7 +472,6 @@ export default function HomeScreen() {
                     <Text
                       style={[
                         styles.favoriteBadgeText,
-
                         {
                           color: station.color,
                         },
@@ -336,16 +482,47 @@ export default function HomeScreen() {
                   </View>
 
                   <View style={styles.favoriteInfo}>
-                    <Text style={styles.favoriteNameKo}>{station.nameKo}</Text>
+                    <Text
+                      style={[
+                        styles.favoriteNameKo,
+                        {
+                          color: colors.text,
+                        },
+                      ]}
+                    >
+                      {station.nameKo}
+                    </Text>
 
-                    <Text style={styles.favoriteNameJa}>{station.nameJa}</Text>
+                    <Text
+                      style={[
+                        styles.favoriteNameJa,
+                        {
+                          color: colors.textMuted,
+                        },
+                      ]}
+                    >
+                      {station.nameJa}
+                    </Text>
 
-                    <Text style={styles.favoriteLine}>
+                    <Text
+                      style={[
+                        styles.favoriteLine,
+                        {
+                          color: colors.textSecondary,
+                        },
+                      ]}
+                    >
                       {station.lineNameKo}
                     </Text>
                   </View>
 
-                  <Text style={styles.star}>★</Text>
+                  <Star
+                    style={styles.trailingIcon}
+                    size={20}
+                    color="#F5B800"
+                    fill="#F5B800"
+                    strokeWidth={2}
+                  />
                 </TouchableOpacity>
               ))}
             </View>
@@ -360,9 +537,25 @@ export default function HomeScreen() {
           <View style={styles.stationSection}>
             <View style={styles.sectionHeaderRow}>
               <View>
-                <Text style={styles.sectionTitle}>최근 본 역</Text>
+                <Text
+                  style={[
+                    styles.sectionTitle,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                >
+                  최근 본 역
+                </Text>
 
-                <Text style={styles.sectionDescription}>
+                <Text
+                  style={[
+                    styles.sectionDescription,
+                    {
+                      color: colors.textMuted,
+                    },
+                  ]}
+                >
                   최근 확인한 역으로 바로 이동하세요.
                 </Text>
               </View>
@@ -376,14 +569,18 @@ export default function HomeScreen() {
               {recentStations.map((station) => (
                 <TouchableOpacity
                   key={station.id}
-                  style={styles.recentCard}
+                  style={[
+                    styles.recentCard,
+                    {
+                      backgroundColor: colors.surface,
+                    },
+                  ]}
                   activeOpacity={0.7}
                   onPress={() => handlePressStation(station.id)}
                 >
                   <View
                     style={[
                       styles.recentCodeBadge,
-
                       {
                         backgroundColor: station.color,
                       },
@@ -392,15 +589,39 @@ export default function HomeScreen() {
                     <Text style={styles.recentCodeText}>{station.code}</Text>
                   </View>
 
-                  <Text style={styles.recentNameKo} numberOfLines={1}>
+                  <Text
+                    style={[
+                      styles.recentNameKo,
+                      {
+                        color: colors.text,
+                      },
+                    ]}
+                    numberOfLines={1}
+                  >
                     {station.nameKo}
                   </Text>
 
-                  <Text style={styles.recentNameJa} numberOfLines={1}>
+                  <Text
+                    style={[
+                      styles.recentNameJa,
+                      {
+                        color: colors.textMuted,
+                      },
+                    ]}
+                    numberOfLines={1}
+                  >
                     {station.nameJa}
                   </Text>
 
-                  <Text style={styles.recentLine} numberOfLines={1}>
+                  <Text
+                    style={[
+                      styles.recentLine,
+                      {
+                        color: colors.textSecondary,
+                      },
+                    ]}
+                    numberOfLines={1}
+                  >
                     {station.lineNameKo}
                   </Text>
                 </TouchableOpacity>
@@ -416,9 +637,25 @@ export default function HomeScreen() {
         <View style={styles.companySection}>
           <View style={styles.sectionHeaderRow}>
             <View>
-              <Text style={styles.sectionTitle}>철도회사</Text>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+              >
+                철도회사
+              </Text>
 
-              <Text style={styles.sectionDescription}>
+              <Text
+                style={[
+                  styles.sectionDescription,
+                  {
+                    color: colors.textMuted,
+                  },
+                ]}
+              >
                 이용할 철도회사를 선택하세요.
               </Text>
             </View>
@@ -428,14 +665,18 @@ export default function HomeScreen() {
             {RAILWAY_COMPANIES.map((company) => (
               <TouchableOpacity
                 key={company.id}
-                style={styles.companyCard}
+                style={[
+                  styles.companyCard,
+                  {
+                    backgroundColor: colors.surface,
+                  },
+                ]}
                 activeOpacity={0.7}
                 onPress={() => handlePressCompany(company)}
               >
                 <View
                   style={[
                     styles.companyBadge,
-
                     {
                       backgroundColor: company.color,
                     },
@@ -445,16 +686,46 @@ export default function HomeScreen() {
                 </View>
 
                 <View style={styles.companyInfo}>
-                  <Text style={styles.companyNameKo}>{company.nameKo}</Text>
+                  <Text
+                    style={[
+                      styles.companyNameKo,
+                      {
+                        color: colors.text,
+                      },
+                    ]}
+                  >
+                    {company.nameKo}
+                  </Text>
 
-                  <Text style={styles.companyNameJa}>{company.nameJa}</Text>
+                  <Text
+                    style={[
+                      styles.companyNameJa,
+                      {
+                        color: colors.textMuted,
+                      },
+                    ]}
+                  >
+                    {company.nameJa}
+                  </Text>
 
-                  <Text style={styles.companyDescription}>
+                  <Text
+                    style={[
+                      styles.companyDescription,
+                      {
+                        color: colors.textSecondary,
+                      },
+                    ]}
+                  >
                     {company.description}
                   </Text>
                 </View>
 
-                <Text style={styles.arrow}>›</Text>
+                <ChevronRight
+                  style={styles.trailingIcon}
+                  size={24}
+                  color={colors.textMuted}
+                  strokeWidth={2}
+                />
               </TouchableOpacity>
             ))}
           </View>
@@ -465,9 +736,27 @@ export default function HomeScreen() {
         ================================================= */}
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Tokyo Railway Guide</Text>
+          <Text
+            style={[
+              styles.footerText,
+              {
+                color: colors.textMuted,
+              },
+            ]}
+          >
+            Tokyo Railway Guide
+          </Text>
 
-          <Text style={styles.footerSubText}>For travelers in Tokyo</Text>
+          <Text
+            style={[
+              styles.footerSubText,
+              {
+                color: colors.textMuted,
+              },
+            ]}
+          >
+            For travelers in Tokyo
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -477,14 +766,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-
-    backgroundColor: "#F5F6F8",
   },
 
   screen: {
     flex: 1,
-
-    backgroundColor: "#F5F6F8",
   },
 
   container: {
@@ -492,7 +777,7 @@ const styles = StyleSheet.create({
 
     paddingTop: 30,
 
-    paddingBottom: 70,
+    paddingBottom: 120,
   },
 
   hero: {
@@ -517,8 +802,6 @@ const styles = StyleSheet.create({
     fontWeight: "800",
 
     letterSpacing: 1.4,
-
-    color: "#8C96A5",
   },
 
   settingsButton: {
@@ -528,20 +811,11 @@ const styles = StyleSheet.create({
 
     borderRadius: 15,
 
-    backgroundColor: "#FFFFFF",
-
     alignItems: "center",
 
     justifyContent: "center",
   },
 
-  settingsIcon: {
-    fontSize: 21,
-
-    lineHeight: 25,
-
-    color: "#596474",
-  },
 
   title: {
     marginTop: 9,
@@ -553,8 +827,6 @@ const styles = StyleSheet.create({
     fontWeight: "900",
 
     letterSpacing: -1.2,
-
-    color: "#15171A",
   },
 
   description: {
@@ -567,8 +839,6 @@ const styles = StyleSheet.create({
     lineHeight: 23,
 
     fontWeight: "500",
-
-    color: "#7D8796",
   },
 
   searchButton: {
@@ -579,8 +849,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
 
     borderRadius: 21,
-
-    backgroundColor: "#FFFFFF",
 
     flexDirection: "row",
 
@@ -594,8 +862,6 @@ const styles = StyleSheet.create({
 
     borderRadius: 16,
 
-    backgroundColor: "#F1F3F6",
-
     alignItems: "center",
 
     justifyContent: "center",
@@ -603,13 +869,6 @@ const styles = StyleSheet.create({
     marginRight: 13,
   },
 
-  searchIcon: {
-    fontSize: 29,
-
-    lineHeight: 31,
-
-    color: "#566171",
-  },
 
   searchTextArea: {
     flex: 1,
@@ -621,8 +880,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
 
     fontWeight: "800",
-
-    color: "#25282D",
   },
 
   searchExample: {
@@ -631,18 +888,11 @@ const styles = StyleSheet.create({
     fontSize: 11,
 
     lineHeight: 15,
-
-    color: "#9AA4B3",
   },
 
-  arrow: {
+
+  trailingIcon: {
     marginLeft: 10,
-
-    fontSize: 30,
-
-    lineHeight: 32,
-
-    color: "#B0B7C2",
   },
 
   stationSection: {
@@ -669,8 +919,6 @@ const styles = StyleSheet.create({
     lineHeight: 27,
 
     fontWeight: "900",
-
-    color: "#17191D",
   },
 
   sectionDescription: {
@@ -679,17 +927,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
 
     lineHeight: 17,
-
-    color: "#9AA4B3",
   },
 
   sectionCount: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+
+  sectionCountText: {
     fontSize: 12,
-
     lineHeight: 17,
-
     fontWeight: "800",
-
     color: "#D49B00",
   },
 
@@ -705,8 +954,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
 
     borderRadius: 20,
-
-    backgroundColor: "#FFFFFF",
 
     flexDirection: "row",
 
@@ -751,8 +998,6 @@ const styles = StyleSheet.create({
     lineHeight: 21,
 
     fontWeight: "900",
-
-    color: "#17191D",
   },
 
   favoriteNameJa: {
@@ -761,8 +1006,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
 
     lineHeight: 14,
-
-    color: "#9AA4B3",
   },
 
   favoriteLine: {
@@ -771,17 +1014,8 @@ const styles = StyleSheet.create({
     fontSize: 11,
 
     lineHeight: 15,
-
-    color: "#737E8C",
   },
 
-  star: {
-    marginLeft: 10,
-
-    fontSize: 20,
-
-    color: "#F5B800",
-  },
 
   recentList: {
     gap: 10,
@@ -799,8 +1033,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
 
     borderRadius: 20,
-
-    backgroundColor: "#FFFFFF",
   },
 
   recentCodeBadge: {
@@ -837,8 +1069,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
 
     fontWeight: "900",
-
-    color: "#17191D",
   },
 
   recentNameJa: {
@@ -847,8 +1077,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
 
     lineHeight: 14,
-
-    color: "#9AA4B3",
   },
 
   recentLine: {
@@ -859,8 +1087,6 @@ const styles = StyleSheet.create({
     lineHeight: 14,
 
     fontWeight: "600",
-
-    color: "#7B8593",
   },
 
   companyList: {
@@ -875,8 +1101,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
 
     borderRadius: 22,
-
-    backgroundColor: "#FFFFFF",
 
     flexDirection: "row",
 
@@ -917,8 +1141,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
 
     fontWeight: "900",
-
-    color: "#17191D",
   },
 
   companyNameJa: {
@@ -927,8 +1149,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
 
     lineHeight: 15,
-
-    color: "#9AA4B3",
   },
 
   companyDescription: {
@@ -937,8 +1157,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
 
     lineHeight: 17,
-
-    color: "#6F7886",
   },
 
   footer: {
@@ -953,8 +1171,6 @@ const styles = StyleSheet.create({
     lineHeight: 17,
 
     fontWeight: "800",
-
-    color: "#9AA4B3",
   },
 
   footerSubText: {
@@ -963,7 +1179,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
 
     lineHeight: 14,
-
-    color: "#B7BDC6",
   },
 });

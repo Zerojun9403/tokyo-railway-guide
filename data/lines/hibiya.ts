@@ -273,7 +273,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
   H08: [
     transfer("chiyoda", "C", "지요다선", "千代田線", "#00BB85"),
 
-    transfer("toei-mita", "I", "도에이 미타선", "都営三田線", "#0079C2"),
+    transfer("mita", "I", "도에이 미타선", "都営三田線", "#0079C2"),
 
     transfer("yurakucho", "Y", "유라쿠초선", "有楽町線", "#C1A470"),
   ],
@@ -293,7 +293,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   H10: [
-    transfer("toei-asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
+    transfer("asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
   ],
 
   /*
@@ -313,7 +313,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   H14: [
-    transfer("toei-asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
+    transfer("asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
 
     transfer("hanzomon", "Z", "한조몬선", "半蔵門線", "#8F76D6"),
   ],
@@ -629,3 +629,4 @@ export const hibiyaStations: Station[] = HIBIYA_STATION_BASE.map(
  */
 
 export const hibiyaTrains: Record<string, Train[]> = {};
+

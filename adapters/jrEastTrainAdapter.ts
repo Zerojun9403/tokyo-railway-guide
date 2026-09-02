@@ -7,18 +7,79 @@ import type { JrNextTrain } from "../services/jrEast";
  * JR East Train Adapter
  * =========================================================
  *
- * tokyo-metro-sigma API 응답
+ * tokyo-railway-api 응답
  *
  * {
- *   trainNumber,
+ *   id,
  *   departureTime,
- *   minutesUntilDeparture
+ *   trainType,
+ *   trainTypeKo,
+ *   trainTypeJa,
+ *   destinationStation,
+ *   destinationKo,
+ *   destinationJa
  * }
  *
  *      ↓
  *
  * Tokyo Railway Guide 공통 Train
  *
+ * =========================================================
+ */
+
+/*
+ * =========================================================
+ * 출발까지 남은 시간 계산
+ * =========================================================
+ *
+ * API의 departureTime은 HH:mm 형식.
+ * 일본 현지 시각 기준으로 다음 출발까지의 분을 계산한다.
+ *
+ * 자정 이후 시간표도 처리할 수 있도록
+ * 이미 지난 시각이면 다음 날로 계산한다.
+ * =========================================================
+ */
+
+const getMinutesUntilDeparture = (departureTime: string): number => {
+  const [hoursText, minutesText] = departureTime.split(":");
+
+  const hours = Number(hoursText);
+  const minutes = Number(minutesText);
+
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) {
+    return 0;
+  }
+
+  const now = new Date();
+
+  const tokyoParts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Tokyo",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(now);
+
+  const tokyoHour = Number(
+    tokyoParts.find((part) => part.type === "hour")?.value ?? "0",
+  );
+
+  const tokyoMinute = Number(
+    tokyoParts.find((part) => part.type === "minute")?.value ?? "0",
+  );
+
+  const nowMinutes = tokyoHour * 60 + tokyoMinute;
+  let departureMinutes = hours * 60 + minutes;
+
+  if (departureMinutes < nowMinutes) {
+    departureMinutes += 24 * 60;
+  }
+
+  return departureMinutes - nowMinutes;
+};
+
+/*
+ * =========================================================
+ * 단일 열차 변환
  * =========================================================
  */
 
@@ -29,13 +90,10 @@ export const adaptJrEastTrain = (
 ): Train => {
   return {
     /*
-     * 서버에서 trainNumber가 있으면
-     * 그 값을 기반으로 ID 생성
+     * 백엔드에서 생성한 고유 ID 사용
      */
 
-    id: train.trainNumber
-      ? `jr-${directionId}-${train.trainNumber}-${index}`
-      : `jr-${directionId}-${train.departureTime}-${index}`,
+    id: train.id || `jr-${directionId}-${train.departureTime}-${index}`,
 
     /*
      * 실제 출발 시각
@@ -44,32 +102,34 @@ export const adaptJrEastTrain = (
     time: train.departureTime,
 
     /*
-     * 서버에서 이미 일본 현재시각 기준으로
-     * 계산된 값
+     * 일본 현재 시각 기준 출발까지 남은 시간
      */
 
-    minutesUntilDeparture: train.minutesUntilDeparture,
+    minutesUntilDeparture: getMinutesUntilDeparture(train.departureTime),
 
     /*
-     * 야마노테는 기본적으로
-     * 별도 열차종별 표시가 필요 없으므로
-     * trainType은 비워둔다.
+     * 열차 종별
+     *
+     * 공통 Train 타입은 문자열 하나를 사용하므로
+     * 한국어 번역을 우선 사용한다.
      */
 
-    trainType: undefined,
+    trainType: train.trainTypeKo ?? train.trainType,
 
     /*
-     * 현재 야마노테 API에서는
-     * 목적지를 별도로 표시하지 않으므로
-     * undefined
+     * 목적지 번역
      */
 
-    destinationKo: undefined,
+    destinationKo:
+      train.destinationKo ??
+      train.destinationStation,
 
-    destinationJa: undefined,
+    destinationJa:
+      train.destinationJa ??
+      train.destinationStation,
 
     /*
-     * inner / outer
+     * 앱에서 사용 중인 방향 ID 유지
      */
 
     directionId,

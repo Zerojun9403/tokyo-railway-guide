@@ -3,6 +3,8 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { LineBadge } from "../common/LineBadge";
 import { LiveClock } from "../common/LiveClock";
 
+import { useAppTheme } from "../../hooks/useAppTheme";
+
 type StationHeaderProps = {
   lineCode: string;
   stationCode: string;
@@ -26,6 +28,8 @@ export const StationHeader = ({
   hasTransfer = false,
   onPressTransfer,
 }: StationHeaderProps) => {
+  const { colors } = useAppTheme();
+
   return (
     <View style={styles.container}>
       {/* 왼쪽: 역 정보 */}
@@ -35,9 +39,27 @@ export const StationHeader = ({
         <View style={styles.stationTextArea}>
           <Text style={[styles.stationCode, { color }]}>{stationCode}</Text>
 
-          <Text style={styles.stationNameKo}>{stationNameKo}</Text>
+          <Text
+            style={[
+              styles.stationNameKo,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
+            {stationNameKo}
+          </Text>
 
-          <Text style={styles.stationNameJa}>{stationNameJa}</Text>
+          <Text
+            style={[
+              styles.stationNameJa,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            {stationNameJa}
+          </Text>
         </View>
       </View>
 
@@ -53,9 +75,27 @@ export const StationHeader = ({
             ]}
             onPress={onPressTransfer}
           >
-            <Text style={styles.transferIcon}>⇄</Text>
+            <Text
+              style={[
+                styles.transferIcon,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              ⇄
+            </Text>
 
-            <Text style={styles.transferText}>환승노선</Text>
+            <Text
+              style={[
+                styles.transferText,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              환승노선
+            </Text>
           </Pressable>
         )}
       </View>
@@ -96,8 +136,6 @@ const styles = StyleSheet.create({
     lineHeight: 27,
 
     fontWeight: "800",
-
-    color: "#111318",
   },
 
   stationNameJa: {
@@ -107,8 +145,6 @@ const styles = StyleSheet.create({
     lineHeight: 17,
 
     fontWeight: "400",
-
-    color: "#8D96A5",
   },
 
   rightArea: {
@@ -136,8 +172,6 @@ const styles = StyleSheet.create({
 
     fontSize: 18,
     lineHeight: 20,
-
-    color: "#17191D",
   },
 
   transferText: {
@@ -145,7 +179,5 @@ const styles = StyleSheet.create({
     lineHeight: 18,
 
     fontWeight: "700",
-
-    color: "#17191D",
   },
 });

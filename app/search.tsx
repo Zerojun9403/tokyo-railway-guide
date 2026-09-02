@@ -13,6 +13,7 @@ import {
 import { router } from "expo-router";
 
 import { searchStations } from "../data/railwayRegistry";
+import { useAppTheme } from "../hooks/useAppTheme";
 
 /*
  * =========================================================
@@ -33,6 +34,8 @@ const OPERATOR_NAMES: Record<string, string> = {
  */
 
 export default function SearchScreen() {
+  const { colors } = useAppTheme();
+
   /*
    * =======================================================
    * 검색어
@@ -65,12 +68,13 @@ export default function SearchScreen() {
    * =======================================================
    */
 
-  const handlePressStation = (stationId: string) => {
+  const handlePressStation = (stationId: string, lineId: string) => {
     router.push({
       pathname: "/station/[stationId]",
 
       params: {
         stationId,
+        lineId,
       },
     });
   };
@@ -86,25 +90,70 @@ export default function SearchScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.screen}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        {
+          backgroundColor: colors.background,
+        },
+      ]}
+    >
+      <View
+        style={[
+          styles.screen,
+          {
+            backgroundColor: colors.background,
+          },
+        ]}
+      >
         {/* =================================================
             Header
         ================================================= */}
 
         <View style={styles.header}>
           <TouchableOpacity
-            style={styles.backButton}
+            style={[
+              styles.backButton,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+            ]}
             activeOpacity={0.7}
             onPress={() => router.back()}
           >
-            <Text style={styles.backArrow}>‹</Text>
+            <Text
+              style={[
+                styles.backArrow,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              ‹
+            </Text>
           </TouchableOpacity>
 
           <View style={styles.headerTextArea}>
-            <Text style={styles.headerTitle}>역 검색</Text>
+            <Text
+              style={[
+                styles.headerTitle,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              역 검색
+            </Text>
 
-            <Text style={styles.headerDescription}>
+            <Text
+              style={[
+                styles.headerDescription,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
               원하는 역을 바로 찾아보세요.
             </Text>
           </View>
@@ -115,35 +164,81 @@ export default function SearchScreen() {
         ================================================= */}
 
         <View style={styles.searchArea}>
-          <View style={styles.searchBox}>
+          <View
+            style={[
+              styles.searchBox,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+            ]}
+          >
             <View style={styles.searchIconArea}>
-              <Text style={styles.searchIcon}>⌕</Text>
+              <Text
+                style={[
+                  styles.searchIcon,
+                  {
+                    color: colors.textSecondary,
+                  },
+                ]}
+              >
+                ⌕
+              </Text>
             </View>
 
             <TextInput
-              style={styles.searchInput}
+              style={[
+                styles.searchInput,
+                {
+                  color: colors.text,
+                },
+              ]}
               value={query}
               onChangeText={setQuery}
               placeholder="역 이름 또는 역번호"
-              placeholderTextColor="#A6AFBC"
+              placeholderTextColor={colors.textMuted}
               autoCapitalize="characters"
               autoCorrect={false}
               returnKeyType="search"
               clearButtonMode="never"
+              selectionColor={colors.text}
             />
 
             {hasQuery && (
               <TouchableOpacity
-                style={styles.clearButton}
+                style={[
+                  styles.clearButton,
+                  {
+                    backgroundColor: colors.surfaceSecondary,
+                  },
+                ]}
                 activeOpacity={0.7}
                 onPress={handleClear}
               >
-                <Text style={styles.clearButtonText}>×</Text>
+                <Text
+                  style={[
+                    styles.clearButtonText,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  ×
+                </Text>
               </TouchableOpacity>
             )}
           </View>
 
-          <Text style={styles.searchHint}>예: 신주쿠 · 新宿 · JY17 · E27</Text>
+          <Text
+            style={[
+              styles.searchHint,
+              {
+                color: colors.textMuted,
+              },
+            ]}
+          >
+            예: 신주쿠 · 新宿 · JY17 · E27
+          </Text>
         </View>
 
         {/* =================================================
@@ -162,13 +257,46 @@ export default function SearchScreen() {
 
           {!hasQuery && (
             <View style={styles.emptyArea}>
-              <View style={styles.emptyIcon}>
-                <Text style={styles.emptyIconText}>駅</Text>
+              <View
+                style={[
+                  styles.emptyIcon,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.emptyIconText,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  駅
+                </Text>
               </View>
 
-              <Text style={styles.emptyTitle}>역을 검색해 보세요</Text>
+              <Text
+                style={[
+                  styles.emptyTitle,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+              >
+                역을 검색해 보세요
+              </Text>
 
-              <Text style={styles.emptyDescription}>
+              <Text
+                style={[
+                  styles.emptyDescription,
+                  {
+                    color: colors.textSecondary,
+                  },
+                ]}
+              >
                 한국어 역명, 일본어 역명이나{"\n"}
                 JY17 같은 역번호로 검색할 수 있습니다.
               </Text>
@@ -178,17 +306,41 @@ export default function SearchScreen() {
               =========================================== */}
 
               <View style={styles.exampleArea}>
-                <Text style={styles.exampleTitle}>검색 예시</Text>
+                <Text
+                  style={[
+                    styles.exampleTitle,
+                    {
+                      color: colors.textMuted,
+                    },
+                  ]}
+                >
+                  검색 예시
+                </Text>
 
                 <View style={styles.exampleList}>
                   {["신주쿠", "新宿", "JY17", "E27"].map((example) => (
                     <TouchableOpacity
                       key={example}
-                      style={styles.exampleChip}
+                      style={[
+                        styles.exampleChip,
+                        {
+                          backgroundColor: colors.surface,
+                          borderColor: colors.border,
+                        },
+                      ]}
                       activeOpacity={0.7}
                       onPress={() => setQuery(example)}
                     >
-                      <Text style={styles.exampleChipText}>{example}</Text>
+                      <Text
+                        style={[
+                          styles.exampleChipText,
+                          {
+                            color: colors.textSecondary,
+                          },
+                        ]}
+                      >
+                        {example}
+                      </Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -203,9 +355,27 @@ export default function SearchScreen() {
           {hasQuery && results.length > 0 && (
             <>
               <View style={styles.resultHeader}>
-                <Text style={styles.resultTitle}>검색 결과</Text>
+                <Text
+                  style={[
+                    styles.resultTitle,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                >
+                  검색 결과
+                </Text>
 
-                <Text style={styles.resultCount}>{results.length}개</Text>
+                <Text
+                  style={[
+                    styles.resultCount,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  {results.length}개
+                </Text>
               </View>
 
               <View style={styles.resultList}>
@@ -218,18 +388,25 @@ export default function SearchScreen() {
                   return (
                     <TouchableOpacity
                       key={`${result.lineId}-${station.id}`}
-                      style={styles.stationCard}
+                      style={[
+                        styles.stationCard,
+                        {
+                          backgroundColor: colors.surface,
+                          borderColor: colors.border,
+                        },
+                      ]}
                       activeOpacity={0.7}
-                      onPress={() => handlePressStation(station.id)}
+                      onPress={() =>
+                        handlePressStation(station.id, result.lineId)
+                      }
                     >
                       {/* ===============================
-                              역번호
-                          =============================== */}
+                          역번호
+                      =============================== */}
 
                       <View
                         style={[
                           styles.stationBadge,
-
                           {
                             borderColor: result.color,
                           },
@@ -238,7 +415,6 @@ export default function SearchScreen() {
                         <Text
                           style={[
                             styles.stationBadgeText,
-
                             {
                               color: result.color,
                             },
@@ -249,15 +425,29 @@ export default function SearchScreen() {
                       </View>
 
                       {/* ===============================
-                              역 정보
-                          =============================== */}
+                          역 정보
+                      =============================== */}
 
                       <View style={styles.stationInfo}>
-                        <Text style={styles.stationNameKo}>
+                        <Text
+                          style={[
+                            styles.stationNameKo,
+                            {
+                              color: colors.text,
+                            },
+                          ]}
+                        >
                           {station.nameKo}
                         </Text>
 
-                        <Text style={styles.stationNameJa}>
+                        <Text
+                          style={[
+                            styles.stationNameJa,
+                            {
+                              color: colors.textSecondary,
+                            },
+                          ]}
+                        >
                           {station.nameJa}
                         </Text>
 
@@ -265,28 +455,50 @@ export default function SearchScreen() {
                           <View
                             style={[
                               styles.lineDot,
-
                               {
                                 backgroundColor: result.color,
                               },
                             ]}
                           />
 
-                          <Text style={styles.lineName}>
+                          <Text
+                            style={[
+                              styles.lineName,
+                              {
+                                color: colors.textSecondary,
+                              },
+                            ]}
+                          >
                             {result.lineNameKo}
                           </Text>
 
-                          <Text style={styles.operatorName}>
+                          <Text
+                            style={[
+                              styles.operatorName,
+                              {
+                                color: colors.textMuted,
+                              },
+                            ]}
+                          >
                             {operatorName}
                           </Text>
                         </View>
                       </View>
 
                       {/* ===============================
-                              Arrow
-                          =============================== */}
+                          Arrow
+                      =============================== */}
 
-                      <Text style={styles.stationArrow}>›</Text>
+                      <Text
+                        style={[
+                          styles.stationArrow,
+                          {
+                            color: colors.textMuted,
+                          },
+                        ]}
+                      >
+                        ›
+                      </Text>
                     </TouchableOpacity>
                   );
                 })}
@@ -300,23 +512,70 @@ export default function SearchScreen() {
 
           {hasQuery && results.length === 0 && (
             <View style={styles.noResultArea}>
-              <View style={styles.noResultIcon}>
-                <Text style={styles.noResultIconText}>?</Text>
+              <View
+                style={[
+                  styles.noResultIcon,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.noResultIconText,
+                    {
+                      color: colors.textMuted,
+                    },
+                  ]}
+                >
+                  ?
+                </Text>
               </View>
 
-              <Text style={styles.noResultTitle}>검색 결과가 없습니다</Text>
+              <Text
+                style={[
+                  styles.noResultTitle,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+              >
+                검색 결과가 없습니다
+              </Text>
 
-              <Text style={styles.noResultDescription}>
+              <Text
+                style={[
+                  styles.noResultDescription,
+                  {
+                    color: colors.textSecondary,
+                  },
+                ]}
+              >
                 "{query}"에 해당하는 역을{"\n"}
                 찾을 수 없습니다.
               </Text>
 
               <TouchableOpacity
-                style={styles.resetButton}
+                style={[
+                  styles.resetButton,
+                  {
+                    backgroundColor: colors.text,
+                  },
+                ]}
                 activeOpacity={0.7}
                 onPress={handleClear}
               >
-                <Text style={styles.resetButtonText}>다시 검색</Text>
+                <Text
+                  style={[
+                    styles.resetButtonText,
+                    {
+                      color: colors.background,
+                    },
+                  ]}
+                >
+                  다시 검색
+                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -337,14 +596,10 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-
-    backgroundColor: "#F5F6F8",
   },
 
   screen: {
     flex: 1,
-
-    backgroundColor: "#F5F6F8",
   },
 
   /*
@@ -370,7 +625,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 14,
 
-    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
 
     alignItems: "center",
 
@@ -385,8 +640,6 @@ const styles = StyleSheet.create({
     fontSize: 31,
 
     lineHeight: 34,
-
-    color: "#17191D",
   },
 
   headerTextArea: {
@@ -399,8 +652,6 @@ const styles = StyleSheet.create({
     lineHeight: 30,
 
     fontWeight: "900",
-
-    color: "#17191D",
   },
 
   headerDescription: {
@@ -409,8 +660,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
 
     lineHeight: 17,
-
-    color: "#8C96A5",
   },
 
   /*
@@ -430,7 +679,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 18,
 
-    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
 
     flexDirection: "row",
 
@@ -451,8 +700,6 @@ const styles = StyleSheet.create({
     fontSize: 26,
 
     lineHeight: 28,
-
-    color: "#687384",
   },
 
   searchInput: {
@@ -467,8 +714,6 @@ const styles = StyleSheet.create({
     lineHeight: 21,
 
     fontWeight: "600",
-
-    color: "#17191D",
   },
 
   clearButton: {
@@ -477,8 +722,6 @@ const styles = StyleSheet.create({
     height: 30,
 
     borderRadius: 15,
-
-    backgroundColor: "#EEF0F3",
 
     alignItems: "center",
 
@@ -493,8 +736,6 @@ const styles = StyleSheet.create({
     fontSize: 21,
 
     lineHeight: 24,
-
-    color: "#747E8C",
   },
 
   searchHint: {
@@ -505,8 +746,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
 
     lineHeight: 15,
-
-    color: "#9AA4B3",
   },
 
   /*
@@ -524,7 +763,7 @@ const styles = StyleSheet.create({
   resultContainer: {
     paddingHorizontal: 22,
 
-    paddingBottom: 50,
+    paddingBottom: 110,
   },
 
   resultHeader: {
@@ -543,8 +782,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
 
     fontWeight: "900",
-
-    color: "#17191D",
   },
 
   resultCount: {
@@ -553,8 +790,6 @@ const styles = StyleSheet.create({
     lineHeight: 16,
 
     fontWeight: "700",
-
-    color: "#8C96A5",
   },
 
   resultList: {
@@ -576,7 +811,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 20,
 
-    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
 
     flexDirection: "row",
 
@@ -621,8 +856,6 @@ const styles = StyleSheet.create({
     lineHeight: 21,
 
     fontWeight: "900",
-
-    color: "#17191D",
   },
 
   stationNameJa: {
@@ -631,8 +864,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
 
     lineHeight: 15,
-
-    color: "#929BA8",
   },
 
   lineInfo: {
@@ -659,8 +890,6 @@ const styles = StyleSheet.create({
     lineHeight: 15,
 
     fontWeight: "700",
-
-    color: "#626C79",
   },
 
   operatorName: {
@@ -669,8 +898,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
 
     lineHeight: 14,
-
-    color: "#A1A9B4",
   },
 
   stationArrow: {
@@ -679,8 +906,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
 
     lineHeight: 32,
-
-    color: "#B0B7C2",
   },
 
   /*
@@ -702,7 +927,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 24,
 
-    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
 
     alignItems: "center",
 
@@ -713,8 +938,6 @@ const styles = StyleSheet.create({
     fontSize: 25,
 
     fontWeight: "900",
-
-    color: "#687384",
   },
 
   emptyTitle: {
@@ -725,8 +948,6 @@ const styles = StyleSheet.create({
     lineHeight: 25,
 
     fontWeight: "900",
-
-    color: "#17191D",
   },
 
   emptyDescription: {
@@ -735,8 +956,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
 
     lineHeight: 20,
-
-    color: "#8C96A5",
 
     textAlign: "center",
   },
@@ -759,8 +978,6 @@ const styles = StyleSheet.create({
     lineHeight: 15,
 
     fontWeight: "700",
-
-    color: "#9AA4B3",
   },
 
   exampleList: {
@@ -782,7 +999,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 14,
 
-    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
   },
 
   exampleChipText: {
@@ -791,8 +1008,6 @@ const styles = StyleSheet.create({
     lineHeight: 16,
 
     fontWeight: "700",
-
-    color: "#596371",
   },
 
   /*
@@ -814,7 +1029,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 22,
 
-    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
 
     alignItems: "center",
 
@@ -827,8 +1042,6 @@ const styles = StyleSheet.create({
     lineHeight: 30,
 
     fontWeight: "900",
-
-    color: "#9AA4B3",
   },
 
   noResultTitle: {
@@ -839,8 +1052,6 @@ const styles = StyleSheet.create({
     lineHeight: 23,
 
     fontWeight: "900",
-
-    color: "#17191D",
   },
 
   noResultDescription: {
@@ -849,8 +1060,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
 
     lineHeight: 20,
-
-    color: "#8C96A5",
 
     textAlign: "center",
   },
@@ -863,8 +1072,6 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
 
     borderRadius: 14,
-
-    backgroundColor: "#17191D",
   },
 
   resetButtonText: {
@@ -873,8 +1080,6 @@ const styles = StyleSheet.create({
     lineHeight: 16,
 
     fontWeight: "800",
-
-    color: "#FFFFFF",
   },
 
   bottomSpace: {

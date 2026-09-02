@@ -1,11 +1,33 @@
+import FloatingBottomBar from "@/components/common/FloatingBottomBar";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { View } from "react-native";
 
-export default function RootLayout() {
+const RootLayout = () => {
+  const { isDark, colors } = useAppTheme();
+
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: colors.background,
       }}
-    />
+    >
+      <StatusBar style={isDark ? "light" : "dark"} />
+
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: {
+            backgroundColor: colors.background,
+          },
+        }}
+      />
+
+      <FloatingBottomBar />
+    </View>
   );
-}
+};
+
+export default RootLayout;

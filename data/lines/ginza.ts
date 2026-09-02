@@ -298,7 +298,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#00A7DB",
     ),
 
-    transfer("toei-asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
+    transfer("asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
   ],
 
   /*
@@ -322,7 +322,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
   G11: [
     transfer("tozai", "T", "도자이선", "東西線", "#009BBF"),
 
-    transfer("toei-asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
+    transfer("asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
   ],
 
   /*
@@ -388,7 +388,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   G19: [
-    transfer("toei-asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
+    transfer("asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
   ],
 };
 
@@ -624,3 +624,4 @@ export const ginzaStations: Station[] = GINZA_STATION_BASE.map(
  */
 
 export const ginzaTrains: Record<string, Train[]> = {};
+

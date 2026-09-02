@@ -429,7 +429,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#F62E36",
     ),
 
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
 
     transfer("oedo", "E", "도에이 오에도선", "都営大江戸線", "#CE045B"),
   ],
@@ -489,7 +489,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#00AC9B",
     ),
 
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
   ],
 
   /*
@@ -571,7 +571,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   JB20: [
-    transfer("toei-asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
+    transfer("asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
   ],
 
   /*
@@ -635,7 +635,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   JB28: [
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
   ],
 
   /*
@@ -825,7 +825,7 @@ export const chuoSobuLocalStations: Station[] =
 
         directions: [
           {
-            id: "eastbound",
+            id: "Eastbound",
 
             label: "지바 방면",
 
@@ -873,7 +873,7 @@ export const chuoSobuLocalStations: Station[] =
 
         directions: [
           {
-            id: "westbound",
+            id: "Westbound",
 
             label: "미타카 방면",
 
@@ -928,7 +928,7 @@ export const chuoSobuLocalStations: Station[] =
          */
 
         {
-          id: "eastbound",
+          id: "Eastbound",
 
           label: "지바 방면",
 
@@ -944,7 +944,7 @@ export const chuoSobuLocalStations: Station[] =
          */
 
         {
-          id: "westbound",
+          id: "Westbound",
 
           label: "미타카 방면",
 
@@ -968,3 +968,4 @@ export const chuoSobuLocalStations: Station[] =
  */
 
 export const chuoSobuLocalTrains: Record<string, Train[]> = {};
+

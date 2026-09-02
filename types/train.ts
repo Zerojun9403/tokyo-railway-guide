@@ -1,4 +1,8 @@
-export type TrainStatus = "normal" | "origin" | "delayed";
+export type TrainStatus = 
+"normal"
+| "origin" 
+| "delayed"
+| "upcoming" ;
 
 export type Train = {
   id: string;

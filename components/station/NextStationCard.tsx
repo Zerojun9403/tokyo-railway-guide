@@ -1,6 +1,8 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { LineBadge } from "../common/LineBadge";
+
+import { useAppTheme } from "../../hooks/useAppTheme";
 
 type NextStationCardProps = {
   lineCode: string;
@@ -13,6 +15,8 @@ type NextStationCardProps = {
   color: string;
 
   showLineName?: boolean;
+
+  onPress?: () => void;
 };
 
 export const NextStationCard = ({
@@ -23,12 +27,35 @@ export const NextStationCard = ({
   stationNameJa,
   color,
   showLineName = false,
+  onPress,
 }: NextStationCardProps) => {
+  const { colors } = useAppTheme();
+
   return (
-    <View style={styles.card}>
+    <TouchableOpacity
+      style={[
+        styles.card,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+      ]}
+      activeOpacity={0.75}
+      onPress={onPress}
+      disabled={!onPress}
+    >
       {/* 분기역처럼 노선명이 필요한 경우에만 표시 */}
       {showLineName && lineNameKo ? (
-        <Text style={styles.lineName}>{lineNameKo}</Text>
+        <Text
+          style={[
+            styles.lineName,
+            {
+              color: colors.textSecondary,
+            },
+          ]}
+        >
+          {lineNameKo}
+        </Text>
       ) : null}
 
       <View style={styles.stationRow}>
@@ -46,12 +73,30 @@ export const NextStationCard = ({
             {stationCode}
           </Text>
 
-          <Text style={styles.stationNameKo}>{stationNameKo}</Text>
+          <Text
+            style={[
+              styles.stationNameKo,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
+            {stationNameKo}
+          </Text>
 
-          <Text style={styles.stationNameJa}>{stationNameJa}</Text>
+          <Text
+            style={[
+              styles.stationNameJa,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            {stationNameJa}
+          </Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -59,9 +104,9 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
 
-    backgroundColor: "#FFFFFF",
-
     borderRadius: 20,
+
+    borderWidth: 1,
 
     paddingHorizontal: 18,
     paddingVertical: 16,
@@ -74,8 +119,6 @@ const styles = StyleSheet.create({
     lineHeight: 16,
 
     fontWeight: "700",
-
-    color: "#8C96A5",
   },
 
   stationRow: {
@@ -103,8 +146,6 @@ const styles = StyleSheet.create({
     lineHeight: 23,
 
     fontWeight: "800",
-
-    color: "#14171B",
   },
 
   stationNameJa: {
@@ -112,7 +153,5 @@ const styles = StyleSheet.create({
 
     fontSize: 12,
     lineHeight: 16,
-
-    color: "#8C96A5",
   },
 });

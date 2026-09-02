@@ -27,7 +27,14 @@ const JR_EAST_API_BASE_URL = "https://tokyo-metro-sigma.vercel.app";
  * =========================================================
  */
 
-export type JrRailway = "Yamanote" | "ChuoRapid" | "ChuoSobuLocal";
+export type JrRailway =
+  | "Yamanote"
+  | "ChuoRapid"
+  | "ChuoSobuLocal"
+  | "KeihinTohokuNegishi"
+  | "SaikyoKawagoe"
+  | "YokosukaSobu"
+  | "NaritaAirport";
 
 /*
  * =========================================================
@@ -36,15 +43,44 @@ export type JrRailway = "Yamanote" | "ChuoRapid" | "ChuoSobuLocal";
  */
 
 export type JrNextTrain = {
-  trainNumber?: string;
+  id: string;
+
+  operator: "jr-east";
+
+  lineId: string;
+
+  stationId: string;
+
+  directionId: string;
 
   departureTime: string;
 
-  minutesUntilDeparture: number;
+  trainType?: string;
 
-  destination?: string;
+  trainTypeKo?: string;
+
+  trainTypeJa?: string;
+
+  destinationStation?: string;
+
+  destinationKo?: string;
+
+  destinationJa?: string;
 };
 
+export type JrTimetableApiResponse = {
+  operator: "jr-east";
+
+  lineId: string;
+
+  stationId: string;
+
+  directionId: string;
+
+  updatedAt: string;
+
+  timetable: JrNextTrain[];
+};
 /*
  * =========================================================
  * JR 시간표 API 응답
@@ -244,16 +280,193 @@ const CHUO_SOBU_LOCAL_STATION_MAP: Record<string, string> = {
 
 /*
  * =========================================================
+ * 게이힌도호쿠·네기시선 Station Map
+ * =========================================================
+ *
+ * JK47 오미야
+ * ↓
+ * JK26 도쿄
+ * ↓
+ * JK12 요코하마
+ * ↓
+ * JK01 오후나
+ *
+ * =========================================================
+ */
+
+const KEIHIN_TOHOKU_NEGISHI_STATION_MAP: Record<string, string> = {
+  JK47: "Omiya",
+  JK46: "SaitamaShintoshin",
+  JK45: "Yono",
+  JK44: "KitaUrawa",
+  JK43: "Urawa",
+  JK42: "MinamiUrawa",
+  JK41: "Warabi",
+  JK40: "NishiKawaguchi",
+  JK39: "Kawaguchi",
+  JK38: "Akabane",
+  JK37: "HigashiJujo",
+  JK36: "Oji",
+  JK35: "Kaminakazato",
+  JK34: "Tabata",
+  JK33: "NishiNippori",
+  JK32: "Nippori",
+  JK31: "Uguisudani",
+  JK30: "Ueno",
+  JK29: "Okachimachi",
+  JK28: "Akihabara",
+  JK27: "Kanda",
+  JK26: "Tokyo",
+  JK25: "Yurakucho",
+  JK24: "Shimbashi",
+  JK23: "Hamamatsucho",
+  JK22: "Tamachi",
+  JK21: "TakanawaGateway",
+  JK20: "Shinagawa",
+  JK19: "Oimachi",
+  JK18: "Omori",
+  JK17: "Kamata",
+  JK16: "Kawasaki",
+  JK15: "Tsurumi",
+  JK14: "ShinKoyasu",
+  JK13: "HigashiKanagawa",
+  JK12: "Yokohama",
+  JK11: "Sakuragicho",
+  JK10: "Kannai",
+  JK09: "Ishikawacho",
+  JK08: "Yamate",
+  JK07: "Negishi",
+  JK06: "Isogo",
+  JK05: "ShinSugita",
+  JK04: "Yokodai",
+  JK03: "Konandai",
+  JK02: "Hongodai",
+  JK01: "Ofuna",
+};
+
+ /*
+ * =========================================================
+ * 사이쿄선 Station Map
+ * =========================================================
+ *
+ * JA08 오사키
+ * ↓
+ * JA11 신주쿠
+ * ↓
+ * JA15 아카바네
+ * ↓
+ * JA21 무사시우라와
+ * ↓
+ * JA26 오미야
+ *
+ * ODPT Railway:
+ * JR-East.SaikyoKawagoe
+ *
+ * =========================================================
+ */
+
+const SAIKYO_KAWAGOE_STATION_MAP: Record<string, string> = {
+  JA08: "Osaki",
+  JA09: "Ebisu",
+  JA10: "Shibuya",
+  JA11: "Shinjuku",
+  JA12: "Ikebukuro",
+  JA13: "Itabashi",
+  JA14: "Jujo",
+  JA15: "Akabane",
+  JA16: "KitaAkabane",
+  JA17: "Ukimafunado",
+  JA18: "TodaKoen",
+  JA19: "Toda",
+  JA20: "KitaToda",
+  JA21: "MusashiUrawa",
+  JA22: "NakaUrawa",
+  JA23: "MinamiYono",
+  JA24: "YonoHommachi",
+  JA25: "KitaYono",
+  JA26: "Omiya",
+};
+
+/*
+ * =========================================================
+ * 요코스카선 · 소부쾌속선 Station Map
+ * =========================================================
+ *
+ * Kurihama
+ * ↓
+ * Yokohama
+ * ↓
+ * Tokyo
+ * ↓
+ * Kinshicho
+ * ↓
+ * Chiba
+ *
+ * ODPT Railway:
+ * Tokyo 서쪽/남쪽 → JR-East.Yokosuka
+ * Tokyo 동쪽       → JR-East.SobuRapid
+ *
+ * =========================================================
+ */
+
+const YOKOSUKA_SOBU_STATION_MAP: Record<string, string> = {
+  JO01: "Kurihama",
+  JO02: "Kinugasa",
+  JO03: "Yokosuka",
+  JO04: "Taura",
+  JO05: "HigashiZushi",
+  JO06: "Zushi",
+  JO07: "Kamakura",
+  JO08: "KitaKamakura",
+  JO09: "Ofuna",
+  JO10: "Totsuka",
+  JO11: "HigashiTotsuka",
+  JO12: "Hodogaya",
+  JO13: "Yokohama",
+  JO14: "ShinKawasaki",
+  JO15: "MusashiKosugi",
+  JO16: "NishiOi",
+  JO17: "Shinagawa",
+  JO18: "Shimbashi",
+  JO19: "Tokyo",
+  JO20: "ShinNihombashi",
+  JO21: "Bakurocho",
+  JO22: "Kinshicho",
+  JO23: "ShinKoiwa",
+  JO24: "Ichikawa",
+  JO25: "Funabashi",
+  JO26: "Tsudanuma",
+  JO27: "Inage",
+  JO28: "Chiba",
+};
+
+
+const NARITA_AIRPORT_STATION_MAP: Record<string, string> = {
+  JO28: "Chiba",
+  JO29: "HigashiChiba",
+  JO30: "Tsuga",
+  JO31: "Yotsukaido",
+  JO32: "Monoi",
+  JO33: "Sakura",
+  JO34: "Shisui",
+  JO35: "Narita",
+  JO36: "NaritaAirportTerminal2and3",
+  JO37: "NaritaAirportTerminal1",
+};
+/*
+ * =========================================================
  * 노선별 Station Map
  * =========================================================
  */
 
 const JR_STATION_MAPS: Record<JrRailway, Record<string, string>> = {
   Yamanote: YAMANOTE_STATION_MAP,
-
   ChuoRapid: CHUO_RAPID_STATION_MAP,
-
   ChuoSobuLocal: CHUO_SOBU_LOCAL_STATION_MAP,
+  KeihinTohokuNegishi: KEIHIN_TOHOKU_NEGISHI_STATION_MAP,
+  SaikyoKawagoe: SAIKYO_KAWAGOE_STATION_MAP,
+  YokosukaSobu: YOKOSUKA_SOBU_STATION_MAP,
+  NaritaAirport: NARITA_AIRPORT_STATION_MAP,
 };
 
 /*
@@ -392,6 +605,416 @@ export const fetchJrEastTrains = async (
   stationId: string,
   directionId: string,
 ): Promise<JrNextTrain[]> => {
+  /*
+   * =====================================================
+   * 주오 쾌속 - Tokyo Railway API
+   * =====================================================
+   */
+
+  if (railway === "ChuoRapid") {
+    const odptStationId = getJrEastOdptStationId(
+      railway,
+      stationId,
+    );
+
+    if (!odptStationId) {
+      throw new Error(
+        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+      );
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    const apiDirection =
+      normalizedDirection === "inbound"
+        ? "Inbound"
+        : normalizedDirection === "outbound"
+          ? "Outbound"
+          : directionId;
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: "chuo-rapid",
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response =
+      await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
+ /*
+   * =====================================================
+   * 주오·소부선 각역정차 - Tokyo Railway API
+   * =====================================================
+   */
+
+  if (railway === "ChuoSobuLocal") {
+    const odptStationId = getJrEastOdptStationId(
+      railway,
+      stationId,
+    );
+
+    if (!odptStationId) {
+      throw new Error(
+        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+      );
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    const apiDirection =
+      normalizedDirection === "eastbound"
+        ? "Eastbound"
+        : normalizedDirection === "westbound"
+          ? "Westbound"
+          : directionId;
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: "chuo-sobu",
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response =
+      await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
+
+  /*
+   * =====================================================
+   * 게이힌도호쿠·네기시선 - Tokyo Railway API
+   * =====================================================
+   */
+
+  if (railway === "KeihinTohokuNegishi") {
+    const odptStationId = getJrEastOdptStationId(
+      railway,
+      stationId,
+    );
+
+    if (!odptStationId) {
+      throw new Error(
+        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+      );
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    const apiDirection =
+      normalizedDirection === "northbound"
+        ? "Northbound"
+        : normalizedDirection === "southbound"
+          ? "Southbound"
+          : directionId;
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: "keihin-tohoku",
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response =
+      await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
+
+   /*
+   * =====================================================
+   * 사이쿄선 - Tokyo Railway API
+   * =====================================================
+   */
+
+  if (railway === "SaikyoKawagoe") {
+    const odptStationId = getJrEastOdptStationId(
+      railway,
+      stationId,
+    );
+
+    if (!odptStationId) {
+      throw new Error(
+        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+      );
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    const apiDirection =
+      normalizedDirection === "northbound"
+        ? "Northbound"
+        : normalizedDirection === "southbound"
+          ? "Southbound"
+          : directionId;
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: "saikyo",
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response =
+      await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
+  /*
+   * =====================================================
+   * 요코스카선 · 소부쾌속선 - Tokyo Railway API
+   * =====================================================
+   *
+   * 앱에서는 하나의 YokosukaSobu 노선으로 취급한다.
+   *
+   * JO01 ~ JO18
+   * → JR-East.Yokosuka
+   *
+   * JO19 Tokyo
+   * → Chiba 방면: JR-East.SobuRapid / Outbound
+   * → Kurihama 방면: JR-East.Yokosuka / Outbound
+   *
+   * JO20 ~ JO28
+   * → JR-East.SobuRapid
+   * =====================================================
+   */
+
+  if (railway === "YokosukaSobu") {
+    const odptStationId = getJrEastOdptStationId(
+      railway,
+      stationId,
+    );
+
+    if (!odptStationId) {
+      throw new Error(
+        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+      );
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    const stationNumber = Number(
+      stationId.replace("JO", ""),
+    );
+
+    const isTokyo = stationId === "JO19";
+
+    let apiLineId: "yokosuka" | "sobu-rapid";
+    let apiDirection: "Inbound" | "Outbound";
+
+    if (isTokyo) {
+      if (
+        normalizedDirection === "northbound" ||
+        normalizedDirection === "chiba"
+      ) {
+        apiLineId = "sobu-rapid";
+        apiDirection = "Outbound";
+      } else {
+        apiLineId = "yokosuka";
+        apiDirection = "Outbound";
+      }
+    } else if (stationNumber < 19) {
+      apiLineId = "yokosuka";
+
+      apiDirection =
+        normalizedDirection === "northbound" ||
+        normalizedDirection === "tokyo"
+          ? "Inbound"
+          : "Outbound";
+    } else {
+      apiLineId = "sobu-rapid";
+
+      apiDirection =
+        normalizedDirection === "northbound" ||
+        normalizedDirection === "chiba"
+          ? "Outbound"
+          : "Inbound";
+    }
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: apiLineId,
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response =
+      await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
+
+
+    /*
+   * =====================================================
+   * 나리타선 · 나리타공항지선 - Tokyo Railway API
+   * =====================================================
+   *
+   * JO28 ~ JO35
+   * → JR-East.Narita
+   *
+   * JO36 ~ JO37
+   * → JR-East.NaritaAirportBranch
+   *
+   * JO35 Narita
+   * → 공항 방면은 NaritaAirportBranch / Outbound
+   * =====================================================
+   */
+
+  if (railway === "NaritaAirport") {
+    const odptStationId = getJrEastOdptStationId(
+      railway,
+      stationId,
+    );
+
+    if (!odptStationId) {
+      throw new Error(
+        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
+      );
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    const stationNumber = Number(
+      stationId.replace("JO", ""),
+    );
+
+    const isNarita = stationId === "JO35";
+
+    let apiLineId: "narita" | "narita-airport";
+    let apiDirection: "Inbound" | "Outbound";
+
+    if (isNarita) {
+      if (
+        normalizedDirection === "outbound" ||
+        normalizedDirection === "airport" ||
+        normalizedDirection === "naritaairport"
+      ) {
+        apiLineId = "narita-airport";
+        apiDirection = "Outbound";
+      } else {
+        apiLineId = "narita";
+        apiDirection = "Inbound";
+      }
+    } else if (stationNumber < 35) {
+      apiLineId = "narita";
+
+      apiDirection =
+        normalizedDirection === "outbound" ||
+        normalizedDirection === "airport" ||
+        normalizedDirection === "naritaairport"
+          ? "Outbound"
+          : "Inbound";
+    } else {
+      apiLineId = "narita-airport";
+
+      apiDirection =
+        normalizedDirection === "outbound" ||
+        normalizedDirection === "airport" ||
+        normalizedDirection === "naritaairport"
+          ? "Outbound"
+          : "Inbound";
+    }
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: apiLineId,
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response =
+      await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /*
+   * =====================================================
+   * 기존 JR API
+   * =====================================================
+   *
+   * 야마노테 등 기존 정상 동작을 유지한다.
+   * =====================================================
+   */
+
   const data = await fetchJrEastTimetable(railway, stationId);
 
   /*
@@ -411,53 +1034,12 @@ export const fetchJrEastTrains = async (
 
     return [];
   }
-
-  /*
-   * =====================================================
-   * 주오 쾌속
-   * =====================================================
-   */
-
-  if (railway === "ChuoRapid") {
-    if (directionId === "inbound") {
-      return data.directions.inbound ?? [];
-    }
-
-    if (directionId === "outbound") {
-      return data.directions.outbound ?? [];
-    }
-
-    return [];
-  }
-
-  /*
-   * =====================================================
-   * 주오·소부 완행
-   * =====================================================
-   */
-
-  if (railway === "ChuoSobuLocal") {
-    if (directionId === "eastbound") {
-      return data.directions.eastbound ?? [];
-    }
-
-    if (directionId === "westbound") {
-      return data.directions.westbound ?? [];
-    }
-
-    return [];
-  }
-
-  return [];
+ return [];
 };
 
 /*
  * =========================================================
  * 기존 야마노테 API 호환
- * =========================================================
- *
- * 기존 useYamanoteTrains.ts를 당장 삭제하지 않아도
- * 계속 정상 작동하도록 남겨둔다.
  * =========================================================
  */
 

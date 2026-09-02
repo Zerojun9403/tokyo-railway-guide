@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
+import { useAppTheme } from "../../hooks/useAppTheme";
+
 type TrainCardProps = {
   time: string;
 
@@ -25,6 +27,8 @@ export const TrainCard = ({
   destinationJa,
   isOrigin = false,
 }: TrainCardProps) => {
+  const { colors, isDark } = useAppTheme();
+
   /*
    * =========================================================
    * 출발까지 남은 시간
@@ -43,7 +47,15 @@ export const TrainCard = ({
   const minutesText = minutes === 0 ? "곧 출발" : `${minutes}분 후`;
 
   return (
-    <View style={styles.card}>
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+      ]}
+    >
       {/* =====================================================
           상단 - 열차 종류 / 시발역
       ===================================================== */}
@@ -65,7 +77,14 @@ export const TrainCard = ({
             ) : null}
 
             {isOrigin ? (
-              <View style={styles.originBadge}>
+              <View
+                style={[
+                  styles.originBadge,
+                  {
+                    backgroundColor: isDark ? "#173526" : "#E8F5EE",
+                  },
+                ]}
+              >
                 <Text style={styles.originText}>이 역 출발</Text>
               </View>
             ) : null}
@@ -78,7 +97,16 @@ export const TrainCard = ({
       ===================================================== */}
 
       <View style={styles.timeRow}>
-        <Text style={styles.time}>{time}</Text>
+        <Text
+          style={[
+            styles.time,
+            {
+              color: colors.text,
+            },
+          ]}
+        >
+          {time}
+        </Text>
 
         <Text
           style={[
@@ -98,10 +126,28 @@ export const TrainCard = ({
 
       {destinationKo ? (
         <View style={styles.destinationArea}>
-          <Text style={styles.destinationKo}>{destinationKo}</Text>
+          <Text
+            style={[
+              styles.destinationKo,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
+            {destinationKo}
+          </Text>
 
           {destinationJa ? (
-            <Text style={styles.destinationJa}>{destinationJa}</Text>
+            <Text
+              style={[
+                styles.destinationJa,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
+              {destinationJa}
+            </Text>
           ) : null}
         </View>
       ) : null}
@@ -115,9 +161,9 @@ const styles = StyleSheet.create({
 
     minHeight: 132,
 
-    backgroundColor: "#FFFFFF",
-
     borderRadius: 22,
+
+    borderWidth: 1,
 
     paddingHorizontal: 18,
     paddingVertical: 18,
@@ -167,8 +213,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
 
     borderRadius: 7,
-
-    backgroundColor: "#E8F5EE",
   },
 
   originText: {
@@ -203,8 +247,6 @@ const styles = StyleSheet.create({
     fontWeight: "900",
 
     letterSpacing: -1,
-
-    color: "#050608",
   },
 
   /*
@@ -237,8 +279,6 @@ const styles = StyleSheet.create({
     lineHeight: 21,
 
     fontWeight: "800",
-
-    color: "#17191D",
   },
 
   destinationJa: {
@@ -247,7 +287,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
 
     lineHeight: 16,
-
-    color: "#8C96A5",
   },
 });

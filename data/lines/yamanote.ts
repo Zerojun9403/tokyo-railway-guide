@@ -370,7 +370,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
     },
 
     {
-      id: "chuo-sobu",
+      id: "chuo-sobu-local",
 
       code: "JB",
 
@@ -593,7 +593,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
     },
 
     {
-      id: "chuo-sobu",
+      id: "chuo-sobu-local",
 
       code: "JB",
 
@@ -626,7 +626,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
     },
 
     {
-      id: "toei-shinjuku",
+      id: "shinjuku",
 
       code: "S",
 
@@ -743,7 +743,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
     },
 
     {
-      id: "toei-mita",
+      id: "mita",
 
       code: "I",
 
@@ -760,7 +760,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
 
   JY23: [
     {
-      id: "toei-asakusa",
+      id: "asakusa",
 
       code: "A",
 
@@ -911,7 +911,7 @@ const TRANSFERS: Record<string, NonNullable<Station["transfers"]>> = {
     },
 
     {
-      id: "toei-asakusa",
+      id: "asakusa",
 
       code: "A",
 
@@ -1165,3 +1165,4 @@ export const yamanoteTrains: Record<string, Train[]> = {
     },
   ],
 };
+

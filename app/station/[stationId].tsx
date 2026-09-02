@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-
 import {
   ActivityIndicator,
   RefreshControl,
@@ -10,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { StationTopActions } from "../../components/station/StationTopActions";
 
 import { router, useLocalSearchParams } from "expo-router";
 
@@ -20,21 +20,29 @@ import { StationHeader } from "../../components/station/StationHeader";
 import { TrainCard } from "../../components/station/TrainCard";
 import { TransferBottomSheet } from "../../components/station/TransferBottomSheet";
 
-import { getStation, getTrains } from "../../data/railwayRegistry";
+import {
+  getStationByLine,
+  getStationsByLine,
+  getTrains,
+} from "../../data/railwayRegistry";
 
+import { useKeikyuTrains } from "../../hooks/useKeikyuTrains";
 import { useKeiseiTrains } from "../../hooks/useKeiseiTrains";
+import { useSeibuTrains } from "../../hooks/useSeibuTrains";
+import { useTokyuTrains } from "../../hooks/useTokyuTrains";
 
 import {
   useJrEastTrains,
   type JrEastRailway,
 } from "../../hooks/useJrEastTrains";
 
-import { useOedoTrains } from "../../hooks/useOedoTrains";
+import { useToeiTrains } from "../../hooks/useToeiTrains";
 
 import { useTokyoMetroTrains } from "../../hooks/useTokyoMetroTrains";
 
 import { useFavoriteStations } from "../../hooks/useFavoriteStations";
 
+import { useAppTheme } from "../../hooks/useAppTheme";
 import { useRecentStations } from "../../hooks/useRecentStations";
 
 /*
@@ -190,6 +198,12 @@ const resolveJrRailway = (lineId?: string): JrEastRailway => {
     case "saikyo":
       return "SaikyoKawagoe";
 
+    case "yokosuka-sobu":
+       return "YokosukaSobu";
+
+    case "narita":
+      return "NaritaAirport";
+
     case "yamanote":
     default:
       return "Yamanote";
@@ -203,14 +217,16 @@ const resolveJrRailway = (lineId?: string): JrEastRailway => {
  */
 
 export default function StationScreen() {
+  const { colors, isDark } = useAppTheme();
   /*
    * =======================================================
    * URL
    * =======================================================
    */
 
-  const { stationId } = useLocalSearchParams<{
+  const { stationId, lineId } = useLocalSearchParams<{
     stationId: string;
+    lineId?: string;
   }>();
 
   /*
@@ -220,8 +236,8 @@ export default function StationScreen() {
    */
 
   const station = useMemo(() => {
-    return getStation(stationId);
-  }, [stationId]);
+    return getStationByLine(stationId, lineId);
+  }, [stationId, lineId]);
 
   /*
    * =======================================================
@@ -239,7 +255,7 @@ export default function StationScreen() {
 
   useEffect(() => {
     setSelectedDirectionId(station?.directions[0]?.id ?? "");
-  }, [station?.id]);
+  }, [station?.id, station?.lineId]);
 
   /*
    * =======================================================
@@ -320,9 +336,16 @@ export default function StationScreen() {
 
   const isKeisei = station?.operatorId === "keisei";
 
+  const isKeikyu = station?.operatorId === "keikyu";
+  
+
+  const isSeibu = station?.operatorId === "seibu";
+
+  const isTokyu = station?.operatorId === "tokyu";
+
   const isJrEast = station?.operatorId === "jr-east";
 
-  const isOedo = station?.lineId === "oedo";
+  const isToei = station?.operatorId === "toei";
 
   /*
    * Tokyo Metro
@@ -389,6 +412,76 @@ export default function StationScreen() {
 
   /*
    * =======================================================
+   * 게이큐 실제 시간표
+   * =======================================================
+   */
+
+  const {
+    trains: keikyuTrains,
+
+    loading: keikyuLoading,
+
+    error: keikyuError,
+  } = useKeikyuTrains({
+    lineId: isKeikyu ? station?.lineId : undefined,
+
+    stationId: isKeikyu ? station?.id : undefined,
+
+    directionId: isKeikyu ? selectedDirection?.id : undefined,
+
+    enabled: isKeikyu,
+  });
+
+
+
+
+  /*
+   * =======================================================
+   * 도큐 실제 시간표
+   * =======================================================
+   */
+
+  const {
+    trains: tokyuTrains,
+
+    loading: tokyuLoading,
+
+    error: tokyuError,
+  } = useTokyuTrains({
+    lineId: isTokyu ? station?.lineId : undefined,
+
+    stationId: isTokyu ? station?.id : undefined,
+
+    directionId: isTokyu ? selectedDirection?.id : undefined,
+
+    enabled: isTokyu,
+  });
+
+
+   /*
+   * =======================================================
+   * 세이부 실제 시간표
+   * =======================================================
+   */
+
+  const {
+    trains: seibuTrains,
+
+    loading: seibuLoading,
+
+    error: seibuError,
+  } = useSeibuTrains({
+    lineId: isSeibu ? station?.lineId : undefined,
+
+    stationId: isSeibu ? station?.id : undefined,
+
+    directionId: isSeibu ? selectedDirection?.id : undefined,
+
+    enabled: isSeibu,
+  });
+
+  /*
+   * =======================================================
    * JR 동일본 실제 시간표
    * =======================================================
    */
@@ -411,22 +504,29 @@ export default function StationScreen() {
 
   /*
    * =======================================================
-   * 도에이 오에도선 실제 시간표
+   * 도에이 실제 시간표
+   *
+   * A 아사쿠사선
+   * I 미타선
+   * S 신주쿠선
+   * E 오에도선
    * =======================================================
    */
 
   const {
-    trains: oedoTrains,
+    trains: toeiTrains,
 
-    loading: oedoLoading,
+    loading: toeiLoading,
 
-    error: oedoError,
+    error: toeiError,
 
-    reload: reloadOedo,
-  } = useOedoTrains(
-    isOedo ? (station?.id ?? "") : "",
+    reload: reloadToei,
+  } = useToeiTrains(
+    isToei ? (station?.lineId ?? "") : "",
 
-    isOedo ? (selectedDirection?.id ?? "") : "",
+    isToei ? (station?.id ?? "") : "",
+
+    isToei ? (selectedDirection?.id ?? "") : "",
   );
 
   /*
@@ -491,8 +591,8 @@ export default function StationScreen() {
         await reloadKeisei();
       } else if (isJrEast) {
         await reloadJr();
-      } else if (isOedo) {
-        await reloadOedo();
+      } else if (isToei) {
+        await reloadToei();
       } else if (isTokyoMetro) {
         await reloadTokyoMetro();
       }
@@ -514,7 +614,7 @@ export default function StationScreen() {
 
     isJrEast,
 
-    isOedo,
+    isToei,
 
     isTokyoMetro,
 
@@ -522,7 +622,7 @@ export default function StationScreen() {
 
     reloadJr,
 
-    reloadOedo,
+    reloadToei,
 
     reloadTokyoMetro,
   ]);
@@ -545,11 +645,17 @@ export default function StationScreen() {
 
   if (!station || !selectedDirection) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView
+        style={[styles.safeArea, { backgroundColor: colors.background }]}
+      >
         <View style={styles.notFoundContainer}>
-          <Text style={styles.notFoundTitle}>역을 찾을 수 없습니다.</Text>
+          <Text style={[styles.notFoundTitle, { color: colors.text }]}>
+            역을 찾을 수 없습니다.
+          </Text>
 
-          <Text style={styles.notFoundDescription}>
+          <Text
+            style={[styles.notFoundDescription, { color: colors.textMuted }]}
+          >
             stationId: {String(stationId)}
           </Text>
 
@@ -598,6 +704,32 @@ export default function StationScreen() {
   }
 
   /*
+   * 게이큐
+   */
+
+  if (isKeikyu) {
+    trains = keikyuTrains;
+  }
+
+
+  /*
+   * 도큐
+   */
+
+  if (isTokyu) {
+    trains = tokyuTrains;
+  }
+
+
+  /*
+   * 세이부
+   */
+
+  if (isSeibu) {
+    trains = seibuTrains;
+  }
+
+  /*
    * JR
    */
 
@@ -609,8 +741,8 @@ export default function StationScreen() {
    * 도에이
    */
 
-  if (isOedo) {
-    trains = oedoTrains;
+  if (isToei) {
+    trains = toeiTrains;
   }
 
   /*
@@ -694,8 +826,11 @@ export default function StationScreen() {
 
   const loading =
     (isKeisei && keiseiLoading) ||
+    (isKeikyu && keikyuLoading) ||
+    (isSeibu && seibuLoading) ||
     (isJrEast && jrLoading) ||
-    (isOedo && oedoLoading) ||
+    (isTokyu && tokyuLoading) ||
+    (isToei && toeiLoading) ||
     (isTokyoMetro && tokyoMetroLoading);
 
   /*
@@ -706,13 +841,19 @@ export default function StationScreen() {
 
   const error = isKeisei
     ? keiseiError
-    : isJrEast
-      ? jrError
-      : isOedo
-        ? oedoError
-        : isTokyoMetro
-          ? tokyoMetroError
-          : null;
+    : isKeikyu
+      ? keikyuError
+      : isSeibu
+        ? seibuError
+        : isJrEast
+         ? jrError
+         : isTokyu
+          ? tokyuError
+          : isToei
+            ? toeiError
+            : isTokyoMetro
+              ? tokyoMetroError
+            : null;
 
   /*
    * =======================================================
@@ -741,9 +882,11 @@ export default function StationScreen() {
   const serviceDayLabel = getServiceDayLabel();
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: colors.background }]}
+    >
       <ScrollView
-        style={styles.screen}
+        style={[styles.screen, { backgroundColor: colors.background }]}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -752,9 +895,9 @@ export default function StationScreen() {
             onRefresh={() => {
               void handleRefresh();
             }}
-            tintColor={station.color}
+            tintColor={isDark ? colors.text : station.color}
             colors={[station.color]}
-            progressBackgroundColor="#FFFFFF"
+            progressBackgroundColor={colors.surface}
           />
         }
       >
@@ -768,35 +911,20 @@ export default function StationScreen() {
             activeOpacity={0.7}
             onPress={() => router.back()}
           >
-            <Text style={styles.backArrow}>‹</Text>
-
-            <Text style={styles.backText}>{station.lineNameKo}</Text>
+            <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.favoriteButton,
-
-              isFavorite && styles.favoriteButtonActive,
-            ]}
-            activeOpacity={0.7}
-            disabled={favoriteLoading}
-            onPress={() => {
+          <StationTopActions
+            isFavorite={isFavorite}
+            favoriteLoading={favoriteLoading}
+            onPressLine={() => {
+              router.push(`/line/${station.lineId}`);
+            }}
+            onPressFavorite={() => {
               void toggleFavorite();
             }}
-          >
-            <Text
-              style={[
-                styles.favoriteIcon,
-
-                isFavorite && styles.favoriteIconActive,
-              ]}
-            >
-              {isFavorite ? "★" : "☆"}
-            </Text>
-          </TouchableOpacity>
+          />
         </View>
-
         {/* =================================================
             역 Header
         ================================================= */}
@@ -818,7 +946,9 @@ export default function StationScreen() {
         <View style={styles.operationStatus}>
           <View style={styles.operationDot} />
 
-          <Text style={styles.operationText}>정상운행</Text>
+          <Text style={[styles.operationText, { color: colors.text }]}>
+            정상운행
+          </Text>
         </View>
 
         {/* =================================================
@@ -855,7 +985,9 @@ export default function StationScreen() {
             다음역
         ================================================= */}
 
-        <Text style={styles.sectionLabel}>다음역</Text>
+        <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>
+          다음역
+        </Text>
 
         <View style={styles.nextStationList}>
           {nextStations.map((nextStation) => (
@@ -868,6 +1000,15 @@ export default function StationScreen() {
               stationNameJa={nextStation.nameJa}
               color={nextStation.color}
               showLineName={nextStations.length > 1}
+              onPress={() => {
+                router.push({
+                  pathname: "/station/[stationId]",
+                  params: {
+                    stationId: nextStation.id,
+                    lineId: nextStation.lineId,
+                  },
+                });
+              }}
             />
           ))}
         </View>
@@ -878,7 +1019,9 @@ export default function StationScreen() {
 
         <View style={styles.nextSection}>
           <View style={styles.nextTitleArea}>
-            <Text style={styles.nextSectionTitle}>다음 도착</Text>
+            <Text style={[styles.nextSectionTitle, { color: colors.text }]}>
+              다음 도착
+            </Text>
 
             <Text
               style={[
@@ -905,14 +1048,20 @@ export default function StationScreen() {
                 ]}
               />
 
-              <Text style={styles.weekdayText}>{serviceDayLabel}</Text>
+              <Text
+                style={[styles.weekdayText, { color: colors.textSecondary }]}
+              >
+                {serviceDayLabel}
+              </Text>
             </View>
 
-            <Text style={styles.updatedText}>{lastUpdatedLabel} 기준</Text>
+            <Text style={[styles.updatedText, { color: colors.textMuted }]}>
+              {lastUpdatedLabel} 기준
+            </Text>
           </View>
         </View>
 
-        <Text style={styles.refreshHint}>
+        <Text style={[styles.refreshHint, { color: colors.textMuted }]}>
           화면을 아래로 당기면 최신 시간표로 갱신됩니다.
         </Text>
 
@@ -921,10 +1070,12 @@ export default function StationScreen() {
         ================================================= */}
 
         {loading && !refreshing && (
-          <View style={styles.loadingArea}>
+          <View
+            style={[styles.loadingArea, { backgroundColor: colors.surface }]}
+          >
             <ActivityIndicator size="small" color={station.color} />
 
-            <Text style={styles.loadingText}>
+            <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
               열차 정보를 불러오는 중입니다.
             </Text>
           </View>
@@ -935,14 +1086,20 @@ export default function StationScreen() {
         ================================================= */}
 
         {!loading && error && (
-          <View style={styles.errorArea}>
+          <View style={[styles.errorArea, { backgroundColor: colors.surface }]}>
             <Text style={styles.errorTitle}>
               열차 정보를 불러오지 못했습니다.
             </Text>
 
-            <Text style={styles.errorDescription}>{error}</Text>
+            <Text
+              style={[styles.errorDescription, { color: colors.textMuted }]}
+            >
+              {error}
+            </Text>
 
-            <Text style={styles.errorRefreshHint}>
+            <Text
+              style={[styles.errorRefreshHint, { color: colors.textSecondary }]}
+            >
               화면을 아래로 당겨 다시 시도해 주세요.
             </Text>
           </View>
@@ -974,10 +1131,19 @@ export default function StationScreen() {
         ================================================= */}
 
         {!loading && !error && displayTrains.length === 0 && (
-          <View style={styles.emptyTrain}>
-            <Text style={styles.emptyTrainTitle}>표시할 열차가 없습니다.</Text>
+          <View
+            style={[styles.emptyTrain, { backgroundColor: colors.surface }]}
+          >
+            <Text style={[styles.emptyTrainTitle, { color: colors.text }]}>
+              표시할 열차가 없습니다.
+            </Text>
 
-            <Text style={styles.emptyTrainDescription}>
+            <Text
+              style={[
+                styles.emptyTrainDescription,
+                { color: colors.textMuted },
+              ]}
+            >
               현재 방향의 다음 열차가 없습니다.
             </Text>
           </View>
@@ -995,9 +1161,59 @@ export default function StationScreen() {
         transfers={station.transfers ?? []}
         onClose={() => setTransferVisible(false)}
         onPressTransfer={(transfer) => {
-          console.log("환승노선:", transfer.nameKo);
+          /*
+           * 선택한 환승 노선의 전체 역
+           */
+          const targetStations = getStationsByLine(transfer.id);
+          console.log("=== 환승 DEBUG ===");
+          console.log("transfer.id:", transfer.id);
+          console.log("현재역:", station.id, station.nameJa);
+          console.log(
+            "대상역:",
+            targetStations.map((item) => ({
+              id: item.id,
+              nameJa: item.nameJa,
+            })),
+          );
 
+          /*
+           * 현재 역과 같은 역명을 가진
+           * 환승 대상 역 찾기
+           */
+          const targetStation = targetStations.find(
+            (item) => item.nameJa === station.nameJa,
+          );
+
+          /*
+           * 환승역을 찾지 못한 경우
+           */
+          if (!targetStation) {
+            console.warn("환승역을 찾을 수 없습니다.", {
+              currentStation: station.nameJa,
+
+              transferLine: transfer.id,
+            });
+
+            setTransferVisible(false);
+
+            return;
+          }
+
+          /*
+           * Bottom Sheet 닫기
+           */
           setTransferVisible(false);
+
+          /*
+           * 환승 노선의 같은 역으로 이동
+           */
+          router.push({
+            pathname: "/station/[stationId]",
+            params: {
+              stationId: targetStation.id,
+              lineId: transfer.id,
+            },
+          });
         }}
       />
     </SafeAreaView>
@@ -1028,7 +1244,7 @@ const styles = StyleSheet.create({
 
     paddingTop: 24,
 
-    paddingBottom: 60,
+    paddingBottom: 110,
   },
 
   topArea: {
@@ -1356,7 +1572,7 @@ const styles = StyleSheet.create({
   },
 
   bottomSpace: {
-    height: 70,
+    height: 90,
   },
 
   notFoundContainer: {

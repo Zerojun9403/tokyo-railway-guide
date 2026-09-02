@@ -1,5 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { useAppTheme } from "../../hooks/useAppTheme";
+
 type DirectionItem = {
   id: string;
   label: string;
@@ -21,6 +23,8 @@ export const DirectionTabs = ({
   color,
   onChangeDirection,
 }: DirectionTabsProps) => {
+  const { colors } = useAppTheme();
+
   return (
     <View style={styles.container}>
       {directions.map((direction) => {
@@ -36,8 +40,8 @@ export const DirectionTabs = ({
               numberOfLines={2}
               style={[
                 styles.label,
-                isActive && {
-                  color,
+                {
+                  color: isActive ? color : colors.textSecondary,
                 },
               ]}
             >
@@ -86,8 +90,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
 
     textAlign: "center",
-
-    color: "#A3ACB9",
   },
 
   indicator: {

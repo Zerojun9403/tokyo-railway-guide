@@ -27,7 +27,9 @@ export type JrEastRailway =
   | "ChuoRapid"
   | "ChuoSobuLocal"
   | "KeihinTohokuNegishi"
-  | "SaikyoKawagoe";
+  | "SaikyoKawagoe"
+  | "YokosukaSobu"
+  | "NaritaAirport";
 
 /*
  * =========================================================
@@ -124,20 +126,79 @@ const resolveJrEastDirection = (
       return "southbound";
     }
   }
-
-  /*
+ /*
    * =======================================================
-   * 사이쿄·가와고에선
+   * 사이쿄선
    * =======================================================
    */
 
   if (railway === "SaikyoKawagoe") {
-    if (normalized === "northbound" || normalized === "kawagoe") {
+    if (
+      normalized === "northbound" ||
+      normalized === "omiya" ||
+      normalized === "kawagoe"
+    ) {
       return "northbound";
     }
 
-    if (normalized === "southbound" || normalized === "osaki") {
+    if (
+      normalized === "southbound" ||
+      normalized === "shinjuku" ||
+      normalized === "osaki"
+    ) {
       return "southbound";
+    }
+  }
+  /*
+   * =======================================================
+   * 요코스카선 · 소부쾌속선
+   * =======================================================
+   *
+   * northbound
+   * → 도쿄 · 긴시초 · 지바 방면
+   *
+   * southbound
+   * → 시나가와 · 요코하마 · 구리하마 방면
+   * =======================================================
+   */
+
+  if (railway === "YokosukaSobu") {
+    if (
+      normalized === "northbound" ||
+      normalized === "tokyo" ||
+      normalized === "chiba"
+    ) {
+      return "northbound";
+    }
+
+    if (
+      normalized === "southbound" ||
+      normalized === "yokohama" ||
+      normalized === "kurihama"
+    ) {
+      return "southbound";
+    }
+  }
+   /*
+   * =======================================================
+   * 나리타선 · 나리타공항지선
+   * =======================================================
+   */
+
+  if (railway === "NaritaAirport") {
+    if (
+      normalized === "outbound" ||
+      normalized === "airport" ||
+      normalized === "naritaairport"
+    ) {
+      return "outbound";
+    }
+
+    if (
+      normalized === "inbound" ||
+      normalized === "chiba"
+    ) {
+      return "inbound";
     }
   }
 

@@ -657,7 +657,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
     transfer("ginza", "G", "도쿄메트로 긴자선", "東京メトロ銀座線", "#F39700"),
 
-    transfer("toei-asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
+    transfer("asakusa", "A", "도에이 아사쿠사선", "都営浅草線", "#E85298"),
   ],
 
   /*
@@ -889,7 +889,7 @@ export const keihinTohokuStations: Station[] = KEIHIN_TOHOKU_STATION_BASE.map(
 
         directions: [
           {
-            id: "southbound",
+            id: "Southbound",
 
             label: "요코하마·오후나 방면",
 
@@ -937,7 +937,7 @@ export const keihinTohokuStations: Station[] = KEIHIN_TOHOKU_STATION_BASE.map(
 
         directions: [
           {
-            id: "northbound",
+            id: "Northbound",
 
             label: "도쿄·오미야 방면",
 
@@ -992,7 +992,7 @@ export const keihinTohokuStations: Station[] = KEIHIN_TOHOKU_STATION_BASE.map(
          */
 
         {
-          id: "southbound",
+          id: "Southbound",
 
           label: "요코하마·오후나 방면",
 
@@ -1008,7 +1008,7 @@ export const keihinTohokuStations: Station[] = KEIHIN_TOHOKU_STATION_BASE.map(
          */
 
         {
-          id: "northbound",
+          id: "Northbound",
 
           label: "우에노·오미야 방면",
 
@@ -1035,3 +1035,4 @@ export const keihinTohokuStations: Station[] = KEIHIN_TOHOKU_STATION_BASE.map(
  */
 
 export const keihinTohokuTrains: Record<string, Train[]> = {};
+

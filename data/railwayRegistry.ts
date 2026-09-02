@@ -1,6 +1,11 @@
 import type { Station } from "../types/station";
 import type { Train } from "../types/train";
 
+/*  
+ 
+ JR East
+
+*/
 import {
   YAMANOTE_COLOR,
   yamanoteStations,
@@ -25,6 +30,46 @@ import {
   keihinTohokuTrains,
 } from "./lines/keihin-tohoku";
 
+import {
+  SAIKYO_COLOR,
+  saikyoStations,
+  saikyoTrains,
+} from "./lines/saikyo";
+
+import {
+  SHONAN_SHINJUKU_COLOR,
+  shonanShinjukuStations,
+  shonanShinjukuTrains,
+} from "./lines/shonan-shinjuku";
+
+import {
+  TOKAIDO_COLOR,
+  tokaidoStations,
+  tokaidoTrains,
+} from "./lines/tokaido";
+
+import {
+  KEIYO_COLOR,
+  keiyoStations,
+  keiyoTrains,
+} from "./lines/keiyo";
+
+import {
+  YOKOSUKA_SOBU_COLOR,
+  yokosukaSobuStations,
+  yokosukaSobuTrains,
+} from "./lines/yokosuka-sobu";
+
+import {
+  NARITA_COLOR,
+  naritaStations,
+  naritaTrains,
+} from "./lines/narita";
+/*  
+ 
+ tokyo_metro
+
+*/
 import { GINZA_COLOR, ginzaStations, ginzaTrains } from "./lines/ginza";
 import {
   MARUNOUCHI_COLOR,
@@ -32,15 +77,130 @@ import {
   marunouchiTrains,
 } from "./lines/marunouchi";
 
+import { CHIYODA_COLOR, chiyodaStations, chiyodaTrains } from "./lines/chiyoda";
 import { HIBIYA_COLOR, hibiyaStations, hibiyaTrains } from "./lines/hibiya";
 
+import { TOZAI_COLOR, tozaiStations, tozaiTrains } from "./lines/tozai";
+
+import {
+  YURAKUCHO_COLOR,
+  yurakuchoStations,
+  yurakuchoTrains,
+} from "./lines/yurakucho";
+
+import {
+  HANZOMON_COLOR,
+  hanzomonStations,
+  hanzomonTrains,
+} from "./lines/hanzomon";
+
+import { NAMBOKU_COLOR, nambokuStations, nambokuTrains } from "./lines/namboku";
+
+import {
+  FUKUTOSHIN_COLOR,
+  fukutoshinStations,
+  fukutoshinTrains,
+} from "./lines/fukutoshin";
+
+/*  
+ 
+ keisei
+
+*/
 import {
   KEISEI_COLOR,
   keiseiMainStations,
   keiseiMainTrains,
 } from "./lines/keisei-main";
 
+/*  
+ 
+ keiky
+
+*/
+
+import {
+  KEIKYU_MAIN_COLOR,
+  keikyuMainStations,
+  keikyuMainTrains,
+} from "./lines/keikyu-main";
+
+import {
+  KEIKYU_AIRPORT_COLOR,
+  keikyuAirportStations,
+  keikyuAirportTrains,
+} from "./lines/keikyu-airport";
+
+/**
+ * 
+ * 
+ * seibu
+ */
+import {
+  SEIBU_IKEBUKURO_COLOR,
+  seibuIkebukuroStations,
+  seibuIkebukuroTrains,
+} from "./lines/seibu-ikebukuro";
+
+
+import {
+  SEIBU_SHINJUKU_COLOR,
+  seibuShinjukuStations,
+  seibuShinjukuTrains,
+} from "./lines/seibu-shinjuku";
+
+/**
+ * 
+ * 
+ * tokyu
+ */
+import {
+  TOKYU_TOYOKO_COLOR,
+  tokyuToyokoStations,
+  tokyuToyokoTrains,
+} from "./lines/tokyu-toyoko";
+
+import {
+  TOKYU_MEGURO_COLOR,
+  tokyuMeguroStations,
+  tokyuMeguroTrains,
+} from "./lines/tokyu-meguro";
+import {
+  TOKYU_OIMACHI_COLOR,
+  tokyuOimachiStations,
+  tokyuOimachiTrains,
+} from "./lines/tokyu-oimachi";
+
+import {
+  TOKYU_SHIN_YOKOHAMA_COLOR,
+  tokyuShinYokohamaStations,
+  tokyuShinYokohamaTrains,
+} from "./lines/tokyu-shin-yokohama";
+
+import {
+  TOKYU_DEN_EN_TOSHI_COLOR,
+  tokyuDenEnToshiStations,
+  tokyuDenEnToshiTrains,
+} from "./lines/tokyu-den-en-toshi";
+
+
+/**
+ * 
+ * 
+ * toei
+ */
+
 import { OEDO_COLOR, oedoStations, oedoTrains } from "./lines/oedo";
+
+import { ASAKUSA_COLOR, asakusaStations, asakusaTrains } from "./lines/asakusa";
+
+import { MITA_COLOR, mitaStations, mitaTrains } from "./lines/mita";
+
+import {
+  SHINJUKU_COLOR,
+  shinjukuStations,
+  shinjukuTrains,
+} from "./lines/shinjuku";
 
 /*
  * =========================================================
@@ -184,10 +344,87 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
 
     trains: keihinTohokuTrains,
   },
+  /*
+   * =======================================================
+   * JR 동일본 - 사이쿄선
+   * =======================================================
+   */
+
+  saikyo: {
+    id: "saikyo",
+
+    operatorId: "jr-east",
+
+    nameKo: "사이쿄선",
+    nameJa: "埼京線",
+
+    lineCode: "JA",
+
+    color: SAIKYO_COLOR,
+
+    stations: saikyoStations,
+
+    trains: saikyoTrains,
+  },
+
+  "shonan-shinjuku": {
+  id: "shonan-shinjuku",
+  operatorId: "jr-east",
+  nameKo: "쇼난신주쿠라인",
+  nameJa: "湘南新宿ライン",
+  lineCode: "JS",
+  color: SHONAN_SHINJUKU_COLOR,
+  stations: shonanShinjukuStations,
+  trains: shonanShinjukuTrains,
+},
+tokaido: {
+  id: "tokaido",
+  operatorId: "jr-east",
+  nameKo: "도카이도선",
+  nameJa: "東海道線",
+  lineCode: "JT",
+  color: TOKAIDO_COLOR,
+  stations: tokaidoStations,
+  trains: tokaidoTrains,
+},
+
+keiyo: {
+  id: "keiyo",
+  operatorId: "jr-east",
+  nameKo: "게이요선",
+  nameJa: "京葉線",
+  lineCode: "JE",
+  color: KEIYO_COLOR,
+  stations: keiyoStations,
+  trains: keiyoTrains,
+},
+
+"yokosuka-sobu": {
+  id: "yokosuka-sobu",
+  operatorId: "jr-east",
+  nameKo: "요코스카선·소부쾌속선",
+  nameJa: "横須賀線・総武快速線",
+  lineCode: "JO",
+  color: YOKOSUKA_SOBU_COLOR,
+  stations: yokosukaSobuStations,
+  trains: yokosukaSobuTrains,
+},
+
+narita: {
+  id: "narita",
+  operatorId: "jr-east",
+  nameKo: "나리타선",
+  nameJa: "成田線",
+  lineCode: "JO",
+  color: NARITA_COLOR,
+  stations: naritaStations,
+  trains: naritaTrains,
+},
+  
 
   /*
    * =======================================================
-   * 도쿄메트로 - 긴자선
+   * 도쿄메트로
    * =======================================================
    */
 
@@ -207,11 +444,6 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
 
     trains: ginzaTrains,
   },
-  /*
-   * =======================================================
-   * 도쿄메트로 - 마루노우치선
-   * =======================================================
-   */
 
   marunouchi: {
     id: "marunouchi",
@@ -241,6 +473,113 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
     trains: hibiyaTrains,
   },
 
+  tozai: {
+    id: "tozai",
+
+    operatorId: "tokyo-metro",
+
+    nameKo: "도자이선",
+
+    nameJa: "東西線",
+
+    lineCode: "T",
+
+    color: TOZAI_COLOR,
+
+    stations: tozaiStations,
+
+    trains: tozaiTrains,
+  },
+
+  chiyoda: {
+    id: "chiyoda",
+
+    operatorId: "tokyo-metro",
+
+    nameKo: "치요다선",
+
+    nameJa: "千代田線",
+
+    lineCode: "C",
+
+    color: CHIYODA_COLOR,
+
+    stations: chiyodaStations,
+
+    trains: chiyodaTrains,
+  },
+
+  yurakucho: {
+    id: "yurakucho",
+
+    operatorId: "tokyo-metro",
+
+    nameKo: "유라쿠초선",
+
+    nameJa: "有楽町線",
+
+    lineCode: "Y",
+
+    color: YURAKUCHO_COLOR,
+
+    stations: yurakuchoStations,
+
+    trains: yurakuchoTrains,
+  },
+
+  hanzomon: {
+    id: "hanzomon",
+
+    operatorId: "tokyo-metro",
+
+    nameKo: "한조몬선",
+
+    nameJa: "半蔵門線",
+
+    lineCode: "Z",
+
+    color: HANZOMON_COLOR,
+
+    stations: hanzomonStations,
+
+    trains: hanzomonTrains,
+  },
+
+  namboku: {
+    id: "namboku",
+
+    operatorId: "tokyo-metro",
+
+    nameKo: "난보쿠선",
+
+    nameJa: "南北線",
+
+    lineCode: "N",
+
+    color: NAMBOKU_COLOR,
+
+    stations: nambokuStations,
+
+    trains: nambokuTrains,
+  },
+
+  fukutoshin: {
+    id: "fukutoshin",
+
+    operatorId: "tokyo-metro",
+
+    nameKo: "후쿠토신선",
+
+    nameJa: "副都心線",
+
+    lineCode: "F",
+
+    color: FUKUTOSHIN_COLOR,
+
+    stations: fukutoshinStations,
+
+    trains: fukutoshinTrains,
+  },
   /*
    * =======================================================
    * 게이세이 전철 - 게이세이 본선
@@ -266,9 +605,279 @@ export const railwayRegistry: Record<string, RailwayLineRegistryItem> = {
 
   /*
    * =======================================================
+   * 게이큐 전철 - 게이큐 본선
+   * =======================================================
+   */
+
+  "keikyu-main": {
+    id: "keikyu-main",
+
+    operatorId: "keikyu",
+
+    nameKo: "게이큐 본선",
+    nameJa: "京急本線",
+
+    lineCode: "KK",
+
+    color: KEIKYU_MAIN_COLOR,
+
+    stations: keikyuMainStations,
+
+    trains: keikyuMainTrains,
+  },
+
+  /*
+   * =======================================================
+   * 게이큐 전철 - 게이큐 공항선
+   * =======================================================
+   */
+
+  "keikyu-airport": {
+    id: "keikyu-airport",
+
+    operatorId: "keikyu",
+
+    nameKo: "게이큐 공항선",
+    nameJa: "京急空港線",
+
+    lineCode: "KK",
+
+    color: KEIKYU_AIRPORT_COLOR,
+
+    stations: keikyuAirportStations,
+
+    trains: keikyuAirportTrains,
+  },
+
+/*
+   * =======================================================
+   * 세이부 철도 - 세이부 이케부쿠로선
+   * =======================================================
+   */
+
+  "seibu-ikebukuro": {
+    id: "seibu-ikebukuro",
+
+    operatorId: "seibu",
+
+    nameKo: "세이부 이케부쿠로선",
+    nameJa: "西武池袋線",
+
+    lineCode: "SI",
+
+    color: SEIBU_IKEBUKURO_COLOR,
+
+    stations: seibuIkebukuroStations,
+
+    trains: seibuIkebukuroTrains,
+  },
+  
+  /*
+   * =======================================================
+   * 세이부 철도 - 세이부 신주쿠선
+   * =======================================================
+   */
+
+  "seibu-shinjuku": {
+    id: "seibu-shinjuku",
+
+    operatorId: "seibu",
+
+    nameKo: "세이부 신주쿠선",
+    nameJa: "西武新宿線",
+
+    lineCode: "SS",
+
+    color: SEIBU_SHINJUKU_COLOR,
+
+    stations: seibuShinjukuStations,
+
+    trains: seibuShinjukuTrains,
+  },
+
+  /*
+   * =======================================================
+   * 도큐 전철 - 도요코선
+   * =======================================================
+   */
+
+  "tokyu-toyoko": {
+    id: "tokyu-toyoko",
+
+    operatorId: "tokyu",
+
+    nameKo: "도큐 도요코선",
+    nameJa: "東急東横線",
+
+    lineCode: "TY",
+
+    color: TOKYU_TOYOKO_COLOR,
+
+    stations: tokyuToyokoStations,
+
+    trains: tokyuToyokoTrains,
+  },
+    /*
+   * =======================================================
+   * 도큐 전철 - 메구로선
+   * =======================================================
+   */
+
+  "tokyu-meguro": {
+    id: "tokyu-meguro",
+
+    operatorId: "tokyu",
+
+    nameKo: "도큐 메구로선",
+    nameJa: "東急目黒線",
+
+    lineCode: "MG",
+
+    color: TOKYU_MEGURO_COLOR,
+
+    stations: tokyuMeguroStations,
+
+    trains: tokyuMeguroTrains,
+  },
+    /*
+   * =======================================================
+   * 도큐 전철 - 덴엔토시선
+   * =======================================================
+   */
+
+  "tokyu-den-en-toshi": {
+    id: "tokyu-den-en-toshi",
+
+    operatorId: "tokyu",
+
+    nameKo: "도큐 덴엔토시선",
+    nameJa: "東急田園都市線",
+
+    lineCode: "DT",
+
+    color: TOKYU_DEN_EN_TOSHI_COLOR,
+
+    stations: tokyuDenEnToshiStations,
+
+    trains: tokyuDenEnToshiTrains,
+  },
+
+    /*
+   * =======================================================
+   * 도큐 전철 - 오이마치선
+   * =======================================================
+   */
+
+  "tokyu-oimachi": {
+    id: "tokyu-oimachi",
+
+    operatorId: "tokyu",
+
+    nameKo: "도큐 오이마치선",
+    nameJa: "東急大井町線",
+
+    lineCode: "OM",
+
+    color: TOKYU_OIMACHI_COLOR,
+
+    stations: tokyuOimachiStations,
+
+    trains: tokyuOimachiTrains,
+  },
+  
+  /*
+   * =======================================================
+   * 도큐 전철 - 신요코하마선
+   * =======================================================
+   */
+
+  "tokyu-shin-yokohama": {
+    id: "tokyu-shin-yokohama",
+
+    operatorId: "tokyu",
+
+    nameKo: "도큐 신요코하마선",
+    nameJa: "東急新横浜線",
+
+    lineCode: "SH",
+
+    color: TOKYU_SHIN_YOKOHAMA_COLOR,
+
+    stations: tokyuShinYokohamaStations,
+
+    trains: tokyuShinYokohamaTrains,
+  },
+
+  /*
+   * =======================================================
    * 도에이 지하철 - 오에도선
    * =======================================================
    */
+  asakusa: {
+    id: "asakusa",
+
+    operatorId: "toei",
+
+    nameKo: "도에이 아사쿠사선",
+
+    nameJa: "都営浅草線",
+
+    lineCode: "A",
+
+    color: ASAKUSA_COLOR,
+
+    stations: asakusaStations,
+
+    trains: asakusaTrains,
+  },
+
+  /*
+   * =======================================================
+   * 도에이 지하철 - 미타선
+   * =======================================================
+   */
+
+  mita: {
+    id: "mita",
+
+    operatorId: "toei",
+
+    nameKo: "도에이 미타선",
+
+    nameJa: "都営三田線",
+
+    lineCode: "I",
+
+    color: MITA_COLOR,
+
+    stations: mitaStations,
+
+    trains: mitaTrains,
+  },
+
+  /*
+   * =======================================================
+   * 도에이 지하철 - 신주쿠선
+   * =======================================================
+   */
+
+  shinjuku: {
+    id: "shinjuku",
+
+    operatorId: "toei",
+
+    nameKo: "도에이 신주쿠선",
+
+    nameJa: "都営新宿線",
+
+    lineCode: "S",
+
+    color: SHINJUKU_COLOR,
+
+    stations: shinjukuStations,
+
+    trains: shinjukuTrains,
+  },
 
   oedo: {
     id: "oedo",
@@ -334,6 +943,37 @@ export const getAllStations = (): Station[] => {
 
 export const getStation = (stationId: string): Station | undefined => {
   return allStations.find((station) => station.id === stationId);
+};
+
+/*
+ * =========================================================
+ * stationId + lineId로 역 찾기
+ * =========================================================
+ *
+ * 동일한 역번호가 여러 노선에 존재하는 경우
+ * lineId를 함께 사용해 정확한 노선의 역을 찾는다.
+ *
+ * 예:
+ *
+ * KK11 + keikyu-main
+ * KK11 + keikyu-airport
+ *
+ * lineId가 없는 기존 URL은
+ * getStation() 방식으로 fallback 한다.
+ * =========================================================
+ */
+
+export const getStationByLine = (
+  stationId: string,
+  lineId?: string,
+): Station | undefined => {
+  if (!lineId) {
+    return getStation(stationId);
+  }
+
+  return railwayRegistry[lineId]?.stations.find(
+    (station) => station.id === stationId,
+  );
 };
 
 /*

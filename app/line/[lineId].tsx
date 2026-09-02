@@ -12,8 +12,10 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 
 import { getLine } from "../../data/railwayRegistry";
+import { useAppTheme } from "../../hooks/useAppTheme";
 
 export default function LineScreen() {
+  const { colors } = useAppTheme();
   /*
    * ========================================
    * URL lineId
@@ -46,19 +48,27 @@ export default function LineScreen() {
 
   if (!line) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView
+        style={[styles.safeArea, { backgroundColor: colors.background }]}
+      >
         <View style={styles.notFoundContainer}>
-          <Text style={styles.notFoundTitle}>노선을 찾을 수 없습니다.</Text>
+          <Text style={[styles.notFoundTitle, { color: colors.text }]}>
+            노선을 찾을 수 없습니다.
+          </Text>
 
-          <Text style={styles.notFoundDescription}>
+          <Text
+            style={[styles.notFoundDescription, { color: colors.textMuted }]}
+          >
             lineId: {String(lineId)}
           </Text>
 
           <TouchableOpacity
-            style={styles.backButton}
+            style={[styles.backButton, { backgroundColor: colors.surface }]}
             onPress={() => router.back()}
           >
-            <Text style={styles.backButtonText}>이전 화면으로</Text>
+            <Text style={[styles.backButtonText, { color: colors.text }]}>
+              이전 화면으로
+            </Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -66,9 +76,11 @@ export default function LineScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: colors.background }]}
+    >
       <ScrollView
-        style={styles.screen}
+        style={[styles.screen, { backgroundColor: colors.background }]}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
@@ -81,9 +93,11 @@ export default function LineScreen() {
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
-          <Text style={styles.backArrow}>‹</Text>
+          <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
 
-          <Text style={styles.backText}>노선 선택</Text>
+          <Text style={[styles.backText, { color: colors.textSecondary }]}>
+            노선 선택
+          </Text>
         </TouchableOpacity>
 
         {/* =================================
@@ -104,9 +118,13 @@ export default function LineScreen() {
           </View>
 
           <View style={styles.headerTextArea}>
-            <Text style={styles.lineNameKo}>{line.nameKo}</Text>
+            <Text style={[styles.lineNameKo, { color: colors.text }]}>
+              {line.nameKo}
+            </Text>
 
-            <Text style={styles.lineNameJa}>{line.nameJa}</Text>
+            <Text style={[styles.lineNameJa, { color: colors.textMuted }]}>
+              {line.nameJa}
+            </Text>
           </View>
         </View>
 
@@ -115,14 +133,18 @@ export default function LineScreen() {
         ================================= */}
 
         <View style={styles.summaryArea}>
-          <Text style={styles.summaryText}>총 {line.stations.length}개 역</Text>
+          <Text style={[styles.summaryText, { color: colors.textMuted }]}>
+            총 {line.stations.length}개 역
+          </Text>
         </View>
 
         {/* =================================
             세로형 노선도
         ================================= */}
 
-        <View style={styles.routeContainer}>
+        <View
+          style={[styles.routeContainer, { backgroundColor: colors.surface }]}
+        >
           {line.stations.map((station, index) => {
             const isFirst = index === 0;
 
@@ -141,6 +163,7 @@ export default function LineScreen() {
 
                     params: {
                       stationId: station.id,
+                      lineId: line.id,
                     },
                   })
                 }
@@ -165,9 +188,9 @@ export default function LineScreen() {
                   <View
                     style={[
                       styles.stationCircle,
-
                       {
                         borderColor: line.color,
+                        backgroundColor: colors.surface,
                       },
                     ]}
                   >
@@ -199,7 +222,12 @@ export default function LineScreen() {
                       역 정보
                   ========================= */}
 
-                <View style={styles.stationContent}>
+                <View
+                  style={[
+                    styles.stationContent,
+                    { borderBottomColor: colors.border },
+                  ]}
+                >
                   <View style={styles.stationMainRow}>
                     <View style={styles.stationTextArea}>
                       <Text
@@ -214,12 +242,25 @@ export default function LineScreen() {
                         {station.code}
                       </Text>
 
-                      <Text style={styles.stationNameKo}>{station.nameKo}</Text>
+                      <Text
+                        style={[styles.stationNameKo, { color: colors.text }]}
+                      >
+                        {station.nameKo}
+                      </Text>
 
-                      <Text style={styles.stationNameJa}>{station.nameJa}</Text>
+                      <Text
+                        style={[
+                          styles.stationNameJa,
+                          { color: colors.textMuted },
+                        ]}
+                      >
+                        {station.nameJa}
+                      </Text>
                     </View>
 
-                    <Text style={styles.chevron}>›</Text>
+                    <Text style={[styles.chevron, { color: colors.textMuted }]}>
+                      ›
+                    </Text>
                   </View>
 
                   {/* =========================
@@ -228,7 +269,14 @@ export default function LineScreen() {
 
                   {hasTransfer && (
                     <View style={styles.transferArea}>
-                      <Text style={styles.transferLabel}>환승</Text>
+                      <Text
+                        style={[
+                          styles.transferLabel,
+                          { color: colors.textMuted },
+                        ]}
+                      >
+                        환승
+                      </Text>
 
                       <View style={styles.transferList}>
                         {station.transfers?.map((transfer) => (
@@ -280,7 +328,7 @@ const styles = StyleSheet.create({
 
     paddingTop: 22,
 
-    paddingBottom: 50,
+    paddingBottom: 100,
   },
 
   /*
@@ -670,6 +718,6 @@ const styles = StyleSheet.create({
   },
 
   bottomSpace: {
-    height: 60,
+    height: 80,
   },
 });

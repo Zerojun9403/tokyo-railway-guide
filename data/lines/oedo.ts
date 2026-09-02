@@ -278,7 +278,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
     transfer("yamanote", "JY", "야마노테선", "山手線", "#80C41C"),
 
-    transfer("chuo-sobu", "JB", "주오·소부선", "中央・総武線", "#FFD400"),
+    transfer("chuo-sobu-local", "JB", "주오·소부선", "中央・総武線", "#FFD400"),
 
     transfer("chuo-rapid", "JC", "주오선 쾌속", "中央線快速", "#F15A22"),
 
@@ -340,7 +340,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#00AC9B",
     ),
 
-    transfer("chuo-sobu", "JB", "JR 주오·소부선", "JR中央・総武線", "#FFD400"),
+    transfer("chuo-sobu-local", "JB", "JR 주오·소부선", "JR中央・総武線", "#FFD400"),
   ],
 
   /*
@@ -432,7 +432,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   E12: [
-    transfer("chuo-sobu", "JB", "JR 주오·소부선", "JR中央・総武線", "#FFD400"),
+    transfer("chuo-sobu-local", "JB", "JR 주오·소부선", "JR中央・総武線", "#FFD400"),
   ],
 
   /*
@@ -440,7 +440,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   E13: [
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
   ],
 
   /*
@@ -568,7 +568,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
   E26: [
     transfer("yamanote", "JY", "JR 야마노테선", "JR山手線", "#80C41C"),
 
-    transfer("chuo-sobu", "JB", "JR 주오·소부선", "JR中央・総武線", "#FFD400"),
+    transfer("chuo-sobu-local", "JB", "JR 주오·소부선", "JR中央・総武線", "#FFD400"),
   ],
 
   /*
@@ -576,11 +576,11 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   E27: [
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
 
     transfer("yamanote", "JY", "JR 야마노테선", "JR山手線", "#80C41C"),
 
-    transfer("chuo-sobu", "JB", "JR 주오·소부선", "JR中央・総武線", "#FFD400"),
+    transfer("chuo-sobu-local", "JB", "JR 주오·소부선", "JR中央・総武線", "#FFD400"),
 
     transfer("chuo-rapid", "JC", "JR 주오선 쾌속", "JR中央線快速", "#F15A22"),
 
@@ -610,7 +610,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
    */
 
   E31: [
-    transfer("chuo-sobu", "JB", "JR 주오·소부선", "JR中央・総武線", "#FFD400"),
+    transfer("chuo-sobu-local", "JB", "JR 주오·소부선", "JR中央・総武線", "#FFD400"),
   ],
 
   /*
@@ -957,3 +957,4 @@ export const oedoStations: Station[] = [
  */
 
 export const oedoTrains: Record<string, Train[]> = {};
+

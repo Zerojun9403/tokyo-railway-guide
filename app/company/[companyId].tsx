@@ -9,6 +9,8 @@ import {
 
 import { router, useLocalSearchParams } from "expo-router";
 
+import { useAppTheme } from "../../hooks/useAppTheme";
+
 /*
  * =========================================================
  * 노선 타입
@@ -142,6 +144,99 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
 
         description: "오미야 · 우에노 · 도쿄 · 요코하마 · 오후나",
       },
+            /*
+       * JA 사이쿄선
+       */
+
+      {
+        id: "saikyo",
+
+        nameKo: "사이쿄선",
+        nameJa: "埼京線",
+
+        code: "JA",
+
+        color: "#00AC9A",
+
+        description: "오사키 · 신주쿠 · 이케부쿠로 · 아카바네 · 오미야",
+      },
+
+      /*
+       * JS 쇼난신주쿠라인
+       */
+
+      {
+        id: "shonan-shinjuku",
+
+        nameKo: "쇼난신주쿠라인",
+        nameJa: "湘南新宿ライン",
+
+        code: "JS",
+
+        color: "#E21F26",
+
+        description: "오미야 · 이케부쿠로 · 신주쿠 · 시부야 · 요코하마",
+      },
+
+      /*
+       * JT 도카이도선
+       */
+
+      {
+        id: "tokaido",
+
+        nameKo: "도카이도선",
+        nameJa: "東海道線",
+
+        code: "JT",
+
+        color: "#F68B1E",
+
+        description: "도쿄 · 신바시 · 시나가와 · 요코하마 · 오후나",
+      },
+
+      /*
+       * JO 요코스카선
+       */
+
+    {
+  id: "yokosuka-sobu",
+  nameKo: "요코스카선·소부쾌속선",
+  nameJa: "横須賀線・総武快速線",
+  code: "JO",
+  color: "#0067C0",
+  description: "구리하마 · 요코하마 · 도쿄 · 긴시초 · 지바",
+},
+
+      /*
+       * JE 게이요선
+       */
+
+      {
+        id: "keiyo",
+
+        nameKo: "게이요선",
+        nameJa: "京葉線",
+
+        code: "JE",
+
+        color: "#C9252F",
+
+        description: "도쿄 · 핫초보리 · 신키바 · 마이하마 · 소가",
+      },
+
+      /*
+       * JO 나리타선
+       */
+{
+  id: "narita",
+  nameKo: "나리타선",
+  nameJa: "成田線",
+  code: "JO",
+  color: "#00A85A",
+  description: "지바 · 사쿠라 · 나리타 · 나리타공항",
+},
+
     ],
   },
 
@@ -201,6 +296,57 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
         color: "#B5B5AC",
         description: "나카메구로 · 긴자 · 우에노 · 기타센주",
       },
+      {
+        id: "tozai",
+        code: "T",
+        nameKo: "도자이선",
+        nameJa: "東西線",
+        color: "#009BBF",
+        description: "나카노 · 다카다노바바 · 오테마치 · 니시후나바시",
+      },
+      {
+        id: "chiyoda",
+        code: "C",
+        nameKo: "치요다선",
+        nameJa: "千代田線",
+        color: "#00BB85",
+        description:
+          "요요기우에하라 · 오모테산도 · 오테마치 · 기타센주 · 기타아야세",
+      },
+
+      {
+        id: "yurakucho",
+        code: "Y",
+        nameKo: "유라쿠초선",
+        nameJa: "有楽町線",
+        color: "#C1A470",
+        description: "와코시 · 이케부쿠로 · 유라쿠초 · 도요스 · 신키바",
+      },
+      {
+        id: "hanzomon",
+        code: "Z",
+        nameKo: "한조몬선",
+        nameJa: "半蔵門線",
+        color: "#8F76D6",
+        description: "시부야 · 오모테산도 · 오테마치 · 긴시초 · 오시아게",
+      },
+      {
+        id: "namboku",
+        code: "N",
+        nameKo: "난보쿠선",
+        nameJa: "南北線",
+        color: "#00AC9B",
+        description:
+          "메구로 · 아자부주반 · 나가타초 · 고마고메 · 아카바네이와부치",
+      },
+      {
+        id: "fukutoshin",
+        code: "F",
+        nameKo: "후쿠토신선",
+        nameJa: "副都心線",
+        color: "#9C5E31",
+        description: "와코시 · 이케부쿠로 · 신주쿠산초메 · 시부야",
+      },
 
       /*
        * 다음에 추가
@@ -253,6 +399,54 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
 
   /*
    * =======================================================
+   * 게이큐 전철
+   * =======================================================
+   */
+
+  keikyu: {
+    id: "keikyu",
+
+    nameKo: "게이큐 전철",
+    nameJa: "京浜急行電鉄",
+
+    description:
+      "도쿄 도심과 요코하마 · 요코스카 · 하네다공항을 연결하는 주요 사철",
+
+    color: "#00BFFF",
+
+    badge: "KK",
+
+    lines: [
+      {
+        id: "keikyu-main",
+
+        nameKo: "게이큐 본선",
+        nameJa: "京急本線",
+
+        code: "KK",
+
+        color: "#00BFFF",
+
+        description: "시나가와 · 게이큐카마타 · 요코하마 · 요코스카 · 우라가",
+      },
+
+      {
+        id: "keikyu-airport",
+
+        nameKo: "게이큐 공항선",
+        nameJa: "京急空港線",
+
+        code: "KK",
+
+        color: "#00BFFF",
+
+        description: "게이큐카마타 · 덴쿠바시 · 하네다공항",
+      },
+    ],
+  },
+
+  /*
+   * =======================================================
    * 도에이
    * =======================================================
    */
@@ -282,8 +476,129 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
 
         description: "신주쿠 · 롯폰기 · 다이몬 · 료고쿠",
       },
+
+      {
+        id: "asakusa",
+        code: "A",
+        nameKo: "도에이 아사쿠사선",
+        nameJa: "都営浅草線",
+        color: "#E85298",
+        description: "니시마고메 · 센가쿠지 · 신바시 · 아사쿠사 · 오시아게",
+      },
+
+      {
+        id: "mita",
+        code: "I",
+        nameKo: "도에이 미타선",
+        nameJa: "都営三田線",
+        color: "#0079C2",
+        description:
+          "메구로 · 미타 · 히비야 · 오테마치 · 스가모 · 니시타카시마다이라",
+      },
+      {
+        id: "shinjuku",
+        code: "S",
+        nameKo: "도에이 신주쿠선",
+        nameJa: "都営新宿線",
+        color: "#6CBB5A",
+        description:
+          "신주쿠 · 이치가야 · 진보초 · 모리시타 · 오지마 · 모토야와타",
+      },
     ],
   },
+
+  /*
+   * =======================================================
+   * 세이부 철도
+   * =======================================================
+   */
+
+  seibu: {
+  id: "seibu",
+  nameKo: "세이부 철도",
+  nameJa: "西武鉄道",
+  description: "이케부쿠로와 도쿄 서북부 · 사이타마 방면을 연결하는 주요 사철",
+  color: "#EF7A00",
+  badge: "SI",
+  lines: [
+    {
+      id: "seibu-ikebukuro",
+      nameKo: "세이부 이케부쿠로선",
+      nameJa: "西武池袋線",
+      code: "SI",
+      color: "#EF7A00",
+      description: "이케부쿠로 · 네리마 · 토코로자와 · 한노 · 아가노",
+    },
+    {
+      id: "seibu-shinjuku",
+      nameKo: "세이부 신주쿠선",
+      nameJa: "西武新宿線",
+      code: "SS",
+      color: "#00A6BF",
+      description: "세이부신주쿠 · 다카다노바바 · 도코로자와 · 혼카와고에",
+    },
+  ],
+},
+
+  /*
+   * =======================================================
+   * 도큐 전철
+   * =======================================================
+   */
+
+  tokyu: {
+    id: "tokyu",
+    nameKo: "도큐 전철",
+    nameJa: "東急電鉄",
+    description: "시부야를 중심으로 도쿄 남서부와 요코하마를 연결하는 주요 사철",
+    color: "#DA0442",
+    badge: "TY",
+    lines: [
+      {
+        id: "tokyu-toyoko",
+        nameKo: "도큐 도요코선",
+        nameJa: "東急東横線",
+        code: "TY",
+        color: "#DA0442",
+        description: "시부야 · 나카메구로 · 지유가오카 · 무사시코스기 · 요코하마",
+      },
+       {
+      id: "tokyu-meguro",
+      nameKo: "도큐 메구로선",
+      nameJa: "東急目黒線",
+      code: "MG",
+      color: "#009CD2",
+      description: "메구로 · 오오카야마 · 무사시코스기 · 히요시",
+    },
+    {
+    id: "tokyu-den-en-toshi",
+    nameKo: "도큐 덴엔토시선",
+    nameJa: "東急田園都市線",
+    code: "DT",
+    color: "#20A288",
+    description: "시부야 · 산겐자야 · 후타코타마가와 · 나가쓰타 · 주오린칸",
+    },
+    {
+      id: "tokyu-oimachi",
+      nameKo: "도큐 오이마치선",
+      nameJa: "東急大井町線",
+      code: "OM",
+      color: "#F18C43",
+      description: "오이마치 · 오오카야마 · 지유가오카 · 후타코타마가와 · 미조노쿠치",
+    },
+    {
+      id: "tokyu-shin-yokohama",
+      nameKo: "도큐 신요코하마선",
+      nameJa: "東急新横浜線",
+      code: "SH",
+      color: "#6FBA2C",
+      description: "신요코하마 · 신쓰나시마 · 히요시",
+    },
+  ],
+  },
+
+
+
 };
 
 /*
@@ -293,6 +608,8 @@ const RAILWAY_COMPANIES: Record<string, RailwayCompany> = {
  */
 
 export default function CompanyScreen() {
+  const { colors } = useAppTheme();
+
   /*
    * =======================================================
    * URL
@@ -319,20 +636,57 @@ export default function CompanyScreen() {
 
   if (!company) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView
+        style={[
+          styles.safeArea,
+          {
+            backgroundColor: colors.background,
+          },
+        ]}
+      >
         <View style={styles.notFoundContainer}>
-          <Text style={styles.notFoundTitle}>철도회사를 찾을 수 없습니다.</Text>
+          <Text
+            style={[
+              styles.notFoundTitle,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
+            철도회사를 찾을 수 없습니다.
+          </Text>
 
-          <Text style={styles.notFoundDescription}>
+          <Text
+            style={[
+              styles.notFoundDescription,
+              {
+                color: colors.textMuted,
+              },
+            ]}
+          >
             companyId: {String(companyId)}
           </Text>
 
           <TouchableOpacity
-            style={styles.notFoundButton}
+            style={[
+              styles.notFoundButton,
+              {
+                backgroundColor: colors.surface,
+              },
+            ]}
             activeOpacity={0.7}
             onPress={() => router.back()}
           >
-            <Text style={styles.notFoundButtonText}>이전 화면으로</Text>
+            <Text
+              style={[
+                styles.notFoundButtonText,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              이전 화면으로
+            </Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -356,9 +710,21 @@ export default function CompanyScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        {
+          backgroundColor: colors.background,
+        },
+      ]}
+    >
       <ScrollView
-        style={styles.screen}
+        style={[
+          styles.screen,
+          {
+            backgroundColor: colors.background,
+          },
+        ]}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
@@ -371,9 +737,11 @@ export default function CompanyScreen() {
           activeOpacity={0.7}
           onPress={() => router.back()}
         >
-          <Text style={styles.backArrow}>‹</Text>
+          <Text style={[styles.backArrow, { color: colors.text }]}>‹</Text>
 
-          <Text style={styles.backText}>철도회사</Text>
+          <Text style={[styles.backText, { color: colors.textSecondary }]}>
+            철도회사
+          </Text>
         </TouchableOpacity>
 
         {/* =================================================
@@ -394,22 +762,34 @@ export default function CompanyScreen() {
           </View>
 
           <View style={styles.headerTextArea}>
-            <Text style={styles.companyNameKo}>{company.nameKo}</Text>
+            <Text style={[styles.companyNameKo, { color: colors.text }]}>
+              {company.nameKo}
+            </Text>
 
-            <Text style={styles.companyNameJa}>{company.nameJa}</Text>
+            <Text style={[styles.companyNameJa, { color: colors.textMuted }]}>
+              {company.nameJa}
+            </Text>
           </View>
         </View>
 
-        <Text style={styles.companyDescription}>{company.description}</Text>
+        <Text
+          style={[styles.companyDescription, { color: colors.textSecondary }]}
+        >
+          {company.description}
+        </Text>
 
         {/* =================================================
             노선 선택
         ================================================= */}
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>노선 선택</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            노선 선택
+          </Text>
 
-          <Text style={styles.sectionDescription}>
+          <Text
+            style={[styles.sectionDescription, { color: colors.textMuted }]}
+          >
             이용할 노선을 선택하세요.
           </Text>
         </View>
@@ -422,7 +802,7 @@ export default function CompanyScreen() {
           {company.lines.map((line) => (
             <TouchableOpacity
               key={line.id}
-              style={styles.lineCard}
+              style={[styles.lineCard, { backgroundColor: colors.surface }]}
               activeOpacity={0.7}
               onPress={() => handlePressLine(line.id)}
             >
@@ -439,14 +819,27 @@ export default function CompanyScreen() {
               </View>
 
               <View style={styles.lineInfo}>
-                <Text style={styles.lineNameKo}>{line.nameKo}</Text>
+                <Text style={[styles.lineNameKo, { color: colors.text }]}>
+                  {line.nameKo}
+                </Text>
 
-                <Text style={styles.lineNameJa}>{line.nameJa}</Text>
+                <Text style={[styles.lineNameJa, { color: colors.textMuted }]}>
+                  {line.nameJa}
+                </Text>
 
-                <Text style={styles.lineDescription}>{line.description}</Text>
+                <Text
+                  style={[
+                    styles.lineDescription,
+                    { color: colors.textSecondary },
+                  ]}
+                >
+                  {line.description}
+                </Text>
               </View>
 
-              <Text style={styles.chevron}>›</Text>
+              <Text style={[styles.chevron, { color: colors.textMuted }]}>
+                ›
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -456,9 +849,13 @@ export default function CompanyScreen() {
         ================================================= */}
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>{company.nameKo}</Text>
+          <Text style={[styles.footerText, { color: colors.textMuted }]}>
+            {company.nameKo}
+          </Text>
 
-          <Text style={styles.footerSubText}>Tokyo Railway Guide</Text>
+          <Text style={[styles.footerSubText, { color: colors.textMuted }]}>
+            Tokyo Railway Guide
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -489,7 +886,7 @@ const styles = StyleSheet.create({
 
     paddingTop: 22,
 
-    paddingBottom: 70,
+    paddingBottom: 120,
   },
 
   backArea: {

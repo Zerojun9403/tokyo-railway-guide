@@ -263,7 +263,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
       "#E21F26",
     ),
 
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
 
     transfer("oedo", "E", "도에이 오에도선", "都営大江戸線", "#CE045B"),
 
@@ -287,7 +287,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
   M09: [
     transfer("fukutoshin", "F", "후쿠토신선", "副都心線", "#9C5E31"),
 
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
   ],
 
   /*
@@ -391,7 +391,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
     transfer("hanzomon", "Z", "한조몬선", "半蔵門線", "#8F76D6"),
 
-    transfer("toei-mita", "I", "도에이 미타선", "都営三田線", "#0079C2"),
+    transfer("mita", "I", "도에이 미타선", "都営三田線", "#0079C2"),
   ],
 
   /*
@@ -403,7 +403,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
   M19: [
     transfer("chiyoda", "C", "지요다선", "千代田線", "#00BB85"),
 
-    transfer("toei-shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
   ],
 
   /*
@@ -435,7 +435,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
   M22: [
     transfer("namboku", "N", "난보쿠선", "南北線", "#00AC9B"),
 
-    transfer("toei-mita", "I", "도에이 미타선", "都営三田線", "#0079C2"),
+    transfer("mita", "I", "도에이 미타선", "都営三田線", "#0079C2"),
 
     transfer("oedo", "E", "도에이 오에도선", "都営大江戸線", "#CE045B"),
   ],
@@ -714,3 +714,4 @@ export const marunouchiStations: Station[] = MARUNOUCHI_STATION_BASE.map(
  */
 
 export const marunouchiTrains: Record<string, Train[]> = {};
+
