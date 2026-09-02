@@ -9,11 +9,14 @@ import {
   View,
 } from "react-native";
 
+import { Plane } from "lucide-react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { getLine } from "../../data/railwayRegistry";
 import { useAppTheme } from "../../hooks/useAppTheme";
 import { resolveStationTransfers } from "../../utils/normalizeTransfers";
+import { isAirportName } from "../../utils/airport";
+
 
 export default function LineScreen() {
   const { colors } = useAppTheme();
@@ -244,11 +247,21 @@ export default function LineScreen() {
                         {station.code}
                       </Text>
 
-                      <Text
-                        style={[styles.stationNameKo, { color: colors.text }]}
-                      >
-                        {station.nameKo}
-                      </Text>
+                      <View style={styles.stationNameRow}>
+  <Text
+    style={[styles.stationNameKo, { color: colors.text }]}
+  >
+    {station.nameKo}
+  </Text>
+
+  {isAirportName(station.nameKo, station.nameJa) && (
+    <Plane
+      size={16}
+      color={colors.textSecondary}
+      strokeWidth={2.2}
+    />
+  )}
+</View>
 
                       <Text
                         style={[
@@ -722,4 +735,11 @@ const styles = StyleSheet.create({
   bottomSpace: {
     height: 80,
   },
+
+
+  stationNameRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 6,
+},
 });

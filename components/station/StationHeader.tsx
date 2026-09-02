@@ -5,6 +5,10 @@ import { LiveClock } from "../common/LiveClock";
 
 import { useAppTheme } from "../../hooks/useAppTheme";
 
+import { Plane } from "lucide-react-native";
+
+import { isAirportName } from "../../utils/airport";
+
 type StationHeaderProps = {
   lineCode: string;
   stationCode: string;
@@ -39,16 +43,26 @@ export const StationHeader = ({
         <View style={styles.stationTextArea}>
           <Text style={[styles.stationCode, { color }]}>{stationCode}</Text>
 
-          <Text
-            style={[
-              styles.stationNameKo,
-              {
-                color: colors.text,
-              },
-            ]}
-          >
-            {stationNameKo}
-          </Text>
+          <View style={styles.stationNameRow}>
+            <Text
+              style={[
+                styles.stationNameKo,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              {stationNameKo}
+            </Text>
+
+            {isAirportName(stationNameKo, stationNameJa) && (
+              <Plane
+                size={19}
+                color={colors.textSecondary}
+                strokeWidth={2.2}
+              />
+            )}
+          </View>
 
           <Text
             style={[
@@ -180,4 +194,10 @@ const styles = StyleSheet.create({
 
     fontWeight: "700",
   },
+
+  stationNameRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 7,
+},
 });
