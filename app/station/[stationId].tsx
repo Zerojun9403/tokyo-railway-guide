@@ -199,10 +199,19 @@ const resolveJrRailway = (lineId?: string): JrEastRailway => {
       return "SaikyoKawagoe";
 
     case "yokosuka-sobu":
-       return "YokosukaSobu";
+      return "YokosukaSobu";
 
     case "narita":
       return "NaritaAirport";
+
+    case "tokaido":
+      return "Tokaido";
+
+    case "shonan-shinjuku":
+      return "ShonanShinjuku";
+
+    case "keiyo":
+      return "Keiyo";
 
     case "yamanote":
     default:
@@ -337,7 +346,6 @@ export default function StationScreen() {
   const isKeisei = station?.operatorId === "keisei";
 
   const isKeikyu = station?.operatorId === "keikyu";
-  
 
   const isSeibu = station?.operatorId === "seibu";
 
@@ -432,9 +440,6 @@ export default function StationScreen() {
     enabled: isKeikyu,
   });
 
-
-
-
   /*
    * =======================================================
    * 도큐 실제 시간표
@@ -457,8 +462,7 @@ export default function StationScreen() {
     enabled: isTokyu,
   });
 
-
-   /*
+  /*
    * =======================================================
    * 세이부 실제 시간표
    * =======================================================
@@ -711,7 +715,6 @@ export default function StationScreen() {
     trains = keikyuTrains;
   }
 
-
   /*
    * 도큐
    */
@@ -719,7 +722,6 @@ export default function StationScreen() {
   if (isTokyu) {
     trains = tokyuTrains;
   }
-
 
   /*
    * 세이부
@@ -846,14 +848,14 @@ export default function StationScreen() {
       : isSeibu
         ? seibuError
         : isJrEast
-         ? jrError
-         : isTokyu
-          ? tokyuError
-          : isToei
-            ? toeiError
-            : isTokyoMetro
-              ? tokyoMetroError
-            : null;
+          ? jrError
+          : isTokyu
+            ? tokyuError
+            : isToei
+              ? toeiError
+              : isTokyoMetro
+                ? tokyoMetroError
+                : null;
 
   /*
    * =======================================================

@@ -29,7 +29,10 @@ export type JrEastRailway =
   | "KeihinTohokuNegishi"
   | "SaikyoKawagoe"
   | "YokosukaSobu"
-  | "NaritaAirport";
+  | "NaritaAirport"
+  | "Tokaido"
+  | "ShonanShinjuku"
+  | "Keiyo";
 
 /*
  * =========================================================
@@ -126,7 +129,7 @@ const resolveJrEastDirection = (
       return "southbound";
     }
   }
- /*
+  /*
    * =======================================================
    * 사이쿄선
    * =======================================================
@@ -179,7 +182,7 @@ const resolveJrEastDirection = (
       return "southbound";
     }
   }
-   /*
+  /*
    * =======================================================
    * 나리타선 · 나리타공항지선
    * =======================================================
@@ -194,10 +197,7 @@ const resolveJrEastDirection = (
       return "outbound";
     }
 
-    if (
-      normalized === "inbound" ||
-      normalized === "chiba"
-    ) {
+    if (normalized === "inbound" || normalized === "chiba") {
       return "inbound";
     }
   }
