@@ -10,7 +10,7 @@ import {
 } from "react-native";
 
 import { router, useFocusEffect } from "expo-router";
-import { ChevronRight, Search, Settings, Star } from "lucide-react-native";
+import { ChevronRight, Search, Star } from "lucide-react-native";
 
 import { getStation } from "../data/railwayRegistry";
 import { useAppTheme } from "../hooks/useAppTheme";
@@ -260,9 +260,7 @@ export default function HomeScreen() {
    * =======================================================
    */
 
-  const handlePressSettings = () => {
-    router.push("/settings");
-  };
+ 
 
   return (
     <SafeAreaView
@@ -300,22 +298,6 @@ export default function HomeScreen() {
               TOKYO RAILWAY GUIDE
             </Text>
 
-            <TouchableOpacity
-              style={[
-                styles.settingsButton,
-                {
-                  backgroundColor: colors.surface,
-                },
-              ]}
-              activeOpacity={0.7}
-              onPress={handlePressSettings}
-            >
-              <Settings
-                size={21}
-                color={colors.textSecondary}
-                strokeWidth={2}
-              />
-            </TouchableOpacity>
           </View>
 
           <Text
@@ -804,17 +786,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1.4,
   },
 
-  settingsButton: {
-    width: 44,
 
-    height: 44,
-
-    borderRadius: 15,
-
-    alignItems: "center",
-
-    justifyContent: "center",
-  },
 
 
   title: {

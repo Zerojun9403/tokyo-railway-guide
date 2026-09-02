@@ -1,4 +1,4 @@
-import { ArrowLeft, Star } from "lucide-react-native";
+import { Star } from "lucide-react-native";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { useAppTheme } from "../../hooks/useAppTheme";
@@ -6,38 +6,18 @@ import { useAppTheme } from "../../hooks/useAppTheme";
 type StationTopActionsProps = {
   isFavorite: boolean;
   favoriteLoading?: boolean;
-
-  onPressLine: () => void;
   onPressFavorite: () => void;
 };
 
 export const StationTopActions = ({
   isFavorite,
   favoriteLoading = false,
-  onPressLine,
   onPressFavorite,
 }: StationTopActionsProps) => {
   const { colors, isDark } = useAppTheme();
 
   return (
     <View style={styles.container}>
-      {/* 노선으로 돌아가기 */}
-      <TouchableOpacity
-        style={[
-          styles.actionButton,
-          {
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          },
-        ]}
-        activeOpacity={0.7}
-        onPress={onPressLine}
-        accessibilityRole="button"
-        accessibilityLabel="노선으로 돌아가기"
-      >
-        <ArrowLeft size={23} color={colors.text} strokeWidth={2.2} />
-      </TouchableOpacity>
-
       {/* 즐겨찾기 */}
       <TouchableOpacity
         style={[
@@ -78,11 +58,8 @@ const styles = StyleSheet.create({
   actionButton: {
     width: 44,
     height: 44,
-
     borderRadius: 14,
-
     borderWidth: 1,
-
     alignItems: "center",
     justifyContent: "center",
   },

@@ -920,9 +920,6 @@ export default function StationScreen() {
           <StationTopActions
             isFavorite={isFavorite}
             favoriteLoading={favoriteLoading}
-            onPressLine={() => {
-              router.push(`/line/${station.lineId}`);
-            }}
             onPressFavorite={() => {
               void toggleFavorite();
             }}
