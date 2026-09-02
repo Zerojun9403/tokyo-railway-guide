@@ -193,7 +193,7 @@ const transfersByStation: Record<string, Transfer[]> = {
       "#F68B1E",
     ),
     transfer(
-      "yokosuka",
+      "yokosuka-sobu",
       "JO",
       "요코스카선",
       "横須賀線",
@@ -210,7 +210,7 @@ const transfersByStation: Record<string, Transfer[]> = {
       "#F68B1E",
     ),
     transfer(
-      "yokosuka",
+      "yokosuka-sobu",
       "JO",
       "요코스카선",
       "横須賀線",
@@ -234,7 +234,7 @@ const transfersByStation: Record<string, Transfer[]> = {
       "#F68B1E",
     ),
     transfer(
-      "yokosuka",
+      "yokosuka-sobu",
       "JO",
       "요코스카선",
       "横須賀線",
@@ -251,7 +251,7 @@ const transfersByStation: Record<string, Transfer[]> = {
 
   JS15: [
     transfer(
-      "yokosuka",
+      "yokosuka-sobu",
       "JO",
       "요코스카선",
       "横須賀線",

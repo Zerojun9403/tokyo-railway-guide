@@ -226,19 +226,13 @@ const transfersByStation: Record<string, Transfer[]> = {
       "#F68B1E",
     ),
     transfer(
-      "yokosuka",
+      "yokosuka-sobu",
       "JO",
       "요코스카선",
       "横須賀線",
       "#0067C0",
     ),
-    transfer(
-      "sobu",
-      "JO",
-      "소부선 쾌속",
-      "総武線快速",
-      "#0067C0",
-    ),
+    
     transfer(
       "marunouchi",
       "M",

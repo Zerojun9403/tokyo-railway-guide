@@ -9,10 +9,14 @@ import {
   View,
 } from "react-native";
 
+import { Plane } from "lucide-react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { getLine } from "../../data/railwayRegistry";
 import { useAppTheme } from "../../hooks/useAppTheme";
+import { resolveStationTransfers } from "../../utils/normalizeTransfers";
+import { isAirportName } from "../../utils/airport";
+
 
 export default function LineScreen() {
   const { colors } = useAppTheme();
@@ -150,7 +154,8 @@ export default function LineScreen() {
 
             const isLast = index === line.stations.length - 1;
 
-            const hasTransfer = (station.transfers?.length ?? 0) > 0;
+            const transfers = resolveStationTransfers(station);
+            const hasTransfer = transfers.length > 0;
 
             return (
               <TouchableOpacity
@@ -242,11 +247,21 @@ export default function LineScreen() {
                         {station.code}
                       </Text>
 
-                      <Text
-                        style={[styles.stationNameKo, { color: colors.text }]}
-                      >
-                        {station.nameKo}
-                      </Text>
+                      <View style={styles.stationNameRow}>
+  <Text
+    style={[styles.stationNameKo, { color: colors.text }]}
+  >
+    {station.nameKo}
+  </Text>
+
+  {isAirportName(station.nameKo, station.nameJa) && (
+    <Plane
+      size={16}
+      color={colors.textSecondary}
+      strokeWidth={2.2}
+    />
+  )}
+</View>
 
                       <Text
                         style={[
@@ -279,7 +294,7 @@ export default function LineScreen() {
                       </Text>
 
                       <View style={styles.transferList}>
-                        {station.transfers?.map((transfer) => (
+                        {transfers.map((transfer) => (
                           <View
                             key={transfer.id}
                             style={[
@@ -720,4 +735,11 @@ const styles = StyleSheet.create({
   bottomSpace: {
     height: 80,
   },
+
+
+  stationNameRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 6,
+},
 });

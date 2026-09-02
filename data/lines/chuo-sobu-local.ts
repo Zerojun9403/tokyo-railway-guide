@@ -586,7 +586,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
   JB22: [
     transfer(
-      "yokosuka-sobu-rapid",
+      "yokosuka-sobu",
       "JO",
       "소부 쾌속선",
       "総武快速線",
@@ -608,7 +608,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
   JB25: [
     transfer(
-      "yokosuka-sobu-rapid",
+      "yokosuka-sobu",
       "JO",
       "소부 쾌속선",
       "総武快速線",
@@ -622,7 +622,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
   JB27: [
     transfer(
-      "yokosuka-sobu-rapid",
+      "yokosuka-sobu",
       "JO",
       "소부 쾌속선",
       "総武快速線",
@@ -664,7 +664,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
   JB31: [
     transfer(
-      "yokosuka-sobu-rapid",
+      "yokosuka-sobu",
       "JO",
       "소부 쾌속선",
       "総武快速線",
@@ -686,7 +686,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
   JB33: [
     transfer(
-      "yokosuka-sobu-rapid",
+      "yokosuka-sobu",
       "JO",
       "소부 쾌속선",
       "総武快速線",
@@ -700,7 +700,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
   JB37: [
     transfer(
-      "yokosuka-sobu-rapid",
+      "yokosuka-sobu",
       "JO",
       "소부 쾌속선",
       "総武快速線",
@@ -714,7 +714,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
 
   JB39: [
     transfer(
-      "yokosuka-sobu-rapid",
+      "yokosuka-sobu",
       "JO",
       "소부 쾌속선",
       "総武快速線",

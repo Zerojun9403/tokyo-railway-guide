@@ -109,7 +109,7 @@ const resolveApiLineId = (lineId: string) => {
  * ODPT API는:
  *
  * Shibuya
- * Nakameguro
+ * NakaMeguro
  * Jiyugaoka
  * MusashiKosugi
  * Kikuna
@@ -121,6 +121,7 @@ const resolveApiLineId = (lineId: string) => {
 
 const STATION_ID_MAP: Record<string, string> = {
   // Tokyu Toyoko Line
+
   TY01: "Shibuya",
   TY02: "Daikanyama",
   TY03: "NakaMeguro",

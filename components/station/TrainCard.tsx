@@ -2,6 +2,10 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { useAppTheme } from "../../hooks/useAppTheme";
 
+import { Plane } from "lucide-react-native";
+
+import { isAirportName } from "../../utils/airport";
+
 type TrainCardProps = {
   time: string;
 
@@ -120,37 +124,47 @@ export const TrainCard = ({
         </Text>
       </View>
 
-      {/* =====================================================
-          행선지
-      ===================================================== */}
+{/* =====================================================
+    행선지
+===================================================== */}
 
-      {destinationKo ? (
-        <View style={styles.destinationArea}>
-          <Text
-            style={[
-              styles.destinationKo,
-              {
-                color: colors.text,
-              },
-            ]}
-          >
-            {destinationKo}
-          </Text>
+{destinationKo ? (
+  <View style={styles.destinationArea}>
+    <View style={styles.destinationKoRow}>
+      <Text
+        style={[
+          styles.destinationKo,
+          {
+            color: colors.text,
+          },
+        ]}
+      >
+        {destinationKo}
+      </Text>
 
-          {destinationJa ? (
-            <Text
-              style={[
-                styles.destinationJa,
-                {
-                  color: colors.textSecondary,
-                },
-              ]}
-            >
-              {destinationJa}
-            </Text>
-          ) : null}
-        </View>
-      ) : null}
+      {isAirportName(destinationKo, destinationJa) && (
+        <Plane
+          size={16}
+          color={colors.textSecondary}
+          strokeWidth={2.2}
+        />
+      )}
+    </View>
+
+    {destinationJa ? (
+      <Text
+        style={[
+          styles.destinationJa,
+          {
+            color: colors.textSecondary,
+          },
+        ]}
+      >
+        {destinationJa}
+      </Text>
+    ) : null}
+  </View>
+) : null}
     </View>
   );
 };
@@ -288,4 +302,16 @@ const styles = StyleSheet.create({
 
     lineHeight: 16,
   },
+
+  /*
+   * =========================================================
+   * 공항전용
+   * =========================================================
+   */
+
+  destinationKoRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 6,
+},
 });

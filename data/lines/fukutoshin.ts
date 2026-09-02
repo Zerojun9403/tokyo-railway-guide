@@ -269,7 +269,7 @@ const TRANSFERS: Record<string, Transfer[]> = {
     transfer("saikyo", "JA", "사이쿄선", "埼京線", "#00AC9A"),
     transfer("tokyu-toyoko", "TY", "도큐 도요코선", "東急東横線", "#DA0442"),
     transfer(
-      "tokyu-denentoshi",
+      "tokyu-den-en-toshi",
       "DT",
       "도큐 덴엔토시선",
       "東急田園都市線",

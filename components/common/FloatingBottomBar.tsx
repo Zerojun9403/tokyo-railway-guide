@@ -1,5 +1,9 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { usePathname, useRouter } from "expo-router";
+import {
+  useGlobalSearchParams,
+  usePathname,
+  useRouter,
+} from "expo-router";
 import { Home, Map, Search, Settings, Star } from "lucide-react-native";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -41,6 +45,11 @@ const tabs: TabItem[] = [
 const FloatingBottomBar = () => {
   const router = useRouter();
   const pathname = usePathname();
+
+  const { lineId } = useGlobalSearchParams<{
+    lineId?: string;
+  }>();
+
   const insets = useSafeAreaInsets();
   const { colors } = useAppTheme();
 
@@ -53,7 +62,8 @@ const FloatingBottomBar = () => {
       return (
         pathname.startsWith("/company") ||
         pathname.startsWith("/line") ||
-        pathname.startsWith("/railway")
+        pathname.startsWith("/railway") ||
+        pathname.startsWith("/station")
       );
     }
 
@@ -62,6 +72,18 @@ const FloatingBottomBar = () => {
 
   const handlePress = (tab: TabItem) => {
     if (tab.id === "lines") {
+      /*
+       * 역 상세 페이지에서는
+       * 현재 역이 속한 노선의 노선도로 이동
+       */
+      if (pathname.startsWith("/station") && lineId) {
+        router.push(`/line/${lineId}`);
+        return;
+      }
+
+      /*
+       * 그 외 화면에서는 기존 동작 유지
+       */
       router.push("/");
       return;
     }
