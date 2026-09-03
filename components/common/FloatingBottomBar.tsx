@@ -1,44 +1,30 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
-import {
-  useGlobalSearchParams,
-  usePathname,
-  useRouter,
-} from "expo-router";
-import { Home, Map, Search, Settings, Star } from "lucide-react-native";
+import { useGlobalSearchParams, usePathname, useRouter } from "expo-router";
+import { Map, MoreHorizontal, Search } from "lucide-react-native";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type TabItem = {
-  id: "home" | "lines" | "search" | "favorites" | "settings";
-  path: "/" | "/search" | "/favorite-stations" | "/settings";
-  icon: typeof Home;
+  id: "search" | "lines" | "more";
+  path: "/" | "/map" | "/more";
+  icon: typeof Search;
 };
 
 const tabs: TabItem[] = [
   {
-    id: "home",
-    path: "/",
-    icon: Home,
-  },
-  {
-    id: "lines",
-    path: "/",
-    icon: Map,
-  },
-  {
     id: "search",
-    path: "/search",
+    path: "/",
     icon: Search,
   },
   {
-    id: "favorites",
-    path: "/favorite-stations",
-    icon: Star,
+    id: "lines",
+    path: "/map",
+    icon: Map,
   },
   {
-    id: "settings",
-    path: "/settings",
-    icon: Settings,
+    id: "more",
+    path: "/more",
+    icon: MoreHorizontal,
   },
 ];
 
@@ -54,12 +40,13 @@ const FloatingBottomBar = () => {
   const { colors } = useAppTheme();
 
   const isActive = (tab: TabItem) => {
-    if (tab.id === "home") {
-      return pathname === "/";
+    if (tab.id === "search") {
+      return pathname === "/" || pathname === "/route-result";
     }
 
     if (tab.id === "lines") {
       return (
+        pathname === "/map" ||
         pathname.startsWith("/company") ||
         pathname.startsWith("/line") ||
         pathname.startsWith("/railway") ||
@@ -67,10 +54,19 @@ const FloatingBottomBar = () => {
       );
     }
 
-    return pathname === tab.path;
+    if (tab.id === "more") {
+      return pathname === "/more";
+    }
+
+    return false;
   };
 
   const handlePress = (tab: TabItem) => {
+    if (tab.id === "search") {
+      router.push("/");
+      return;
+    }
+
     if (tab.id === "lines") {
       /*
        * 역 상세 페이지에서는
@@ -82,13 +78,17 @@ const FloatingBottomBar = () => {
       }
 
       /*
-       * 그 외 화면에서는 기존 동작 유지
+       * 그 외 화면에서는
+       * 노선 화면으로 이동
        */
-      router.push("/");
+      router.push("/map");
       return;
     }
 
-    router.push(tab.path);
+    if (tab.id === "more") {
+      router.push("/more");
+      return;
+    }
   };
 
   return (
@@ -129,9 +129,7 @@ const FloatingBottomBar = () => {
               <Icon
                 size={24}
                 color={
-                  active
-                    ? colors.bottomBarActiveIcon
-                    : colors.bottomBarIcon
+                  active ? colors.bottomBarActiveIcon : colors.bottomBarIcon
                 }
                 strokeWidth={2}
               />

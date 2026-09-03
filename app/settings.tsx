@@ -1,574 +1,180 @@
+import { router } from "expo-router";
 import {
-  SafeAreaView,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
+  Database,
+  Globe2,
+  Info,
+  Star,
+} from "lucide-react-native";
+import {
+  Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
-
-import { router } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAppTheme } from "../hooks/useAppTheme";
 
 export default function SettingsScreen() {
-  const { colors, isDark } = useAppTheme();
+  const { colors } = useAppTheme();
+  const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView
+    <View
       style={[
-        styles.safeArea,
+        styles.screen,
         {
           backgroundColor: colors.background,
+          paddingTop: insets.top,
         },
       ]}
     >
       <ScrollView
-        style={[
-          styles.screen,
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.container,
           {
-            backgroundColor: colors.background,
+            paddingBottom: Math.max(insets.bottom, 12) + 110,
           },
         ]}
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
       >
-        {/* ========================================
-            Header
-        ======================================== */}
+        {/* Header */}
 
         <View style={styles.header}>
-          <TouchableOpacity
-            style={[
+          <Pressable
+            onPress={() => router.back()}
+            style={({ pressed }) => [
               styles.backButton,
+              pressed && styles.pressed,
+            ]}
+          >
+            <ChevronLeft size={25} color={colors.text} strokeWidth={1.8} />
+          </Pressable>
+
+          <Text
+            style={[
+              styles.pageTitle,
               {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
+                color: colors.text,
               },
             ]}
-            activeOpacity={0.7}
-            onPress={() => router.back()}
           >
+            설정
+          </Text>
+        </View>
+
+        {/* 일반 */}
+
+        <SectionTitle title="일반" color={colors.textSecondary} />
+
+        <SettingRow
+          icon={<Globe2 size={20} color={colors.text} strokeWidth={1.7} />}
+          title="언어"
+          description="앱에서 사용하는 언어"
+          value="한국어"
+          showDivider
+        />
+
+        <SettingRow
+          icon={<Star size={20} color={colors.text} strokeWidth={1.7} />}
+          title="즐겨찾기 관리"
+          description="저장한 역을 확인하고 관리합니다"
+          onPress={() => router.push("/favorite-stations")}
+          showChevron
+          showDivider
+        />
+
+        <SettingRow
+          icon={<Clock3 size={20} color={colors.text} strokeWidth={1.7} />}
+          title="최근 역 관리"
+          description="최근 확인한 역을 확인합니다"
+          onPress={() => router.push("/recent-stations")}
+          showChevron
+        />
+
+        {/* 데이터 */}
+
+        <View style={styles.sectionGap} />
+
+        <SectionTitle title="데이터" color={colors.textSecondary} />
+
+        <View style={styles.dataHeader}>
+          <Database size={20} color={colors.text} strokeWidth={1.7} />
+
+          <View style={styles.dataHeaderText}>
             <Text
               style={[
-                styles.backArrow,
+                styles.rowTitle,
                 {
                   color: colors.text,
                 },
               ]}
             >
-              ‹
-            </Text>
-          </TouchableOpacity>
-
-          <View style={styles.headerTextArea}>
-            <Text
-              style={[
-                styles.headerTitle,
-                {
-                  color: colors.text,
-                },
-              ]}
-            >
-              설정
+              데이터 출처
             </Text>
 
             <Text
               style={[
-                styles.headerDescription,
+                styles.rowDescription,
                 {
                   color: colors.textSecondary,
                 },
               ]}
             >
-              앱 정보와 저장 데이터를 관리합니다.
+              철도 운행 및 시간표 데이터
             </Text>
           </View>
         </View>
 
-        {/* ========================================
-            Language
-        ======================================== */}
-
-        <View style={styles.section}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              {
-                color: colors.textSecondary,
-              },
-            ]}
-          >
-            언어
-          </Text>
-
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            <View style={styles.settingRow}>
-              <View
-                style={[
-                  styles.settingIcon,
-                  {
-                    backgroundColor: colors.surfaceSecondary,
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.settingIconText,
-                    {
-                      color: colors.textSecondary,
-                    },
-                  ]}
-                >
-                  가
-                </Text>
-              </View>
-
-              <View style={styles.settingInfo}>
-                <Text
-                  style={[
-                    styles.settingTitle,
-                    {
-                      color: colors.text,
-                    },
-                  ]}
-                >
-                  표시 언어
-                </Text>
-
-                <Text
-                  style={[
-                    styles.settingDescription,
-                    {
-                      color: colors.textSecondary,
-                    },
-                  ]}
-                >
-                  현재 한국어를 기본으로 사용합니다.
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  styles.valueBadge,
-                  {
-                    backgroundColor: colors.surfaceSecondary,
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.valueText,
-                    {
-                      color: colors.textSecondary,
-                    },
-                  ]}
-                >
-                  한국어
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* ========================================
-            Saved data
-        ======================================== */}
-
-        <View style={styles.section}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              {
-                color: colors.textSecondary,
-              },
-            ]}
-          >
-            저장 데이터
-          </Text>
-
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            <TouchableOpacity
-              style={styles.settingRow}
-              activeOpacity={0.7}
-              onPress={() => router.push("/favorite-stations")}
-            >
-              <View
-                style={[
-                  styles.settingIcon,
-                  {
-                    backgroundColor: colors.surfaceSecondary,
-                  },
-                ]}
-              >
-                <Text style={styles.favoriteSettingIcon}>★</Text>
-              </View>
-
-              <View style={styles.settingInfo}>
-                <Text
-                  style={[
-                    styles.settingTitle,
-                    {
-                      color: colors.text,
-                    },
-                  ]}
-                >
-                  즐겨찾기 관리
-                </Text>
-
-                <Text
-                  style={[
-                    styles.settingDescription,
-                    {
-                      color: colors.textSecondary,
-                    },
-                  ]}
-                >
-                  저장한 역을 확인하고 관리합니다.
-                </Text>
-              </View>
-
-              <Text
-                style={[
-                  styles.chevron,
-                  {
-                    color: colors.textMuted,
-                  },
-                ]}
-              >
-                ›
-              </Text>
-            </TouchableOpacity>
-
-            <View
-              style={[
-                styles.divider,
-                {
-                  backgroundColor: colors.border,
-                },
-              ]}
-            />
-
-            <TouchableOpacity
-              style={styles.settingRow}
-              activeOpacity={0.7}
-              onPress={() => router.push("/recent-stations")}
-            >
-              <View
-                style={[
-                  styles.settingIcon,
-                  {
-                    backgroundColor: colors.surfaceSecondary,
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.settingIconText,
-                    {
-                      color: colors.textSecondary,
-                    },
-                  ]}
-                >
-                  ↻
-                </Text>
-              </View>
-
-              <View style={styles.settingInfo}>
-                <Text
-                  style={[
-                    styles.settingTitle,
-                    {
-                      color: colors.text,
-                    },
-                  ]}
-                >
-                  최근 본 역 관리
-                </Text>
-
-                <Text
-                  style={[
-                    styles.settingDescription,
-                    {
-                      color: colors.textSecondary,
-                    },
-                  ]}
-                >
-                  최근 확인한 역 기록을 관리합니다.
-                </Text>
-              </View>
-
-              <Text
-                style={[
-                  styles.chevron,
-                  {
-                    color: colors.textMuted,
-                  },
-                ]}
-              >
-                ›
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* ========================================
-            Data source
-        ======================================== */}
-
-        <View style={styles.section}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              {
-                color: colors.textSecondary,
-              },
-            ]}
-          >
-            데이터 출처
-          </Text>
-
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            <View style={styles.sourceRow}>
-              <Text
-                style={[
-                  styles.sourceName,
-                  {
-                    color: colors.text,
-                  },
-                ]}
-              >
-                JR동일본
-              </Text>
-
-              <Text
-                style={[
-                  styles.sourceValue,
-                  {
-                    color: colors.textSecondary,
-                  },
-                ]}
-              >
-                ODPT
-              </Text>
-            </View>
-
-            <View
-              style={[
-                styles.divider,
-                {
-                  backgroundColor: colors.border,
-                },
-              ]}
-            />
-
-            <View style={styles.sourceRow}>
-              <Text
-                style={[
-                  styles.sourceName,
-                  {
-                    color: colors.text,
-                  },
-                ]}
-              >
-                도에이 지하철
-              </Text>
-
-              <Text
-                style={[
-                  styles.sourceValue,
-                  {
-                    color: colors.textSecondary,
-                  },
-                ]}
-              >
-                ODPT
-              </Text>
-            </View>
-
-            <View
-              style={[
-                styles.divider,
-                {
-                  backgroundColor: colors.border,
-                },
-              ]}
-            />
-
-            <View style={styles.sourceRow}>
-              <Text
-                style={[
-                  styles.sourceName,
-                  {
-                    color: colors.text,
-                  },
-                ]}
-              >
-                게이세이 전철
-              </Text>
-
-              <Text
-                style={[
-                  styles.sourceValue,
-                  {
-                    color: colors.textSecondary,
-                  },
-                ]}
-              >
-                공식 시간표 데이터
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* ========================================
-            App info
-        ======================================== */}
-
-        <View style={styles.section}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              {
-                color: colors.textSecondary,
-              },
-            ]}
-          >
-            앱 정보
-          </Text>
-
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            <View style={styles.appInfoRow}>
-              <View
-                style={[
-                  styles.appLogo,
-                  {
-                    backgroundColor: isDark ? "#F5F6F8" : "#17191D",
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.appLogoText,
-                    {
-                      color: isDark ? "#111827" : "#FFFFFF",
-                    },
-                  ]}
-                >
-                  TR
-                </Text>
-              </View>
-
-              <View style={styles.appInfoTextArea}>
-                <Text
-                  style={[
-                    styles.appName,
-                    {
-                      color: colors.text,
-                    },
-                  ]}
-                >
-                  Tokyo Railway Guide
-                </Text>
-
-                <Text
-                  style={[
-                    styles.appVersion,
-                    {
-                      color: colors.textMuted,
-                    },
-                  ]}
-                >
-                  Version 1.0.0
-                </Text>
-              </View>
-            </View>
-
-            <View
-              style={[
-                styles.divider,
-                {
-                  backgroundColor: colors.border,
-                },
-              ]}
-            />
-
-            <View style={styles.infoRow}>
-              <Text
-                style={[
-                  styles.infoLabel,
-                  {
-                    color: colors.textMuted,
-                  },
-                ]}
-              >
-                목적
-              </Text>
-
-              <Text
-                style={[
-                  styles.infoValue,
-                  {
-                    color: colors.text,
-                  },
-                ]}
-              >
-                한국인 도쿄 여행객을 위한 철도 안내
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* ========================================
-            Notice
-        ======================================== */}
-
         <View
           style={[
-            styles.noticeCard,
+            styles.sourceList,
             {
-              backgroundColor: isDark ? "#2B271B" : "#FFF8E8",
-              borderColor: isDark ? "#494027" : "#F4E5BD",
+              borderTopColor: colors.border,
             },
           ]}
         >
+          <SourceRow name="JR동일본" source="ODPT" />
+
+          <SourceRow name="도쿄메트로" source="ODPT" />
+
+          <SourceRow name="도에이 지하철" source="ODPT" />
+
+          <SourceRow name="게이세이 전철" source="공식 데이터" />
+
+          <SourceRow name="게이큐 전철" source="ODPT" />
+
+          <SourceRow name="세이부 철도" source="ODPT" />
+
+          <SourceRow name="도큐 전철" source="ODPT" last />
+        </View>
+
+        {/* 앱 정보 */}
+
+        <View style={styles.sectionGap} />
+
+        <SectionTitle title="앱 정보" color={colors.textSecondary} />
+
+        <SettingRow
+          icon={<Info size={20} color={colors.text} strokeWidth={1.7} />}
+          title="Tokyo Railway Guide"
+          description="도쿄 철도를 더 쉽고 직관적으로 이용하기 위한 여행자용 철도 가이드"
+          value="Version 1.0.0"
+        />
+
+        {/* 이용 안내 */}
+
+        <View style={styles.noticeArea}>
           <Text
             style={[
               styles.noticeTitle,
               {
-                color: isDark ? "#E8C86A" : "#8B6508",
+                color: colors.text,
               },
             ]}
           >
@@ -579,25 +185,57 @@ export default function SettingsScreen() {
             style={[
               styles.noticeText,
               {
-                color: isDark ? "#CDBB83" : "#92752B",
+                color: colors.textSecondary,
               },
             ]}
           >
-            표시되는 시간표와 운행정보는 실제 상황과 차이가 발생할 수 있습니다.
-            열차 이용 전 각 철도사업자의 공식 안내도 함께 확인해 주세요.
+            열차 시간표 및 운행 정보는 실제 운행 상황에 따라 달라질 수 있습니다.
+            열차 이용 전 철도회사의 공식 안내도 함께 확인해 주세요.
           </Text>
         </View>
 
-        {/* ========================================
-            Footer
-        ======================================== */}
+        {/* SDG 11 */}
+
+        <View style={styles.sdgArea}>
+          <Image
+            source={require("../assets/images/sgs11.png")}
+            style={styles.sdgLogo}
+            resizeMode="contain"
+          />
+
+          <View style={styles.sdgTextArea}>
+            <Text
+              style={[
+                styles.sdgTitle,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
+              지속가능한 도시와 공동체
+            </Text>
+
+            <Text
+              style={[
+                styles.sdgDescription,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
+              Sustainable Cities and Communities
+            </Text>
+          </View>
+        </View>
+
+        {/* Footer */}
 
         <View style={styles.footer}>
           <Text
             style={[
               styles.footerTitle,
               {
-                color: colors.textMuted,
+                color: colors.textSecondary,
               },
             ]}
           >
@@ -606,9 +244,9 @@ export default function SettingsScreen() {
 
           <Text
             style={[
-              styles.footerText,
+              styles.footerDescription,
               {
-                color: colors.textMuted,
+                color: colors.textSecondary,
               },
             ]}
           >
@@ -616,149 +254,301 @@ export default function SettingsScreen() {
           </Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
+/* =========================================================
+ * Section Title
+ * ======================================================= */
 
+type SectionTitleProps = {
+  title: string;
+  color: string;
+};
+
+const SectionTitle = ({ title, color }: SectionTitleProps) => {
+  return (
+    <Text
+      style={[
+        styles.sectionTitle,
+        {
+          color,
+        },
+      ]}
+    >
+      {title}
+    </Text>
+  );
+};
+
+/* =========================================================
+ * Setting Row
+ * ======================================================= */
+
+type SettingRowProps = {
+  icon: React.ReactNode;
+  title: string;
+  description?: string;
+  value?: string;
+  showChevron?: boolean;
+  showDivider?: boolean;
+  onPress?: () => void;
+};
+
+const SettingRow = ({
+  icon,
+  title,
+  description,
+  value,
+  showChevron = false,
+  showDivider = false,
+  onPress,
+}: SettingRowProps) => {
+  const { colors } = useAppTheme();
+
+  const content = (
+    <View style={styles.row}>
+      <View style={styles.iconArea}>{icon}</View>
+
+      <View
+        style={[
+          styles.rowContent,
+          showDivider && {
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderBottomColor: colors.border,
+          },
+        ]}
+      >
+        <View style={styles.rowTextArea}>
+          <Text
+            style={[
+              styles.rowTitle,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
+            {title}
+          </Text>
+
+          {description && (
+            <Text
+              style={[
+                styles.rowDescription,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
+              {description}
+            </Text>
+          )}
+        </View>
+
+        {value && (
+          <Text
+            style={[
+              styles.rowValue,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            {value}
+          </Text>
+        )}
+
+        {showChevron && (
+          <ChevronRight
+            size={17}
+            color={colors.textSecondary}
+            strokeWidth={1.8}
+          />
+        )}
+      </View>
+    </View>
+  );
+
+  if (!onPress) {
+    return content;
+  }
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [pressed && styles.pressed]}
+    >
+      {content}
+    </Pressable>
+  );
+};
+
+/* =========================================================
+ * Source Row
+ * ======================================================= */
+
+type SourceRowProps = {
+  name: string;
+  source: string;
+  last?: boolean;
+};
+
+const SourceRow = ({ name, source, last = false }: SourceRowProps) => {
+  const { colors } = useAppTheme();
+
+  return (
+    <View
+      style={[
+        styles.sourceRow,
+        !last && {
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: colors.border,
+        },
+      ]}
+    >
+      <Text
+        style={[
+          styles.sourceName,
+          {
+            color: colors.text,
+          },
+        ]}
+      >
+        {name}
+      </Text>
+
+      <Text
+        style={[
+          styles.sourceValue,
+          {
+            color: colors.textSecondary,
+          },
+        ]}
+      >
+        {source}
+      </Text>
+    </View>
+  );
+};
+
+/* =========================================================
+ * Styles
+ * ======================================================= */
+
+const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
 
   container: {
-    paddingHorizontal: 22,
-    paddingTop: 22,
-    paddingBottom: 120,
+    width: "100%",
+    maxWidth: 720,
+    alignSelf: "center",
+    paddingHorizontal: 24,
+    paddingTop: 24,
   },
+
+  /* Header */
 
   header: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 34,
   },
 
   backButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    borderWidth: 1,
-    alignItems: "center",
+    width: 38,
+    height: 38,
+    alignItems: "flex-start",
     justifyContent: "center",
-    marginRight: 13,
+    marginRight: 6,
   },
 
-  backArrow: {
-    marginTop: -3,
-    fontSize: 31,
-    lineHeight: 34,
+  pageTitle: {
+    fontSize: 26,
+    fontWeight: "700",
+    letterSpacing: -0.5,
   },
 
-  headerTextArea: {
-    flex: 1,
-  },
-
-  headerTitle: {
-    fontSize: 25,
-    lineHeight: 31,
-    fontWeight: "900",
-  },
-
-  headerDescription: {
-    marginTop: 2,
-    fontSize: 12,
-    lineHeight: 17,
-  },
-
-  section: {
-    marginBottom: 28,
-  },
+  /* Sections */
 
   sectionTitle: {
-    marginBottom: 11,
-    fontSize: 15,
-    lineHeight: 20,
-    fontWeight: "800",
+    marginBottom: 8,
+    fontSize: 13,
+    fontWeight: "600",
   },
 
-  card: {
-    borderRadius: 22,
-    borderWidth: 1,
-    overflow: "hidden",
+  sectionGap: {
+    height: 38,
   },
 
-  settingRow: {
-    minHeight: 82,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+  /* Setting Row */
+
+  row: {
+    minHeight: 66,
+    flexDirection: "row",
+    alignItems: "stretch",
+  },
+
+  iconArea: {
+    width: 46,
+    paddingTop: 20,
+    alignItems: "flex-start",
+  },
+
+  rowContent: {
+    flex: 1,
+    minHeight: 66,
     flexDirection: "row",
     alignItems: "center",
   },
 
-  settingIcon: {
-    width: 46,
-    height: 46,
-    borderRadius: 15,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 13,
-  },
-
-  settingIconText: {
-    fontSize: 18,
-    fontWeight: "900",
-  },
-
-  favoriteSettingIcon: {
-    fontSize: 18,
-    lineHeight: 22,
-    color: "#F5B800",
-  },
-
-  settingInfo: {
+  rowTextArea: {
     flex: 1,
+    paddingVertical: 14,
+    paddingRight: 12,
   },
 
-  settingTitle: {
+  rowTitle: {
     fontSize: 15,
-    lineHeight: 20,
-    fontWeight: "800",
+    fontWeight: "600",
+    letterSpacing: -0.2,
   },
 
-  settingDescription: {
+  rowDescription: {
     marginTop: 3,
-    fontSize: 11,
-    lineHeight: 16,
+    fontSize: 12.5,
+    lineHeight: 18,
   },
 
-  valueBadge: {
-    paddingHorizontal: 11,
-    paddingVertical: 7,
-    borderRadius: 11,
-  },
-
-  valueText: {
-    fontSize: 11,
-    fontWeight: "800",
-  },
-
-  chevron: {
+  rowValue: {
     marginLeft: 10,
-    fontSize: 29,
-    lineHeight: 32,
+    fontSize: 12,
   },
 
-  divider: {
-    height: 1,
-    marginLeft: 75,
+  /* Data */
+
+  dataHeader: {
+    minHeight: 66,
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+
+  dataHeaderText: {
+    flex: 1,
+    paddingTop: 17,
+    paddingBottom: 14,
+    marginLeft: 26,
+  },
+
+  sourceList: {
+    marginLeft: 46,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
 
   sourceRow: {
-    minHeight: 61,
-    paddingHorizontal: 17,
+    minHeight: 47,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -766,99 +556,79 @@ const styles = StyleSheet.create({
 
   sourceName: {
     fontSize: 13,
-    fontWeight: "700",
+    fontWeight: "500",
   },
 
   sourceValue: {
-    fontSize: 11,
-    fontWeight: "600",
+    marginLeft: 16,
+    fontSize: 11.5,
   },
 
-  appInfoRow: {
-    paddingHorizontal: 17,
-    paddingVertical: 18,
-    flexDirection: "row",
-    alignItems: "center",
-  },
+  /* Notice */
 
-  appLogo: {
-    width: 54,
-    height: 54,
-    borderRadius: 17,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 14,
-  },
-
-  appLogoText: {
-    fontSize: 16,
-    fontWeight: "900",
-  },
-
-  appInfoTextArea: {
-    flex: 1,
-  },
-
-  appName: {
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: "900",
-  },
-
-  appVersion: {
-    marginTop: 3,
-    fontSize: 11,
-  },
-
-  infoRow: {
-    paddingHorizontal: 17,
-    paddingVertical: 16,
-  },
-
-  infoLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-  },
-
-  infoValue: {
-    marginTop: 5,
-    fontSize: 13,
-    lineHeight: 19,
-    fontWeight: "700",
-  },
-
-  noticeCard: {
-    paddingHorizontal: 18,
-    paddingVertical: 18,
-    borderRadius: 20,
-    borderWidth: 1,
+  noticeArea: {
+    marginTop: 32,
   },
 
   noticeTitle: {
     fontSize: 13,
-    lineHeight: 18,
-    fontWeight: "900",
+    fontWeight: "600",
   },
 
   noticeText: {
-    marginTop: 7,
-    fontSize: 11,
+    marginTop: 8,
+    fontSize: 11.5,
     lineHeight: 18,
   },
 
-  footer: {
-    marginTop: 35,
+  /* SDG */
+
+  sdgArea: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    marginTop: 52,
+  },
+
+  sdgLogo: {
+    width: 42,
+    height: 42,
+    marginRight: 10,
+  },
+
+  sdgTextArea: {
+    justifyContent: "center",
+  },
+
+  sdgTitle: {
+    fontSize: 10,
+    fontWeight: "600",
+  },
+
+  sdgDescription: {
+    marginTop: 2,
+    fontSize: 8.5,
+  },
+
+  /* Footer */
+
+  footer: {
+    alignItems: "center",
+    marginTop: 24,
   },
 
   footerTitle: {
-    fontSize: 11,
-    fontWeight: "900",
-    letterSpacing: 1.1,
+    fontSize: 9,
+    fontWeight: "700",
+    letterSpacing: 1.2,
   },
 
-  footerText: {
+  footerDescription: {
     marginTop: 4,
-    fontSize: 10,
+    fontSize: 8.5,
+  },
+
+  pressed: {
+    opacity: 0.5,
   },
 });

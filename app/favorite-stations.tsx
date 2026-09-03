@@ -1,49 +1,25 @@
 import { useCallback, useMemo } from "react";
 
-import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-
 import { router, useFocusEffect } from "expo-router";
+import { ChevronLeft, ChevronRight, Search, Star } from "lucide-react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { getStation } from "../data/railwayRegistry";
-
 import { useAppTheme } from "../hooks/useAppTheme";
 import { useFavoriteStations } from "../hooks/useFavoriteStations";
 
 export default function FavoriteStationsScreen() {
-  const { colors, isDark } = useAppTheme();
-
-  /*
-   * =======================================================
-   * 즐겨찾기
-   * =======================================================
-   */
+  const { colors } = useAppTheme();
+  const insets = useSafeAreaInsets();
 
   const { favoriteStationIds, reload } = useFavoriteStations("");
-
-  /*
-   * =======================================================
-   * 화면 진입 / 복귀 시 다시 불러오기
-   * =======================================================
-   */
 
   useFocusEffect(
     useCallback(() => {
       void reload();
     }, [reload]),
   );
-
-  /*
-   * =======================================================
-   * Station[]
-   * =======================================================
-   */
 
   const favoriteStations = useMemo(() => {
     return favoriteStationIds
@@ -54,16 +30,9 @@ export default function FavoriteStationsScreen() {
       );
   }, [favoriteStationIds]);
 
-  /*
-   * =======================================================
-   * 역 상세 이동
-   * =======================================================
-   */
-
   const handlePressStation = (stationId: string) => {
     router.push({
       pathname: "/station/[stationId]",
-
       params: {
         stationId,
       },
@@ -71,111 +40,80 @@ export default function FavoriteStationsScreen() {
   };
 
   return (
-    <SafeAreaView
+    <View
       style={[
-        styles.safeArea,
+        styles.screen,
         {
           backgroundColor: colors.background,
+          paddingTop: insets.top,
         },
       ]}
     >
       <ScrollView
-        style={[
-          styles.screen,
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.container,
           {
-            backgroundColor: colors.background,
+            paddingBottom: Math.max(insets.bottom, 12) + 110,
           },
         ]}
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
       >
-        {/* =================================================
-            Header
-        ================================================= */}
+        {/* Header */}
 
         <View style={styles.header}>
-          <TouchableOpacity
-            style={[
-              styles.backButton,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-            ]}
-            activeOpacity={0.7}
+          <Pressable
             onPress={() => router.back()}
+            style={({ pressed }) => [
+              styles.backButton,
+              pressed && styles.pressed,
+            ]}
           >
-            <Text
-              style={[
-                styles.backArrow,
-                {
-                  color: colors.text,
-                },
-              ]}
-            >
-              ‹
-            </Text>
-          </TouchableOpacity>
+            <ChevronLeft size={25} color={colors.text} strokeWidth={1.8} />
+          </Pressable>
 
-          <View style={styles.headerTextArea}>
-            <Text
-              style={[
-                styles.headerTitle,
-                {
-                  color: colors.text,
-                },
-              ]}
-            >
-              즐겨찾는 역
-            </Text>
-
-            <Text
-              style={[
-                styles.headerDescription,
-                {
-                  color: colors.textSecondary,
-                },
-              ]}
-            >
-              자주 이용하는 역을 관리합니다.
-            </Text>
-          </View>
-        </View>
-
-        {/* =================================================
-            Count
-        ================================================= */}
-
-        <View style={styles.toolbar}>
           <Text
             style={[
-              styles.resultCount,
+              styles.pageTitle,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
+            즐겨찾는 역
+          </Text>
+        </View>
+
+        {/* 설명 */}
+
+        <View style={styles.intro}>
+          <Text
+            style={[
+              styles.introText,
               {
                 color: colors.textSecondary,
               },
             ]}
           >
-            총 {favoriteStations.length}개
+            자주 이용하는 역을 빠르게 확인할 수 있습니다.
+          </Text>
+
+          <Text
+            style={[
+              styles.countText,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            {favoriteStations.length}개
           </Text>
         </View>
 
-        {/* =================================================
-            Empty
-        ================================================= */}
+        {/* Empty */}
 
         {favoriteStations.length === 0 && (
           <View style={styles.emptyArea}>
-            <View
-              style={[
-                styles.emptyIcon,
-                {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                },
-              ]}
-            >
-              <Text style={styles.emptyIconText}>☆</Text>
-            </View>
+            <Star size={32} color={colors.textSecondary} strokeWidth={1.6} />
 
             <Text
               style={[
@@ -196,91 +134,72 @@ export default function FavoriteStationsScreen() {
                 },
               ]}
             >
-              역 상세 화면의 별을 눌러{"\n"}
+              역 상세 화면에서 별을 눌러{"\n"}
               자주 이용하는 역을 저장해 보세요.
             </Text>
 
-            <TouchableOpacity
-              style={[
+            <Pressable
+              onPress={() => router.push("/search")}
+              style={({ pressed }) => [
                 styles.searchButton,
                 {
-                  backgroundColor: colors.text,
+                  borderColor: colors.border,
                 },
+                pressed && styles.pressed,
               ]}
-              activeOpacity={0.7}
-              onPress={() => router.push("/search")}
             >
+              <Search size={17} color={colors.text} strokeWidth={1.8} />
+
               <Text
                 style={[
                   styles.searchButtonText,
                   {
-                    color: colors.background,
+                    color: colors.text,
                   },
                 ]}
               >
-                역 검색하기
+                역 검색
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         )}
 
-        {/* =================================================
-            Favorite List
-        ================================================= */}
+        {/* Favorite List */}
 
-        <View style={styles.stationList}>
-          {favoriteStations.map((station) => (
-            <FavoriteStationRow
-              key={station.id}
-              stationId={station.id}
-              stationCode={station.code}
-              stationNameKo={station.nameKo}
-              stationNameJa={station.nameJa}
-              lineNameKo={station.lineNameKo}
-              color={station.color}
-              isDark={isDark}
-              onPress={() => handlePressStation(station.id)}
-              onRemoved={() => {
-                void reload();
-              }}
-            />
-          ))}
-        </View>
+        {favoriteStations.length > 0 && (
+          <View style={styles.stationList}>
+            {favoriteStations.map((station, index) => (
+              <FavoriteStationRow
+                key={station.id}
+                stationId={station.id}
+                stationCode={station.code}
+                stationNameKo={station.nameKo}
+                stationNameJa={station.nameJa}
+                lineNameKo={station.lineNameKo}
+                color={station.color}
+                showDivider={index < favoriteStations.length - 1}
+                onPress={() => handlePressStation(station.id)}
+                onRemoved={() => {
+                  void reload();
+                }}
+              />
+            ))}
+          </View>
+        )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
-/*
- * =========================================================
- * Favorite Station Row
- * =========================================================
- *
- * Hook은 React 규칙상 map 안에서 직접 호출하면 안 된다.
- *
- * 그래서 각 역을 별도의 컴포넌트로 분리하고,
- * 이 컴포넌트 안에서 useFavoriteStations(stationId)를
- * 호출한다.
- * =========================================================
- */
-
 type FavoriteStationRowProps = {
   stationId: string;
-
   stationCode: string;
-
   stationNameKo: string;
-
   stationNameJa: string;
-
   lineNameKo: string;
-
   color: string;
-
-  isDark: boolean;
-
+  showDivider: boolean;
   onPress: () => void;
-
   onRemoved: () => void;
 };
 
@@ -291,7 +210,7 @@ function FavoriteStationRow({
   stationNameJa,
   lineNameKo,
   color,
-  isDark,
+  showDivider,
   onPress,
   onRemoved,
 }: FavoriteStationRowProps) {
@@ -299,47 +218,26 @@ function FavoriteStationRow({
 
   const { isFavorite, toggleFavorite } = useFavoriteStations(stationId);
 
-  /*
-   * =======================================================
-   * 삭제
-   * =======================================================
-   */
-
   const handleRemove = async () => {
-    /*
-     * 이미 삭제된 상태라면
-     * 다시 추가하지 않도록 방어
-     */
-
     if (!isFavorite) {
       return;
     }
 
     await toggleFavorite();
-
     onRemoved();
   };
 
   return (
-    <View
-      style={[
-        styles.stationCard,
-        {
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
-        },
-      ]}
-    >
-      {/* 역 상세 이동 영역 */}
-
-      <TouchableOpacity
-        style={styles.stationMain}
-        activeOpacity={0.7}
+    <View style={styles.stationRow}>
+      <Pressable
         onPress={onPress}
+        style={({ pressed }) => [styles.stationMain, pressed && styles.pressed]}
       >
+        {/* 역 코드 */}
+
         <View
           style={[
-            styles.stationBadge,
+            styles.stationCode,
             {
               borderColor: color,
             },
@@ -347,7 +245,7 @@ function FavoriteStationRow({
         >
           <Text
             style={[
-              styles.stationBadgeText,
+              styles.stationCodeText,
               {
                 color,
               },
@@ -357,355 +255,263 @@ function FavoriteStationRow({
           </Text>
         </View>
 
-        <View style={styles.stationInfo}>
-          <Text
-            style={[
-              styles.stationNameKo,
-              {
-                color: colors.text,
-              },
-            ]}
-          >
-            {stationNameKo}
-          </Text>
+        {/* 역 정보 */}
 
-          <Text
-            style={[
-              styles.stationNameJa,
-              {
-                color: colors.textSecondary,
-              },
-            ]}
-          >
-            {stationNameJa}
-          </Text>
+        <View
+          style={[
+            styles.stationContent,
+            showDivider && {
+              borderBottomWidth: StyleSheet.hairlineWidth,
+              borderBottomColor: colors.border,
+            },
+          ]}
+        >
+          <View style={styles.stationInfo}>
+            <View style={styles.stationNameRow}>
+              <Text
+                style={[
+                  styles.stationNameKo,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+                numberOfLines={1}
+              >
+                {stationNameKo}
+              </Text>
 
-          <Text
-            style={[
-              styles.stationLine,
-              {
-                color: colors.textSecondary,
-              },
+              <Text
+                style={[
+                  styles.stationNameJa,
+                  {
+                    color: colors.textSecondary,
+                  },
+                ]}
+                numberOfLines={1}
+              >
+                {stationNameJa}
+              </Text>
+            </View>
+
+            <Text
+              style={[
+                styles.stationLine,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+              numberOfLines={1}
+            >
+              {lineNameKo}
+            </Text>
+          </View>
+
+          <Pressable
+            onPress={(event) => {
+              event.stopPropagation();
+              void handleRemove();
+            }}
+            hitSlop={12}
+            style={({ pressed }) => [
+              styles.favoriteButton,
+              pressed && styles.pressed,
             ]}
+            accessibilityRole="button"
+            accessibilityLabel="즐겨찾기 해제"
           >
-            {lineNameKo}
-          </Text>
+            <Star size={19} color="#F5B800" fill="#F5B800" strokeWidth={1.7} />
+          </Pressable>
+
+          <ChevronRight
+            size={17}
+            color={colors.textSecondary}
+            strokeWidth={1.8}
+          />
         </View>
-      </TouchableOpacity>
-
-      {/* 즐겨찾기 삭제 */}
-
-      <TouchableOpacity
-        style={[
-          styles.favoriteButton,
-          {
-            backgroundColor: isDark ? "#3A3218" : "#FFF8DE",
-            borderColor: isDark ? "#5C4D17" : "#FBE9A3",
-          },
-        ]}
-        activeOpacity={0.7}
-        onPress={() => {
-          void handleRemove();
-        }}
-        accessibilityRole="button"
-        accessibilityLabel="즐겨찾기 해제"
-      >
-        <Text style={styles.favoriteIcon}>★</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }
 
-/*
- * =========================================================
- * Styles
- * =========================================================
- */
-
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-
   screen: {
     flex: 1,
   },
 
   container: {
-    paddingHorizontal: 22,
-
-    paddingTop: 22,
-
-    paddingBottom: 120,
+    width: "100%",
+    maxWidth: 720,
+    alignSelf: "center",
+    paddingHorizontal: 24,
+    paddingTop: 24,
   },
 
-  /*
-   * =====================================================
-   * Header
-   * =====================================================
-   */
+  /* Header */
 
   header: {
     flexDirection: "row",
-
     alignItems: "center",
-
-    marginBottom: 28,
+    marginBottom: 30,
   },
 
   backButton: {
-    width: 42,
-
-    height: 42,
-
-    borderRadius: 14,
-
-    borderWidth: 1,
-
-    alignItems: "center",
-
+    width: 38,
+    height: 38,
+    alignItems: "flex-start",
     justifyContent: "center",
-
-    marginRight: 13,
+    marginRight: 6,
   },
 
-  backArrow: {
-    marginTop: -3,
-
-    fontSize: 31,
-
-    lineHeight: 34,
-  },
-
-  headerTextArea: {
-    flex: 1,
-  },
-
-  headerTitle: {
-    fontSize: 24,
-
-    lineHeight: 30,
-
-    fontWeight: "900",
-  },
-
-  headerDescription: {
-    marginTop: 2,
-
-    fontSize: 12,
-
-    lineHeight: 17,
-  },
-
-  /*
-   * =====================================================
-   * Toolbar
-   * =====================================================
-   */
-
-  toolbar: {
-    flexDirection: "row",
-
-    alignItems: "center",
-
-    justifyContent: "space-between",
-
-    marginBottom: 13,
-  },
-
-  resultCount: {
-    fontSize: 12,
-
+  pageTitle: {
+    fontSize: 26,
     fontWeight: "700",
+    letterSpacing: -0.5,
   },
 
-  /*
-   * =====================================================
-   * Station List
-   * =====================================================
-   */
+  /* Intro */
+
+  intro: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 24,
+  },
+
+  introText: {
+    flex: 1,
+    fontSize: 12.5,
+    lineHeight: 18,
+  },
+
+  countText: {
+    marginLeft: 16,
+    fontSize: 12,
+    fontWeight: "500",
+  },
+
+  /* Station List */
 
   stationList: {
-    gap: 10,
+    width: "100%",
   },
 
-  stationCard: {
-    minHeight: 88,
-
-    paddingHorizontal: 14,
-
-    paddingVertical: 13,
-
-    borderRadius: 20,
-
-    borderWidth: 1,
-
-    flexDirection: "row",
-
-    alignItems: "center",
+  stationRow: {
+    width: "100%",
   },
 
   stationMain: {
+    minHeight: 76,
+    flexDirection: "row",
+    alignItems: "stretch",
+  },
+
+  stationCode: {
+    width: 38,
+    height: 38,
+    marginTop: 19,
+    marginRight: 12,
+
+    borderRadius: 12,
+    borderWidth: 2,
+
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  stationCodeText: {
+    fontSize: 9.5,
+    fontWeight: "700",
+  },
+
+  stationContent: {
     flex: 1,
+    minHeight: 76,
 
     flexDirection: "row",
-
     alignItems: "center",
-  },
-
-  stationBadge: {
-    minWidth: 50,
-
-    height: 50,
-
-    paddingHorizontal: 7,
-
-    borderRadius: 16,
-
-    borderWidth: 3,
-
-    alignItems: "center",
-
-    justifyContent: "center",
-
-    marginRight: 13,
-  },
-
-  stationBadgeText: {
-    fontSize: 11,
-
-    fontWeight: "900",
   },
 
   stationInfo: {
     flex: 1,
-
     minWidth: 0,
   },
 
+  stationNameRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+  },
+
   stationNameKo: {
-    fontSize: 16,
-
-    lineHeight: 21,
-
-    fontWeight: "900",
+    maxWidth: "60%",
+    fontSize: 15,
+    fontWeight: "600",
+    letterSpacing: -0.2,
   },
 
   stationNameJa: {
-    marginTop: 1,
-
-    fontSize: 10,
-
-    lineHeight: 14,
+    flexShrink: 1,
+    marginLeft: 7,
+    fontSize: 10.5,
   },
 
   stationLine: {
-    marginTop: 5,
-
-    fontSize: 11,
-
-    lineHeight: 15,
+    marginTop: 4,
+    fontSize: 12,
+    lineHeight: 17,
   },
-
-  /*
-   * =====================================================
-   * Favorite Button
-   * =====================================================
-   */
 
   favoriteButton: {
-    width: 42,
-
-    height: 42,
-
-    marginLeft: 8,
-
-    borderRadius: 14,
-
-    borderWidth: 1,
+    width: 38,
+    height: 38,
 
     alignItems: "center",
-
     justifyContent: "center",
+
+    marginRight: 2,
   },
 
-  favoriteIcon: {
-    fontSize: 20,
-
-    lineHeight: 24,
-
-    color: "#F5B800",
-  },
-
-  /*
-   * =====================================================
-   * Empty
-   * =====================================================
-   */
+  /* Empty */
 
   emptyArea: {
-    paddingTop: 80,
-
+    paddingTop: 90,
     alignItems: "center",
-  },
-
-  emptyIcon: {
-    width: 70,
-
-    height: 70,
-
-    borderRadius: 23,
-
-    borderWidth: 1,
-
-    alignItems: "center",
-
-    justifyContent: "center",
-  },
-
-  emptyIconText: {
-    fontSize: 31,
-
-    lineHeight: 35,
-
-    color: "#F5B800",
   },
 
   emptyTitle: {
-    marginTop: 19,
-
-    fontSize: 18,
-
-    lineHeight: 23,
-
-    fontWeight: "900",
+    marginTop: 18,
+    fontSize: 16,
+    fontWeight: "600",
   },
 
   emptyDescription: {
     marginTop: 8,
-
-    fontSize: 13,
-
-    lineHeight: 20,
-
+    fontSize: 12.5,
+    lineHeight: 19,
     textAlign: "center",
   },
 
   searchButton: {
-    marginTop: 22,
+    marginTop: 24,
+    height: 42,
 
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
 
-    paddingVertical: 13,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
 
+    borderWidth: 1,
     borderRadius: 14,
+
+    gap: 7,
   },
 
   searchButtonText: {
     fontSize: 13,
+    fontWeight: "600",
+  },
 
-    lineHeight: 18,
-
-    fontWeight: "800",
+  pressed: {
+    opacity: 0.5,
   },
 });
