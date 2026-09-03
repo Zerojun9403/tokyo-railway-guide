@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 
-import { router } from "expo-router";
+import { router, useLocalSearchParams  } from "expo-router";
 
 import { searchStations } from "../data/railwayRegistry";
 import { useAppTheme } from "../hooks/useAppTheme";
@@ -35,6 +35,26 @@ const OPERATOR_NAMES: Record<string, string> = {
 
 export default function SearchScreen() {
   const { colors } = useAppTheme();
+ const params = useLocalSearchParams<{
+  mode?: "departure" | "arrival";
+
+  departureStationId?: string;
+  departureLineId?: string;
+  departureNameKo?: string;
+  departureNameJa?: string;
+
+  arrivalStationId?: string;
+  arrivalLineId?: string;
+  arrivalNameKo?: string;
+  arrivalNameJa?: string;
+}>();
+
+
+  const mode = params.mode;
+  const isRouteSelection =
+    mode === "departure" || mode === "arrival";
+
+
 
   /*
    * =======================================================
@@ -67,17 +87,63 @@ export default function SearchScreen() {
    * 역 상세 이동
    * =======================================================
    */
-
-  const handlePressStation = (stationId: string, lineId: string) => {
-    router.push({
-      pathname: "/station/[stationId]",
-
+const handlePressStation = (
+  stationId: string,
+  lineId: string,
+  nameKo: string,
+  nameJa: string,
+) => {
+  if (mode === "departure") {
+    router.replace({
+      pathname: "/",
       params: {
+        mode: "departure",
+
         stationId,
         lineId,
+        nameKo,
+        nameJa,
+
+        arrivalStationId: params.arrivalStationId ?? "",
+        arrivalLineId: params.arrivalLineId ?? "",
+        arrivalNameKo: params.arrivalNameKo ?? "",
+        arrivalNameJa: params.arrivalNameJa ?? "",
       },
     });
-  };
+
+    return;
+  }
+
+  if (mode === "arrival") {
+    router.replace({
+      pathname: "/",
+      params: {
+        mode: "arrival",
+
+        stationId,
+        lineId,
+        nameKo,
+        nameJa,
+
+        departureStationId: params.departureStationId ?? "",
+        departureLineId: params.departureLineId ?? "",
+        departureNameKo: params.departureNameKo ?? "",
+        departureNameJa: params.departureNameJa ?? "",
+      },
+    });
+
+    return;
+  }
+
+  router.push({
+    pathname: "/station/[stationId]",
+
+    params: {
+      stationId,
+      lineId,
+    },
+  });
+};
 
   /*
    * =======================================================
@@ -143,7 +209,11 @@ export default function SearchScreen() {
                 },
               ]}
             >
-              역 검색
+              {mode === "departure"
+                ? "출발역 선택"
+                : mode === "arrival"
+                  ? "도착역 선택"
+                  : "역 검색"}
             </Text>
 
             <Text
@@ -154,7 +224,11 @@ export default function SearchScreen() {
                 },
               ]}
             >
-              원하는 역을 바로 찾아보세요.
+              {mode === "departure"
+                  ? "출발할 역을 검색해서 선택하세요."
+                  : mode === "arrival"
+                    ? "도착할 역을 검색해서 선택하세요."
+                    : "원하는 역을 바로 찾아보세요."}
             </Text>
           </View>
         </View>
@@ -397,7 +471,12 @@ export default function SearchScreen() {
                       ]}
                       activeOpacity={0.7}
                       onPress={() =>
-                        handlePressStation(station.id, result.lineId)
+                        handlePressStation(
+                          station.id,
+                          result.lineId,
+                          station.nameKo,
+                          station.nameJa,
+                        )
                       }
                     >
                       {/* ===============================

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useEffect, useState } from "react";
 
 import {
   SafeAreaView,
@@ -9,258 +9,191 @@ import {
   View,
 } from "react-native";
 
-import { router, useFocusEffect } from "expo-router";
-import { ChevronRight, Search, Star } from "lucide-react-native";
+import { router, useLocalSearchParams } from "expo-router";
+import {
+  ArrowDownUp,
+  ChevronRight,
+  Map,
+  MapPin,
+  Navigation,
+  Search,
+} from "lucide-react-native";
 
-import { getStation } from "../data/railwayRegistry";
 import { useAppTheme } from "../hooks/useAppTheme";
-import { useFavoriteStations } from "../hooks/useFavoriteStations";
-import { useRecentStations } from "../hooks/useRecentStations";
 
-/*
- * =========================================================
- * 철도회사 카드
- * =========================================================
- */
-
-type RailwayCompanyCard = {
-  id: string;
-
-  nameKo: string;
-  nameJa: string;
-
-  description: string;
-
-  color: string;
-
-  badge: string;
+type SelectedStation = {
+  stationId: string;
+  lineId?: string;
+  nameKo?: string;
+  nameJa?: string;
 };
 
-/*
- * =========================================================
- * 철도회사
- * =========================================================
- */
-
-const RAILWAY_COMPANIES: RailwayCompanyCard[] = [
-  {
-    id: "jr-east",
-
-    nameKo: "JR동일본",
-    nameJa: "JR東日本",
-
-    /*
-     * 주오선도 생겼으므로
-     * 기존 야마노테 전용 문구에서 변경
-     */
-
-    description: "야마노테선 · 주오선 등 도쿄 주요 JR 노선",
-
-    color: "#80C41C",
-
-    badge: "JR",
-  },
-  {
-    id: "tokyo-metro",
-
-    nameKo: "도쿄메트로",
-    nameJa: "東京メトロ",
-
-    description: "긴자선 등 도쿄 도심 주요 지하철",
-
-    color: "#00A4E0",
-
-    badge: "M",
-  },
-
-  {
-    id: "toei",
-
-    nameKo: "도에이 지하철",
-    nameJa: "都営地下鉄",
-
-    description: "오에도선 등 도쿄 도심 지하철",
-
-    color: "#CE045B",
-
-    badge: "E",
-  },
-
-  {
-    id: "keisei",
-
-    nameKo: "게이세이 전철",
-    nameJa: "京成電鉄",
-
-    description: "우에노 · 나리타공항을 잇는 철도",
-
-    color: "#005AAA",
-
-    badge: "KS",
-  },
-
-  {
-    id: "keikyu",
-
-    nameKo: "게이큐 전철",
-    nameJa: "京浜急行電鉄",
-
-    description: "시나가와 · 요코하마 · 하네다공항을 잇는 철도",
-
-    color: "#00BFFF",
-
-    badge: "KK",
-  },
- {
-    id: "seibu",
-
-    nameKo: "세이부 철도",
-    nameJa: "西武鉄道",
-
-    description: "이케부쿠로 · 네리마 · 토코로자와를 잇는 철도",
-
-    color: "#EF7A00",
-
-    badge: "SI",
-  },
-    {
-    id: "tokyu",
-
-    nameKo: "도큐 전철",
-    nameJa: "東急電鉄",
-
-    description: "시부야 · 요코하마를 잇는 도쿄 남서부의 주요 철도",
-
-    color: "#DA0442",
-
-    badge: "TY",
-  },
-
-];
-
-export default function HomeScreen() {
+const HomeScreen = () => {
   const { colors } = useAppTheme();
 
-  /*
-   * =======================================================
-   * 즐겨찾기
-   * =======================================================
-   */
+  const params = useLocalSearchParams<{
+    mode?: string;
+    stationId?: string;
+    lineId?: string;
+    nameKo?: string;
+    nameJa?: string;
 
-  const {
-    favoriteStationIds,
+    departureStationId?: string;
+    departureLineId?: string;
+    departureNameKo?: string;
+    departureNameJa?: string;
 
-    reload: reloadFavorites,
-  } = useFavoriteStations("");
+    arrivalStationId?: string;
+    arrivalLineId?: string;
+    arrivalNameKo?: string;
+    arrivalNameJa?: string;
+  }>();
 
-  /*
-   * =======================================================
-   * 최근 본 역
-   * =======================================================
-   */
+  const [departure, setDeparture] =
+    useState<SelectedStation | null>(null);
 
-  const {
-    recentStationIds,
+  const [arrival, setArrival] =
+    useState<SelectedStation | null>(null);
 
-    reload: reloadRecent,
-  } = useRecentStations();
+  useEffect(() => {
+    if (params.departureStationId) {
+      setDeparture({
+        stationId: params.departureStationId,
+        lineId: params.departureLineId,
+        nameKo: params.departureNameKo,
+        nameJa: params.departureNameJa,
+      });
+    }
 
-  /*
-   * =======================================================
-   * 화면 복귀
-   * =======================================================
-   */
+    if (params.arrivalStationId) {
+      setArrival({
+        stationId: params.arrivalStationId,
+        lineId: params.arrivalLineId,
+        nameKo: params.arrivalNameKo,
+        nameJa: params.arrivalNameJa,
+      });
+    }
 
-  useFocusEffect(
-    useCallback(() => {
-      void reloadFavorites();
+    if (
+      params.mode === "departure" &&
+      params.stationId
+    ) {
+      setDeparture({
+        stationId: params.stationId,
+        lineId: params.lineId,
+        nameKo: params.nameKo,
+        nameJa: params.nameJa,
+      });
+    }
 
-      void reloadRecent();
-    }, [reloadFavorites, reloadRecent]),
-  );
+    if (
+      params.mode === "arrival" &&
+      params.stationId
+    ) {
+      setArrival({
+        stationId: params.stationId,
+        lineId: params.lineId,
+        nameKo: params.nameKo,
+        nameJa: params.nameJa,
+      });
+    }
+  }, [
+    params.mode,
+    params.stationId,
+    params.lineId,
+    params.nameKo,
+    params.nameJa,
+    params.departureStationId,
+    params.departureLineId,
+    params.departureNameKo,
+    params.departureNameJa,
+    params.arrivalStationId,
+    params.arrivalLineId,
+    params.arrivalNameKo,
+    params.arrivalNameJa,
+  ]);
 
-  /*
-   * =======================================================
-   * 즐겨찾기 Station[]
-   * =======================================================
-   */
-
-  const favoriteStations = useMemo(() => {
-    return favoriteStationIds
-      .map((stationId) => getStation(stationId))
-      .filter(
-        (station): station is NonNullable<ReturnType<typeof getStation>> =>
-          Boolean(station),
-      );
-  }, [favoriteStationIds]);
-
-  /*
-   * =======================================================
-   * 최근 본 Station[]
-   * =======================================================
-   */
-
-  const recentStations = useMemo(() => {
-    return recentStationIds
-      .map((stationId) => getStation(stationId))
-      .filter(
-        (station): station is NonNullable<ReturnType<typeof getStation>> =>
-          Boolean(station),
-      );
-  }, [recentStationIds]);
-
-  /*
-   * =======================================================
-   * 역 상세
-   * =======================================================
-   */
-
-  const handlePressStation = (stationId: string) => {
+  const handleSelectDeparture = () => {
     router.push({
-      pathname: "/station/[stationId]",
+      pathname: "/search",
 
       params: {
-        stationId,
+        mode: "departure",
+
+        arrivalStationId:
+          arrival?.stationId ?? "",
+
+        arrivalLineId:
+          arrival?.lineId ?? "",
+
+        arrivalNameKo:
+          arrival?.nameKo ?? "",
+
+        arrivalNameJa:
+          arrival?.nameJa ?? "",
       },
     });
   };
 
-  /*
-   * =======================================================
-   * 철도회사
-   * =======================================================
-   *
-   * 기존:
-   *
-   * JR동일본
-   * → /line/yamanote
-   *
-   *
-   * 변경:
-   *
-   * JR동일본
-   * → /company/jr-east
-   * → 노선 선택
-   * =======================================================
-   */
-
-  const handlePressCompany = (company: RailwayCompanyCard) => {
+  const handleSelectArrival = () => {
     router.push({
-      pathname: "/company/[companyId]",
+      pathname: "/search",
 
       params: {
-        companyId: company.id,
+        mode: "arrival",
+
+        departureStationId:
+          departure?.stationId ?? "",
+
+        departureLineId:
+          departure?.lineId ?? "",
+
+        departureNameKo:
+          departure?.nameKo ?? "",
+
+        departureNameJa:
+          departure?.nameJa ?? "",
       },
     });
   };
 
-  /*
-   * =======================================================
-   * 설정
-   * =======================================================
-   */
+  const handleSwapStations = () => {
+    const previousDeparture = departure;
 
- 
+    setDeparture(arrival);
+    setArrival(previousDeparture);
+  };
+
+  const canSearch =
+    !!departure?.nameKo &&
+    !!arrival?.nameKo;
+
+  const handleSearchRoute = () => {
+    if (
+      !departure?.nameKo ||
+      !arrival?.nameKo
+    ) {
+      return;
+    }
+
+    router.push({
+      pathname: "/route-result" as any,
+
+      params: {
+        departureNameKo:
+          departure.nameKo,
+
+        departureNameJa:
+          departure.nameJa ?? "",
+
+        arrivalNameKo:
+          arrival.nameKo,
+
+        arrivalNameJa:
+          arrival.nameJa ?? "",
+      },
+    });
+  };
 
   return (
     <SafeAreaView
@@ -281,24 +214,19 @@ export default function HomeScreen() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        {/* =================================================
-            Hero
-        ================================================= */}
+        {/* Hero */}
 
         <View style={styles.hero}>
-          <View style={styles.heroTop}>
-            <Text
-              style={[
-                styles.eyebrow,
-                {
-                  color: colors.textMuted,
-                },
-              ]}
-            >
-              TOKYO RAILWAY GUIDE
-            </Text>
-
-          </View>
+          <Text
+            style={[
+              styles.eyebrow,
+              {
+                color: colors.textMuted,
+              },
+            ]}
+          >
+            TOKYO RAILWAY GUIDE
+          </Text>
 
           <Text
             style={[
@@ -308,9 +236,7 @@ export default function HomeScreen() {
               },
             ]}
           >
-            도쿄의 철도를
-            {"\n"}
-            하나의 출발점에서.
+            어디로 갈까요?
           </Text>
 
           <Text
@@ -321,429 +247,302 @@ export default function HomeScreen() {
               },
             ]}
           >
-            역을 검색하거나 철도회사를 선택해서 다음 열차를 확인해 보세요.
+            출발역과 도착역을 선택하면 환승 경로를 안내해 드려요.
           </Text>
         </View>
 
-        {/* =================================================
-            검색
-        ================================================= */}
+        {/* Route Search */}
 
-        <TouchableOpacity
+        <View
           style={[
-            styles.searchButton,
+            styles.routeCard,
             {
               backgroundColor: colors.surface,
             },
           ]}
-          activeOpacity={0.72}
-          onPress={() => router.push("/search")}
         >
-          <View
-            style={[
-              styles.searchIconArea,
-              {
-                backgroundColor: colors.surfaceSecondary,
-              },
-            ]}
+          {/* 출발 */}
+
+          <TouchableOpacity
+            style={styles.stationRow}
+            activeOpacity={0.7}
+            onPress={handleSelectDeparture}
           >
-            <Search
-              size={24}
-              color={colors.textSecondary}
-              strokeWidth={2}
-            />
-          </View>
-
-          <View style={styles.searchTextArea}>
-            <Text
+            <View
               style={[
-                styles.searchPlaceholder,
+                styles.stationIcon,
                 {
-                  color: colors.text,
+                  backgroundColor:
+                    colors.surfaceSecondary,
                 },
               ]}
             >
-              역 이름 또는 역번호 검색
-            </Text>
-
-            <Text
-              style={[
-                styles.searchExample,
-                {
-                  color: colors.textMuted,
-                },
-              ]}
-            >
-              신주쿠 · 新宿 · JY17 · JC05
-            </Text>
-          </View>
-
-          <ChevronRight
-            style={styles.trailingIcon}
-            size={24}
-            color={colors.textMuted}
-            strokeWidth={2}
-          />
-        </TouchableOpacity>
-
-        {/* =================================================
-            즐겨찾기
-        ================================================= */}
-
-        {favoriteStations.length > 0 && (
-          <View style={styles.stationSection}>
-            <View style={styles.sectionHeaderRow}>
-              <View>
-                <Text
-                  style={[
-                    styles.sectionTitle,
-                    {
-                      color: colors.text,
-                    },
-                  ]}
-                >
-                  즐겨찾는 역
-                </Text>
-
-                <Text
-                  style={[
-                    styles.sectionDescription,
-                    {
-                      color: colors.textMuted,
-                    },
-                  ]}
-                >
-                  자주 이용하는 역을 바로 확인하세요.
-                </Text>
-              </View>
-
-              <View style={styles.sectionCount}>
-                <Star
-                  size={14}
-                  color="#D49B00"
-                  fill="#D49B00"
-                  strokeWidth={2}
-                />
-                <Text style={styles.sectionCountText}>
-                  {favoriteStations.length}
-                </Text>
-              </View>
+              <Navigation
+                size={20}
+                color={colors.textSecondary}
+                strokeWidth={2}
+              />
             </View>
 
-            <View style={styles.favoriteList}>
-              {favoriteStations.map((station) => (
-                <TouchableOpacity
-                  key={station.id}
-                  style={[
-                    styles.favoriteCard,
-                    {
-                      backgroundColor: colors.surface,
-                    },
-                  ]}
-                  activeOpacity={0.7}
-                  onPress={() => handlePressStation(station.id)}
-                >
-                  <View
-                    style={[
-                      styles.favoriteBadge,
-                      {
-                        borderColor: station.color,
-                      },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.favoriteBadgeText,
-                        {
-                          color: station.color,
-                        },
-                      ]}
-                    >
-                      {station.code}
-                    </Text>
-                  </View>
-
-                  <View style={styles.favoriteInfo}>
-                    <Text
-                      style={[
-                        styles.favoriteNameKo,
-                        {
-                          color: colors.text,
-                        },
-                      ]}
-                    >
-                      {station.nameKo}
-                    </Text>
-
-                    <Text
-                      style={[
-                        styles.favoriteNameJa,
-                        {
-                          color: colors.textMuted,
-                        },
-                      ]}
-                    >
-                      {station.nameJa}
-                    </Text>
-
-                    <Text
-                      style={[
-                        styles.favoriteLine,
-                        {
-                          color: colors.textSecondary,
-                        },
-                      ]}
-                    >
-                      {station.lineNameKo}
-                    </Text>
-                  </View>
-
-                  <Star
-                    style={styles.trailingIcon}
-                    size={20}
-                    color="#F5B800"
-                    fill="#F5B800"
-                    strokeWidth={2}
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* =================================================
-            최근 본 역
-        ================================================= */}
-
-        {recentStations.length > 0 && (
-          <View style={styles.stationSection}>
-            <View style={styles.sectionHeaderRow}>
-              <View>
-                <Text
-                  style={[
-                    styles.sectionTitle,
-                    {
-                      color: colors.text,
-                    },
-                  ]}
-                >
-                  최근 본 역
-                </Text>
-
-                <Text
-                  style={[
-                    styles.sectionDescription,
-                    {
-                      color: colors.textMuted,
-                    },
-                  ]}
-                >
-                  최근 확인한 역으로 바로 이동하세요.
-                </Text>
-              </View>
-            </View>
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.recentList}
-            >
-              {recentStations.map((station) => (
-                <TouchableOpacity
-                  key={station.id}
-                  style={[
-                    styles.recentCard,
-                    {
-                      backgroundColor: colors.surface,
-                    },
-                  ]}
-                  activeOpacity={0.7}
-                  onPress={() => handlePressStation(station.id)}
-                >
-                  <View
-                    style={[
-                      styles.recentCodeBadge,
-                      {
-                        backgroundColor: station.color,
-                      },
-                    ]}
-                  >
-                    <Text style={styles.recentCodeText}>{station.code}</Text>
-                  </View>
-
-                  <Text
-                    style={[
-                      styles.recentNameKo,
-                      {
-                        color: colors.text,
-                      },
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {station.nameKo}
-                  </Text>
-
-                  <Text
-                    style={[
-                      styles.recentNameJa,
-                      {
-                        color: colors.textMuted,
-                      },
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {station.nameJa}
-                  </Text>
-
-                  <Text
-                    style={[
-                      styles.recentLine,
-                      {
-                        color: colors.textSecondary,
-                      },
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {station.lineNameKo}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-        )}
-
-        {/* =================================================
-            철도회사
-        ================================================= */}
-
-        <View style={styles.companySection}>
-          <View style={styles.sectionHeaderRow}>
-            <View>
+            <View style={styles.stationTextArea}>
               <Text
                 style={[
-                  styles.sectionTitle,
-                  {
-                    color: colors.text,
-                  },
-                ]}
-              >
-                철도회사
-              </Text>
-
-              <Text
-                style={[
-                  styles.sectionDescription,
+                  styles.stationLabel,
                   {
                     color: colors.textMuted,
                   },
                 ]}
               >
-                이용할 철도회사를 선택하세요.
+                출발
               </Text>
-            </View>
-          </View>
 
-          <View style={styles.companyList}>
-            {RAILWAY_COMPANIES.map((company) => (
-              <TouchableOpacity
-                key={company.id}
+              <Text
                 style={[
-                  styles.companyCard,
+                  styles.stationPlaceholder,
                   {
-                    backgroundColor: colors.surface,
+                    color: colors.text,
                   },
                 ]}
-                activeOpacity={0.7}
-                onPress={() => handlePressCompany(company)}
               >
-                <View
+                {departure?.nameKo ??
+                  "출발역을 선택하세요"}
+              </Text>
+
+              {!!departure?.nameJa && (
+                <Text
                   style={[
-                    styles.companyBadge,
+                    styles.selectedStationJa,
                     {
-                      backgroundColor: company.color,
+                      color: colors.textMuted,
                     },
                   ]}
                 >
-                  <Text style={styles.companyBadgeText}>{company.badge}</Text>
-                </View>
+                  {departure.nameJa}
+                </Text>
+              )}
+            </View>
 
-                <View style={styles.companyInfo}>
-                  <Text
-                    style={[
-                      styles.companyNameKo,
-                      {
-                        color: colors.text,
-                      },
-                    ]}
-                  >
-                    {company.nameKo}
-                  </Text>
+            <ChevronRight
+              size={22}
+              color={colors.textMuted}
+              strokeWidth={2}
+            />
+          </TouchableOpacity>
 
-                  <Text
-                    style={[
-                      styles.companyNameJa,
-                      {
-                        color: colors.textMuted,
-                      },
-                    ]}
-                  >
-                    {company.nameJa}
-                  </Text>
+          {/* Swap */}
 
-                  <Text
-                    style={[
-                      styles.companyDescription,
-                      {
-                        color: colors.textSecondary,
-                      },
-                    ]}
-                  >
-                    {company.description}
-                  </Text>
-                </View>
+          <View style={styles.middleRow}>
+            <View
+              style={[
+                styles.divider,
+                {
+                  backgroundColor:
+                    colors.surfaceSecondary,
+                },
+              ]}
+            />
 
-                <ChevronRight
-                  style={styles.trailingIcon}
-                  size={24}
-                  color={colors.textMuted}
-                  strokeWidth={2}
-                />
-              </TouchableOpacity>
-            ))}
+            <TouchableOpacity
+              style={[
+                styles.swapButton,
+                {
+                  backgroundColor:
+                    colors.surfaceSecondary,
+                },
+              ]}
+              activeOpacity={0.7}
+              onPress={handleSwapStations}
+            >
+              <ArrowDownUp
+                size={18}
+                color={colors.textSecondary}
+                strokeWidth={2}
+              />
+            </TouchableOpacity>
           </View>
+
+          {/* 도착 */}
+
+          <TouchableOpacity
+            style={styles.stationRow}
+            activeOpacity={0.7}
+            onPress={handleSelectArrival}
+          >
+            <View
+              style={[
+                styles.stationIcon,
+                {
+                  backgroundColor:
+                    colors.surfaceSecondary,
+                },
+              ]}
+            >
+              <MapPin
+                size={20}
+                color={colors.textSecondary}
+                strokeWidth={2}
+              />
+            </View>
+
+            <View style={styles.stationTextArea}>
+              <Text
+                style={[
+                  styles.stationLabel,
+                  {
+                    color: colors.textMuted,
+                  },
+                ]}
+              >
+                도착
+              </Text>
+
+              <Text
+                style={[
+                  styles.stationPlaceholder,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+              >
+                {arrival?.nameKo ??
+                  "도착역을 선택하세요"}
+              </Text>
+
+              {!!arrival?.nameJa && (
+                <Text
+                  style={[
+                    styles.selectedStationJa,
+                    {
+                      color: colors.textMuted,
+                    },
+                  ]}
+                >
+                  {arrival.nameJa}
+                </Text>
+              )}
+            </View>
+
+            <ChevronRight
+              size={22}
+              color={colors.textMuted}
+              strokeWidth={2}
+            />
+          </TouchableOpacity>
         </View>
 
-        {/* =================================================
-            Footer
-        ================================================= */}
+        {/* 경로 검색 */}
 
-        <View style={styles.footer}>
+        <TouchableOpacity
+          style={[
+            styles.routeSearchButton,
+            !canSearch &&
+              styles.routeSearchButtonDisabled,
+          ]}
+          activeOpacity={canSearch ? 0.8 : 1}
+          disabled={!canSearch}
+          onPress={handleSearchRoute}
+        >
+          <Search
+            size={20}
+            color="#FFFFFF"
+            strokeWidth={2.4}
+          />
+
+          <Text style={styles.routeSearchButtonText}>
+            경로 검색
+          </Text>
+        </TouchableOpacity>
+
+        {/* Map */}
+
+        <View style={styles.section}>
           <Text
             style={[
-              styles.footerText,
+              styles.sectionTitle,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
+            철도 노선 보기
+          </Text>
+
+          <Text
+            style={[
+              styles.sectionDescription,
               {
                 color: colors.textMuted,
               },
             ]}
           >
-            Tokyo Railway Guide
+            기존 철도회사와 노선 화면도 그대로 이용할 수 있어요.
           </Text>
 
-          <Text
+          <TouchableOpacity
             style={[
-              styles.footerSubText,
+              styles.mapCard,
               {
-                color: colors.textMuted,
+                backgroundColor: colors.surface,
               },
             ]}
+            activeOpacity={0.72}
+            onPress={() =>
+              router.push("/map" as any)
+            }
           >
-            For travelers in Tokyo
-          </Text>
+            <View
+              style={[
+                styles.mapIconArea,
+                {
+                  backgroundColor:
+                    colors.surfaceSecondary,
+                },
+              ]}
+            >
+              <Map
+                size={26}
+                color={colors.text}
+                strokeWidth={2}
+              />
+            </View>
+
+            <View style={styles.mapTextArea}>
+              <Text
+                style={[
+                  styles.mapTitle,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+              >
+                철도 지도
+              </Text>
+
+              <Text
+                style={[
+                  styles.mapDescription,
+                  {
+                    color: colors.textMuted,
+                  },
+                ]}
+              >
+                철도회사와 노선을 선택해서 확인하세요.
+              </Text>
+            </View>
+
+            <ChevronRight
+              size={23}
+              color={colors.textMuted}
+              strokeWidth={2}
+            />
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
+
+export default HomeScreen;
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -755,401 +554,173 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    paddingHorizontal: 22,
-
-    paddingTop: 30,
-
-    paddingBottom: 120,
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 40,
   },
 
   hero: {
-    marginBottom: 24,
-  },
-
-  heroTop: {
-    flexDirection: "row",
-
-    alignItems: "center",
-
-    justifyContent: "space-between",
+    marginBottom: 28,
   },
 
   eyebrow: {
-    flex: 1,
-
-    fontSize: 12,
-
+    fontSize: 11,
     lineHeight: 16,
-
     fontWeight: "800",
-
-    letterSpacing: 1.4,
+    letterSpacing: 1.2,
   },
 
-
-
-
   title: {
-    marginTop: 9,
-
-    fontSize: 34,
-
-    lineHeight: 43,
-
+    marginTop: 8,
+    fontSize: 32,
+    lineHeight: 40,
     fontWeight: "900",
-
-    letterSpacing: -1.2,
   },
 
   description: {
-    marginTop: 14,
-
-    maxWidth: 300,
-
-    fontSize: 15,
-
-    lineHeight: 23,
-
-    fontWeight: "500",
+    marginTop: 8,
+    fontSize: 14,
+    lineHeight: 21,
   },
 
-  searchButton: {
-    minHeight: 78,
-
+  routeCard: {
+    borderRadius: 24,
     paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
 
-    paddingVertical: 14,
-
-    borderRadius: 21,
-
+  stationRow: {
+    minHeight: 82,
     flexDirection: "row",
-
     alignItems: "center",
   },
 
-  searchIconArea: {
-    width: 48,
-
-    height: 48,
-
-    borderRadius: 16,
-
+  stationIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     alignItems: "center",
-
     justifyContent: "center",
-
-    marginRight: 13,
   },
 
-
-  searchTextArea: {
+  stationTextArea: {
     flex: 1,
+    marginLeft: 14,
   },
 
-  searchPlaceholder: {
-    fontSize: 15,
+  stationLabel: {
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "700",
+  },
 
-    lineHeight: 20,
-
+  stationPlaceholder: {
+    marginTop: 3,
+    fontSize: 16,
+    lineHeight: 22,
     fontWeight: "800",
   },
 
-  searchExample: {
-    marginTop: 4,
-
+  selectedStationJa: {
+    marginTop: 1,
     fontSize: 11,
-
     lineHeight: 15,
   },
 
-
-  trailingIcon: {
-    marginLeft: 10,
-  },
-
-  stationSection: {
-    marginTop: 31,
-  },
-
-  companySection: {
-    marginTop: 35,
-  },
-
-  sectionHeaderRow: {
-    flexDirection: "row",
-
+  middleRow: {
+    height: 1,
+    marginLeft: 58,
+    position: "relative",
+    justifyContent: "center",
     alignItems: "flex-end",
+  },
 
-    justifyContent: "space-between",
+  divider: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    height: 1,
+  },
 
-    marginBottom: 14,
+  swapButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 4,
+  },
+
+  routeSearchButton: {
+    height: 56,
+    marginTop: 16,
+    borderRadius: 18,
+    backgroundColor: "#1677FF",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+
+  routeSearchButtonDisabled: {
+    opacity: 0.4,
+  },
+
+  routeSearchButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: "900",
+  },
+
+  section: {
+    marginTop: 38,
   },
 
   sectionTitle: {
-    fontSize: 21,
-
-    lineHeight: 27,
-
+    fontSize: 18,
+    lineHeight: 24,
     fontWeight: "900",
   },
 
   sectionDescription: {
     marginTop: 4,
-
     fontSize: 12,
-
-    lineHeight: 17,
+    lineHeight: 18,
   },
 
-  sectionCount: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-
-  sectionCountText: {
-    fontSize: 12,
-    lineHeight: 17,
-    fontWeight: "800",
-    color: "#D49B00",
-  },
-
-  favoriteList: {
-    gap: 10,
-  },
-
-  favoriteCard: {
+  mapCard: {
     minHeight: 88,
-
-    paddingHorizontal: 15,
-
-    paddingVertical: 14,
-
-    borderRadius: 20,
-
-    flexDirection: "row",
-
-    alignItems: "center",
-  },
-
-  favoriteBadge: {
-    minWidth: 51,
-
-    height: 51,
-
-    paddingHorizontal: 6,
-
-    borderRadius: 17,
-
-    borderWidth: 3,
-
-    alignItems: "center",
-
-    justifyContent: "center",
-
-    marginRight: 13,
-  },
-
-  favoriteBadgeText: {
-    fontSize: 12,
-
-    lineHeight: 16,
-
-    fontWeight: "900",
-  },
-
-  favoriteInfo: {
-    flex: 1,
-
-    minWidth: 0,
-  },
-
-  favoriteNameKo: {
-    fontSize: 16,
-
-    lineHeight: 21,
-
-    fontWeight: "900",
-  },
-
-  favoriteNameJa: {
-    marginTop: 1,
-
-    fontSize: 10,
-
-    lineHeight: 14,
-  },
-
-  favoriteLine: {
-    marginTop: 5,
-
-    fontSize: 11,
-
-    lineHeight: 15,
-  },
-
-
-  recentList: {
-    gap: 10,
-
-    paddingRight: 5,
-  },
-
-  recentCard: {
-    width: 145,
-
-    minHeight: 125,
-
-    paddingHorizontal: 14,
-
-    paddingVertical: 14,
-
-    borderRadius: 20,
-  },
-
-  recentCodeBadge: {
-    alignSelf: "flex-start",
-
-    minWidth: 41,
-
-    height: 27,
-
-    paddingHorizontal: 8,
-
-    borderRadius: 9,
-
-    alignItems: "center",
-
-    justifyContent: "center",
-  },
-
-  recentCodeText: {
-    fontSize: 10,
-
-    lineHeight: 13,
-
-    fontWeight: "900",
-
-    color: "#FFFFFF",
-  },
-
-  recentNameKo: {
-    marginTop: 12,
-
-    fontSize: 15,
-
-    lineHeight: 20,
-
-    fontWeight: "900",
-  },
-
-  recentNameJa: {
-    marginTop: 1,
-
-    fontSize: 10,
-
-    lineHeight: 14,
-  },
-
-  recentLine: {
-    marginTop: 8,
-
-    fontSize: 10,
-
-    lineHeight: 14,
-
-    fontWeight: "600",
-  },
-
-  companyList: {
-    gap: 12,
-  },
-
-  companyCard: {
-    minHeight: 100,
-
+    marginTop: 14,
     paddingHorizontal: 16,
-
-    paddingVertical: 16,
-
-    borderRadius: 22,
-
+    paddingVertical: 14,
+    borderRadius: 20,
     flexDirection: "row",
-
     alignItems: "center",
   },
 
-  companyBadge: {
-    width: 58,
-
-    height: 58,
-
-    borderRadius: 18,
-
+  mapIconArea: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
     alignItems: "center",
-
     justifyContent: "center",
-
-    marginRight: 15,
   },
 
-  companyBadgeText: {
-    fontSize: 17,
-
-    lineHeight: 22,
-
-    fontWeight: "900",
-
-    color: "#FFFFFF",
-  },
-
-  companyInfo: {
+  mapTextArea: {
     flex: 1,
+    marginLeft: 14,
   },
 
-  companyNameKo: {
-    fontSize: 17,
-
+  mapTitle: {
+    fontSize: 16,
     lineHeight: 22,
-
     fontWeight: "900",
   },
 
-  companyNameJa: {
-    marginTop: 1,
-
+  mapDescription: {
+    marginTop: 3,
     fontSize: 11,
-
-    lineHeight: 15,
-  },
-
-  companyDescription: {
-    marginTop: 6,
-
-    fontSize: 12,
-
-    lineHeight: 17,
-  },
-
-  footer: {
-    marginTop: 40,
-
-    alignItems: "center",
-  },
-
-  footerText: {
-    fontSize: 12,
-
-    lineHeight: 17,
-
-    fontWeight: "800",
-  },
-
-  footerSubText: {
-    marginTop: 2,
-
-    fontSize: 10,
-
-    lineHeight: 14,
+    lineHeight: 16,
   },
 });
