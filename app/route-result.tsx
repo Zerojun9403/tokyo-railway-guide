@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CircleDot,
+  Clock3,
   Repeat2,
   TrainFront,
 } from "lucide-react-native";
@@ -22,6 +23,9 @@ import { railwayRegistry } from "../data/railwayRegistry";
 import { useAppTheme } from "../hooks/useAppTheme";
 import { buildRailwayGraph } from "../utils/routing/buildRailwayGraph";
 import { findStationRoute } from "../utils/routing/findStationRoute";
+
+const MINUTES_PER_RIDE = 2;
+const MINUTES_PER_TRANSFER = 3;
 
 const RouteResultScreen = () => {
   const { colors } = useAppTheme();
@@ -75,6 +79,13 @@ const RouteResultScreen = () => {
       (step) => step.via === "ride",
     ).length;
   }, [route]);
+
+  const estimatedMinutes = useMemo(() => {
+    return (
+      rideCount * MINUTES_PER_RIDE +
+      transferCount * MINUTES_PER_TRANSFER
+    );
+  }, [rideCount, transferCount]);
 
   const getLine = (lineId: string) => {
     return Object.values(railwayRegistry).find(
@@ -294,6 +305,81 @@ const RouteResultScreen = () => {
 
         {route && (
           <>
+            {/* 예상 소요시간 */}
+
+            <View
+              style={[
+                styles.estimatedTimeCard,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.estimatedTimeIcon,
+                  {
+                    backgroundColor: colors.surfaceSecondary,
+                  },
+                ]}
+              >
+                <Clock3
+                  size={22}
+                  color={colors.text}
+                  strokeWidth={2}
+                />
+              </View>
+
+              <View style={styles.estimatedTimeTextArea}>
+                <Text
+                  style={[
+                    styles.estimatedTimeLabel,
+                    {
+                      color: colors.textMuted,
+                    },
+                  ]}
+                >
+                  예상 소요시간
+                </Text>
+
+                <Text
+                  style={[
+                    styles.estimatedTimeValue,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                >
+                  약 {estimatedMinutes}분
+                </Text>
+              </View>
+
+              <View style={styles.estimatedTimeBasisArea}>
+                <Text
+                  style={[
+                    styles.estimatedTimeBasis,
+                    {
+                      color: colors.textMuted,
+                    },
+                  ]}
+                >
+                  승차 평균 2분
+                </Text>
+
+                <Text
+                  style={[
+                    styles.estimatedTimeBasis,
+                    {
+                      color: colors.textMuted,
+                    },
+                  ]}
+                >
+                  환승 평균 3분
+                </Text>
+              </View>
+            </View>
+
             {/* 요약 */}
 
             <View style={styles.routeStats}>
@@ -380,7 +466,8 @@ const RouteResultScreen = () => {
                 },
               ]}
             >
-              환승 횟수가 적은 경로를 우선 안내합니다.
+              현재 예상 시간은 역간 이동 1구간당 평균 2분,
+              환승 1회당 평균 3분을 기준으로 계산합니다.
             </Text>
 
             {/* 상세 경로 */}
@@ -539,8 +626,7 @@ const RouteResultScreen = () => {
                               },
                             ]}
                           >
-                            {line?.nameKo ??
-                              node.lineId}
+                            {line?.nameKo ?? node.lineId}
                           </Text>
                         </View>
 
@@ -584,8 +670,7 @@ const RouteResultScreen = () => {
                               style={[
                                 styles.transferText,
                                 {
-                                  color:
-                                    colors.text,
+                                  color: colors.text,
                                 },
                               ]}
                             >
@@ -703,8 +788,56 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
   },
 
-  routeStats: {
+  estimatedTimeCard: {
     marginTop: 14,
+    minHeight: 88,
+    borderRadius: 20,
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  estimatedTimeIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  estimatedTimeTextArea: {
+    flex: 1,
+    marginLeft: 13,
+  },
+
+  estimatedTimeLabel: {
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: "700",
+  },
+
+  estimatedTimeValue: {
+    marginTop: 2,
+    fontSize: 24,
+    lineHeight: 30,
+    fontWeight: "900",
+  },
+
+  estimatedTimeBasisArea: {
+    marginLeft: 10,
+    alignItems: "flex-end",
+  },
+
+  estimatedTimeBasis: {
+    fontSize: 10,
+    lineHeight: 15,
+    fontWeight: "700",
+  },
+
+  routeStats: {
+    marginTop: 10,
     flexDirection: "row",
     gap: 10,
   },
