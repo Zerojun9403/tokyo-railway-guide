@@ -22,10 +22,16 @@ import {
 import { railwayRegistry } from "../data/railwayRegistry";
 import { useAppTheme } from "../hooks/useAppTheme";
 import { buildRailwayGraph } from "../utils/routing/buildRailwayGraph";
+import { calculateRouteTime } from "../utils/routing/calculateRouteTime";
 import { findStationRoute } from "../utils/routing/findStationRoute";
 
-const MINUTES_PER_RIDE = 2;
-const MINUTES_PER_TRANSFER = 3;
+const formatTime = (date: Date) => {
+  return date.toLocaleTimeString("ko-KR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+};
 
 const RouteResultScreen = () => {
   const { colors } = useAppTheme();
@@ -35,6 +41,8 @@ const RouteResultScreen = () => {
     departureNameJa?: string;
     arrivalNameKo?: string;
     arrivalNameJa?: string;
+    departureTime?: string;
+    departureTimeMode?: string;
   }>();
 
   const graph = useMemo(() => {
@@ -80,12 +88,54 @@ const RouteResultScreen = () => {
     ).length;
   }, [route]);
 
-  const estimatedMinutes = useMemo(() => {
-    return (
-      rideCount * MINUTES_PER_RIDE +
-      transferCount * MINUTES_PER_TRANSFER
+  const departureDate = useMemo(() => {
+    if (!params.departureTime) {
+      return new Date();
+    }
+
+    const parsedDate = new Date(
+      params.departureTime,
     );
-  }, [rideCount, transferCount]);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return new Date();
+    }
+
+    return parsedDate;
+  }, [params.departureTime]);
+
+  const routeTime = useMemo(() => {
+    if (!route) {
+      return null;
+    }
+
+    return calculateRouteTime(
+      route,
+      departureDate,
+    );
+  }, [route, departureDate]);
+
+  const estimatedMinutes =
+    routeTime?.totalMinutes ?? 0;
+
+  const departureTimeLabel = useMemo(() => {
+    if (!routeTime) {
+      return "-";
+    }
+
+    return formatTime(routeTime.departureTime);
+  }, [routeTime]);
+
+  const estimatedArrivalTime = useMemo(() => {
+    if (!routeTime) {
+      return "-";
+    }
+
+    return formatTime(routeTime.arrivalTime);
+  }, [routeTime]);
+
+  const isScheduledDeparture =
+    params.departureTimeMode === "scheduled";
 
   const getLine = (lineId: string) => {
     return Object.values(railwayRegistry).find(
@@ -210,7 +260,8 @@ const RouteResultScreen = () => {
             style={[
               styles.summaryArrow,
               {
-                backgroundColor: colors.surfaceSecondary,
+                backgroundColor:
+                  colors.surfaceSecondary,
               },
             ]}
           >
@@ -305,7 +356,7 @@ const RouteResultScreen = () => {
 
         {route && (
           <>
-            {/* 예상 소요시간 */}
+            {/* 시간 */}
 
             <View
               style={[
@@ -320,7 +371,8 @@ const RouteResultScreen = () => {
                 style={[
                   styles.estimatedTimeIcon,
                   {
-                    backgroundColor: colors.surfaceSecondary,
+                    backgroundColor:
+                      colors.surfaceSecondary,
                   },
                 ]}
               >
@@ -355,29 +407,60 @@ const RouteResultScreen = () => {
                 </Text>
               </View>
 
-              <View style={styles.estimatedTimeBasisArea}>
+              <View style={styles.arrivalTimeArea}>
                 <Text
                   style={[
-                    styles.estimatedTimeBasis,
+                    styles.arrivalTimeLabel,
                     {
                       color: colors.textMuted,
                     },
                   ]}
                 >
-                  승차 평균 2분
+                  예상 도착
                 </Text>
 
                 <Text
                   style={[
-                    styles.estimatedTimeBasis,
+                    styles.arrivalTimeValue,
                     {
-                      color: colors.textMuted,
+                      color: colors.text,
                     },
                   ]}
                 >
-                  환승 평균 3분
+                  {estimatedArrivalTime}
                 </Text>
               </View>
+            </View>
+
+            {/* 출발 기준 시간 */}
+
+            <View
+              style={[
+                styles.departureTimeInfo,
+                {
+                  backgroundColor:
+                    colors.surfaceSecondary,
+                },
+              ]}
+            >
+              <Clock3
+                size={15}
+                color={colors.textSecondary}
+                strokeWidth={2}
+              />
+
+              <Text
+                style={[
+                  styles.departureTimeInfoText,
+                  {
+                    color: colors.textSecondary,
+                  },
+                ]}
+              >
+                {isScheduledDeparture
+                  ? `지정 출발 ${departureTimeLabel}`
+                  : `지금 출발 ${departureTimeLabel}`}
+              </Text>
             </View>
 
             {/* 요약 */}
@@ -486,7 +569,8 @@ const RouteResultScreen = () => {
 
               <View style={styles.stepList}>
                 {route.map((step, index) => {
-                  const node = graph.nodes.get(step.nodeId);
+                  const node =
+                    graph.nodes.get(step.nodeId);
 
                   if (!node) {
                     return null;
@@ -494,7 +578,9 @@ const RouteResultScreen = () => {
 
                   const line = getLine(node.lineId);
 
-                  const isStart = step.via === "start";
+                  const isStart =
+                    step.via === "start";
+
                   const isTransfer =
                     step.via === "transfer";
 
@@ -825,15 +911,39 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
 
-  estimatedTimeBasisArea: {
-    marginLeft: 10,
+  arrivalTimeArea: {
+    marginLeft: 12,
     alignItems: "flex-end",
   },
 
-  estimatedTimeBasis: {
+  arrivalTimeLabel: {
     fontSize: 10,
-    lineHeight: 15,
+    lineHeight: 14,
     fontWeight: "700",
+  },
+
+  arrivalTimeValue: {
+    marginTop: 3,
+    fontSize: 18,
+    lineHeight: 23,
+    fontWeight: "900",
+  },
+
+  departureTimeInfo: {
+    alignSelf: "flex-start",
+    marginTop: 9,
+    paddingHorizontal: 11,
+    paddingVertical: 7,
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+
+  departureTimeInfoText: {
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "800",
   },
 
   routeStats: {
