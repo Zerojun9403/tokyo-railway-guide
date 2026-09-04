@@ -1,7 +1,6 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import {
-  ChevronRight,
   CircleHelp,
   CreditCard,
   Info,
@@ -10,16 +9,75 @@ import {
   Star,
   Ticket,
 } from "lucide-react-native";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type MenuItemProps = {
-  icon: typeof Plane;
+  icon: React.ReactNode;
   title: string;
-  description?: string;
+  description: string;
   onPress?: () => void;
   disabled?: boolean;
-  showDivider?: boolean;
+  textColor: string;
+  secondaryTextColor: string;
+  borderColor: string;
+};
+
+const MenuItem = ({
+  icon,
+  title,
+  description,
+  onPress,
+  disabled = false,
+  textColor,
+  secondaryTextColor,
+  borderColor,
+}: MenuItemProps) => {
+  return (
+    <Pressable
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.menuItem,
+        {
+          borderBottomColor: borderColor,
+        },
+        pressed && !disabled && styles.pressed,
+      ]}
+    >
+      <View style={styles.iconArea}>{icon}</View>
+
+      <View style={styles.menuContent}>
+        <Text
+          style={[
+            styles.menuTitle,
+            {
+              color: disabled ? secondaryTextColor : textColor,
+            },
+          ]}
+        >
+          {title}
+        </Text>
+
+        <Text
+          style={[
+            styles.menuDescription,
+            {
+              color: secondaryTextColor,
+            },
+          ]}
+        >
+          {description}
+        </Text>
+      </View>
+    </Pressable>
+  );
 };
 
 const MoreScreen = () => {
@@ -27,78 +85,12 @@ const MoreScreen = () => {
   const insets = useSafeAreaInsets();
   const { colors } = useAppTheme();
 
-  const MenuItem = ({
-    icon: Icon,
-    title,
-    description,
-    onPress,
-    disabled = false,
-    showDivider = false,
-  }: MenuItemProps) => {
-    return (
-      <Pressable
-        disabled={disabled}
-        onPress={onPress}
-        style={({ pressed }) => [
-          styles.menuItem,
-          pressed && !disabled && styles.pressed,
-        ]}
-      >
-        <View style={styles.iconArea}>
-          <Icon size={22} color={colors.text} strokeWidth={1.8} />
-        </View>
-
-        <View
-          style={[
-            styles.menuContent,
-            showDivider && {
-              borderBottomWidth: StyleSheet.hairlineWidth,
-              borderBottomColor: colors.border,
-            },
-          ]}
-        >
-          <View style={styles.menuText}>
-            <Text
-              style={[
-                styles.menuTitle,
-                {
-                  color: colors.text,
-                },
-              ]}
-            >
-              {title}
-            </Text>
-
-            {description && (
-              <Text
-                style={[
-                  styles.menuDescription,
-                  {
-                    color: colors.textSecondary,
-                  },
-                ]}
-              >
-                {description}
-              </Text>
-            )}
-          </View>
-
-          {!disabled && (
-            <ChevronRight
-              size={18}
-              color={colors.textSecondary}
-              strokeWidth={1.8}
-            />
-          )}
-        </View>
-      </Pressable>
-    );
-  };
+  const iconColor = colors.textSecondary;
 
   return (
     <View
       style={[
-        styles.container,
+        styles.screen,
         {
           backgroundColor: colors.background,
           paddingTop: insets.top,
@@ -108,23 +100,30 @@ const MoreScreen = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
-          styles.content,
+          styles.container,
           {
             paddingBottom: Math.max(insets.bottom, 12) + 110,
           },
         ]}
       >
-        <Text
-          style={[
-            styles.pageTitle,
-            {
-              color: colors.text,
-            },
-          ]}
-        >
-          더보기
-        </Text>
+        <View style={styles.header}>
+          <Text style={[styles.pageTitle, { color: colors.text }]}>
+            더보기
+          </Text>
 
+          <Text
+            style={[
+              styles.pageDescription,
+              {
+                color: colors.textSecondary,
+              },
+            ]}
+          >
+            도쿄 여행에 필요한 교통 정보와 앱 설정을 확인할 수 있습니다.
+          </Text>
+        </View>
+
+        {/* 여행 */}
         <View style={styles.section}>
           <Text
             style={[
@@ -138,43 +137,71 @@ const MoreScreen = () => {
           </Text>
 
           <MenuItem
-            icon={Plane}
+            icon={
+              <Plane
+                size={20}
+                color={iconColor}
+                strokeWidth={1.7}
+              />
+            }
             title="공항까지 가는 길"
             description="나리타 · 하네다 공항 교통 안내"
             disabled
+            textColor={colors.text}
+            secondaryTextColor={colors.textSecondary}
+            borderColor={colors.border}
           />
 
           <MenuItem
-            icon={Ticket}
+            icon={
+              <Ticket
+                size={20}
+                color={iconColor}
+                strokeWidth={1.7}
+              />
+            }
             title="여행자 패스"
             description="도쿄 교통패스 안내"
-            disabled
+            onPress={() => router.push("/travel-passes")}
+            textColor={colors.text}
+            secondaryTextColor={colors.textSecondary}
+            borderColor={colors.border}
           />
 
           <MenuItem
-            icon={CreditCard}
+            icon={
+              <CreditCard
+                size={20}
+                color={iconColor}
+                strokeWidth={1.7}
+              />
+            }
             title="IC카드 이용 가이드"
-            description="Suica · PASMO 이용 방법"
-            disabled
+            description="Suica · PASMO · 전국 상호이용 IC카드"
+            onPress={() => router.push("/ic-card-guide")}
+            textColor={colors.text}
+            secondaryTextColor={colors.textSecondary}
+            borderColor={colors.border}
           />
 
           <MenuItem
-            icon={CircleHelp}
+            icon={
+              <CircleHelp
+                size={20}
+                color={iconColor}
+                strokeWidth={1.7}
+              />
+            }
             title="일본 철도 이용 가이드"
             description="개찰구 · 환승 · 열차 이용 방법"
-            disabled
+            onPress={() => router.push("/railway-guide")}
+            textColor={colors.text}
+            secondaryTextColor={colors.textSecondary}
+            borderColor={colors.border}
           />
         </View>
 
-        <View
-          style={[
-            styles.sectionDivider,
-            {
-              backgroundColor: colors.border,
-            },
-          ]}
-        />
-
+        {/* 내 정보 */}
         <View style={styles.section}>
           <Text
             style={[
@@ -188,22 +215,23 @@ const MoreScreen = () => {
           </Text>
 
           <MenuItem
-            icon={Star}
+            icon={
+              <Star
+                size={20}
+                color={iconColor}
+                strokeWidth={1.7}
+              />
+            }
             title="즐겨찾는 역"
             description="저장한 역을 빠르게 확인"
             onPress={() => router.push("/favorite-stations")}
+            textColor={colors.text}
+            secondaryTextColor={colors.textSecondary}
+            borderColor={colors.border}
           />
         </View>
 
-        <View
-          style={[
-            styles.sectionDivider,
-            {
-              backgroundColor: colors.border,
-            },
-          ]}
-        />
-
+        {/* 앱 */}
         <View style={styles.section}>
           <Text
             style={[
@@ -217,17 +245,35 @@ const MoreScreen = () => {
           </Text>
 
           <MenuItem
-            icon={Settings}
+            icon={
+              <Settings
+                size={20}
+                color={iconColor}
+                strokeWidth={1.7}
+              />
+            }
             title="설정"
-            description="테마 및 앱 설정"
+            description="앱 설정 및 데이터 정보"
             onPress={() => router.push("/settings")}
+            textColor={colors.text}
+            secondaryTextColor={colors.textSecondary}
+            borderColor={colors.border}
           />
 
           <MenuItem
-            icon={Info}
+            icon={
+              <Info
+                size={20}
+                color={iconColor}
+                strokeWidth={1.7}
+              />
+            }
             title="앱 정보"
-            description="Tokyo Railway Guide"
+            description="버전 및 서비스 정보"
             disabled
+            textColor={colors.text}
+            secondaryTextColor={colors.textSecondary}
+            borderColor={colors.border}
           />
         </View>
       </ScrollView>
@@ -238,39 +284,49 @@ const MoreScreen = () => {
 export default MoreScreen;
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
   },
 
-  content: {
+  container: {
     width: "100%",
     maxWidth: 720,
     alignSelf: "center",
     paddingHorizontal: 24,
-    paddingTop: 26,
+    paddingTop: 32,
+  },
+
+  header: {
+    marginBottom: 38,
   },
 
   pageTitle: {
     fontSize: 26,
     fontWeight: "700",
     letterSpacing: -0.5,
-    marginBottom: 36,
+  },
+
+  pageDescription: {
+    marginTop: 7,
+    fontSize: 12.5,
+    lineHeight: 19,
   },
 
   section: {
-    marginBottom: 8,
+    marginBottom: 34,
   },
 
   sectionTitle: {
+    marginBottom: 8,
     fontSize: 13,
     fontWeight: "600",
-    marginBottom: 10,
   },
 
   menuItem: {
     minHeight: 66,
     flexDirection: "row",
-    alignItems: "stretch",
+    alignItems: "center",
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 
   iconArea: {
@@ -281,32 +337,21 @@ const styles = StyleSheet.create({
 
   menuContent: {
     flex: 1,
-    minHeight: 66,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  menuText: {
-    flex: 1,
     justifyContent: "center",
+    paddingVertical: 12,
   },
 
   menuTitle: {
     fontSize: 15,
+    lineHeight: 20,
     fontWeight: "600",
     letterSpacing: -0.2,
   },
 
   menuDescription: {
-    fontSize: 12.5,
-    fontWeight: "400",
-    lineHeight: 18,
     marginTop: 3,
-  },
-
-  sectionDivider: {
-    height: StyleSheet.hairlineWidth,
-    marginVertical: 22,
+    fontSize: 12.5,
+    lineHeight: 17,
   },
 
   pressed: {
