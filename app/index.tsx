@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 
+import { Orbitron_700Bold, useFonts } from "@expo-google-fonts/orbitron";
 import { router, useLocalSearchParams } from "expo-router";
 import {
   ArrowDownUp,
@@ -43,6 +44,10 @@ const padTime = (value: number) => {
 const HomeScreen = () => {
   const { colors } = useAppTheme();
 
+  const [fontsLoaded] = useFonts({
+    Orbitron_700Bold,
+  });
+
   const params = useLocalSearchParams<{
     mode?: string;
     stationId?: string;
@@ -61,23 +66,22 @@ const HomeScreen = () => {
     arrivalNameJa?: string;
   }>();
 
-  const [departure, setDeparture] =
-    useState<SelectedStation | null>(null);
+  const [departure, setDeparture] = useState<SelectedStation | null>(null);
 
-  const [arrival, setArrival] =
-    useState<SelectedStation | null>(null);
+  const [arrival, setArrival] = useState<SelectedStation | null>(null);
 
   const [departureTimeMode, setDepartureTimeMode] =
     useState<DepartureTimeMode>("now");
 
-  const [scheduledHour, setScheduledHour] =
-    useState(() => new Date().getHours());
+  const [scheduledHour, setScheduledHour] = useState(() =>
+    new Date().getHours(),
+  );
 
-  const [scheduledMinute, setScheduledMinute] =
-    useState(() => new Date().getMinutes());
+  const [scheduledMinute, setScheduledMinute] = useState(() =>
+    new Date().getMinutes(),
+  );
 
-  const [isTimeModalVisible, setIsTimeModalVisible] =
-    useState(false);
+  const [isTimeModalVisible, setIsTimeModalVisible] = useState(false);
 
   useEffect(() => {
     if (params.departureStationId) {
@@ -98,10 +102,7 @@ const HomeScreen = () => {
       });
     }
 
-    if (
-      params.mode === "departure" &&
-      params.stationId
-    ) {
+    if (params.mode === "departure" && params.stationId) {
       setDeparture({
         stationId: params.stationId,
         lineId: params.lineId,
@@ -110,10 +111,7 @@ const HomeScreen = () => {
       });
     }
 
-    if (
-      params.mode === "arrival" &&
-      params.stationId
-    ) {
+    if (params.mode === "arrival" && params.stationId) {
       setArrival({
         stationId: params.stationId,
         lineId: params.lineId,
@@ -144,17 +142,13 @@ const HomeScreen = () => {
       params: {
         mode: "departure",
 
-        arrivalStationId:
-          arrival?.stationId ?? "",
+        arrivalStationId: arrival?.stationId ?? "",
 
-        arrivalLineId:
-          arrival?.lineId ?? "",
+        arrivalLineId: arrival?.lineId ?? "",
 
-        arrivalNameKo:
-          arrival?.nameKo ?? "",
+        arrivalNameKo: arrival?.nameKo ?? "",
 
-        arrivalNameJa:
-          arrival?.nameJa ?? "",
+        arrivalNameJa: arrival?.nameJa ?? "",
       },
     });
   };
@@ -166,17 +160,13 @@ const HomeScreen = () => {
       params: {
         mode: "arrival",
 
-        departureStationId:
-          departure?.stationId ?? "",
+        departureStationId: departure?.stationId ?? "",
 
-        departureLineId:
-          departure?.lineId ?? "",
+        departureLineId: departure?.lineId ?? "",
 
-        departureNameKo:
-          departure?.nameKo ?? "",
+        departureNameKo: departure?.nameKo ?? "",
 
-        departureNameJa:
-          departure?.nameJa ?? "",
+        departureNameJa: departure?.nameJa ?? "",
       },
     });
   };
@@ -188,20 +178,14 @@ const HomeScreen = () => {
     setArrival(previousDeparture);
   };
 
-  const canSearch =
-    !!departure?.nameKo &&
-    !!arrival?.nameKo;
+  const canSearch = !!departure?.nameKo && !!arrival?.nameKo;
 
   const scheduledTimeLabel = useMemo(() => {
-    return `${padTime(scheduledHour)}:${padTime(
-      scheduledMinute,
-    )}`;
+    return `${padTime(scheduledHour)}:${padTime(scheduledMinute)}`;
   }, [scheduledHour, scheduledMinute]);
 
   const departureTimeLabel =
-    departureTimeMode === "now"
-      ? "지금 출발"
-      : `${scheduledTimeLabel} 출발`;
+    departureTimeMode === "now" ? "지금 출발" : `${scheduledTimeLabel} 출발`;
 
   const changeHour = (amount: number) => {
     setScheduledHour((current) => {
@@ -211,18 +195,13 @@ const HomeScreen = () => {
 
   const changeMinute = (amount: number) => {
     setScheduledMinute((current) => {
-      const totalMinutes =
-        scheduledHour * 60 + current + amount;
+      const totalMinutes = scheduledHour * 60 + current + amount;
 
-      const normalizedTotalMinutes =
-        (totalMinutes + 24 * 60) % (24 * 60);
+      const normalizedTotalMinutes = (totalMinutes + 24 * 60) % (24 * 60);
 
-      const nextHour = Math.floor(
-        normalizedTotalMinutes / 60,
-      );
+      const nextHour = Math.floor(normalizedTotalMinutes / 60);
 
-      const nextMinute =
-        normalizedTotalMinutes % 60;
+      const nextMinute = normalizedTotalMinutes % 60;
 
       setScheduledHour(nextHour);
 
@@ -260,12 +239,7 @@ const HomeScreen = () => {
 
     const selected = new Date(now);
 
-    selected.setHours(
-      scheduledHour,
-      scheduledMinute,
-      0,
-      0,
-    );
+    selected.setHours(scheduledHour, scheduledMinute, 0, 0);
 
     /*
      * 현재 시각보다 지정 시간이 많이 이전이면
@@ -276,10 +250,7 @@ const HomeScreen = () => {
      * 지정 00:10
      * → 다음 날 00:10
      */
-    if (
-      selected.getTime() <
-      now.getTime() - 60 * 60 * 1000
-    ) {
+    if (selected.getTime() < now.getTime() - 60 * 60 * 1000) {
       selected.setDate(selected.getDate() + 1);
     }
 
@@ -287,10 +258,7 @@ const HomeScreen = () => {
   };
 
   const handleSearchRoute = () => {
-    if (
-      !departure?.nameKo ||
-      !arrival?.nameKo
-    ) {
+    if (!departure?.nameKo || !arrival?.nameKo) {
       return;
     }
 
@@ -300,20 +268,15 @@ const HomeScreen = () => {
       pathname: "/route-result" as any,
 
       params: {
-        departureNameKo:
-          departure.nameKo,
+        departureNameKo: departure.nameKo,
 
-        departureNameJa:
-          departure.nameJa ?? "",
+        departureNameJa: departure.nameJa ?? "",
 
-        arrivalNameKo:
-          arrival.nameKo,
+        arrivalNameKo: arrival.nameKo,
 
-        arrivalNameJa:
-          arrival.nameJa ?? "",
+        arrivalNameJa: arrival.nameJa ?? "",
 
-        departureTime:
-          departureDate.toISOString(),
+        departureTime: departureDate.toISOString(),
 
         departureTimeMode,
       },
@@ -397,8 +360,7 @@ const HomeScreen = () => {
               style={[
                 styles.stationIcon,
                 {
-                  backgroundColor:
-                    colors.surfaceSecondary,
+                  backgroundColor: colors.surfaceSecondary,
                 },
               ]}
             >
@@ -429,8 +391,7 @@ const HomeScreen = () => {
                   },
                 ]}
               >
-                {departure?.nameKo ??
-                  "출발역을 선택하세요"}
+                {departure?.nameKo ?? "출발역을 선택하세요"}
               </Text>
 
               {!!departure?.nameJa && (
@@ -447,11 +408,7 @@ const HomeScreen = () => {
               )}
             </View>
 
-            <ChevronRight
-              size={22}
-              color={colors.textMuted}
-              strokeWidth={2}
-            />
+            <ChevronRight size={22} color={colors.textMuted} strokeWidth={2} />
           </TouchableOpacity>
 
           {/* Swap */}
@@ -461,8 +418,7 @@ const HomeScreen = () => {
               style={[
                 styles.divider,
                 {
-                  backgroundColor:
-                    colors.surfaceSecondary,
+                  backgroundColor: colors.surfaceSecondary,
                 },
               ]}
             />
@@ -471,8 +427,7 @@ const HomeScreen = () => {
               style={[
                 styles.swapButton,
                 {
-                  backgroundColor:
-                    colors.surfaceSecondary,
+                  backgroundColor: colors.surfaceSecondary,
                 },
               ]}
               activeOpacity={0.7}
@@ -497,16 +452,11 @@ const HomeScreen = () => {
               style={[
                 styles.stationIcon,
                 {
-                  backgroundColor:
-                    colors.surfaceSecondary,
+                  backgroundColor: colors.surfaceSecondary,
                 },
               ]}
             >
-              <MapPin
-                size={20}
-                color={colors.textSecondary}
-                strokeWidth={2}
-              />
+              <MapPin size={20} color={colors.textSecondary} strokeWidth={2} />
             </View>
 
             <View style={styles.stationTextArea}>
@@ -529,8 +479,7 @@ const HomeScreen = () => {
                   },
                 ]}
               >
-                {arrival?.nameKo ??
-                  "도착역을 선택하세요"}
+                {arrival?.nameKo ?? "도착역을 선택하세요"}
               </Text>
 
               {!!arrival?.nameJa && (
@@ -547,11 +496,7 @@ const HomeScreen = () => {
               )}
             </View>
 
-            <ChevronRight
-              size={22}
-              color={colors.textMuted}
-              strokeWidth={2}
-            />
+            <ChevronRight size={22} color={colors.textMuted} strokeWidth={2} />
           </TouchableOpacity>
         </View>
 
@@ -565,24 +510,17 @@ const HomeScreen = () => {
             },
           ]}
           activeOpacity={0.72}
-          onPress={() =>
-            setIsTimeModalVisible(true)
-          }
+          onPress={() => setIsTimeModalVisible(true)}
         >
           <View
             style={[
               styles.departureTimeIcon,
               {
-                backgroundColor:
-                  colors.surfaceSecondary,
+                backgroundColor: colors.surfaceSecondary,
               },
             ]}
           >
-            <Clock3
-              size={20}
-              color={colors.textSecondary}
-              strokeWidth={2}
-            />
+            <Clock3 size={20} color={colors.textSecondary} strokeWidth={2} />
           </View>
 
           <View style={styles.departureTimeTextArea}>
@@ -609,11 +547,7 @@ const HomeScreen = () => {
             </Text>
           </View>
 
-          <ChevronRight
-            size={22}
-            color={colors.textMuted}
-            strokeWidth={2}
-          />
+          <ChevronRight size={22} color={colors.textMuted} strokeWidth={2} />
         </TouchableOpacity>
 
         {/* 경로 검색 */}
@@ -621,22 +555,15 @@ const HomeScreen = () => {
         <TouchableOpacity
           style={[
             styles.routeSearchButton,
-            !canSearch &&
-              styles.routeSearchButtonDisabled,
+            !canSearch && styles.routeSearchButtonDisabled,
           ]}
           activeOpacity={canSearch ? 0.8 : 1}
           disabled={!canSearch}
           onPress={handleSearchRoute}
         >
-          <Search
-            size={20}
-            color="#FFFFFF"
-            strokeWidth={2.4}
-          />
+          <Search size={20} color="#FFFFFF" strokeWidth={2.4} />
 
-          <Text style={styles.routeSearchButtonText}>
-            경로 검색
-          </Text>
+          <Text style={styles.routeSearchButtonText}>경로 검색</Text>
         </TouchableOpacity>
 
         {/* Map */}
@@ -672,24 +599,17 @@ const HomeScreen = () => {
               },
             ]}
             activeOpacity={0.72}
-            onPress={() =>
-              router.push("/map" as any)
-            }
+            onPress={() => router.push("/map" as any)}
           >
             <View
               style={[
                 styles.mapIconArea,
                 {
-                  backgroundColor:
-                    colors.surfaceSecondary,
+                  backgroundColor: colors.surfaceSecondary,
                 },
               ]}
             >
-              <Map
-                size={26}
-                color={colors.text}
-                strokeWidth={2}
-              />
+              <Map size={26} color={colors.text} strokeWidth={2} />
             </View>
 
             <View style={styles.mapTextArea}>
@@ -716,11 +636,7 @@ const HomeScreen = () => {
               </Text>
             </View>
 
-            <ChevronRight
-              size={23}
-              color={colors.textMuted}
-              strokeWidth={2}
-            />
+            <ChevronRight size={23} color={colors.textMuted} strokeWidth={2} />
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -731,9 +647,7 @@ const HomeScreen = () => {
         visible={isTimeModalVisible}
         transparent
         animationType="fade"
-        onRequestClose={() =>
-          setIsTimeModalVisible(false)
-        }
+        onRequestClose={() => setIsTimeModalVisible(false)}
       >
         <View style={styles.modalBackdrop}>
           <View
@@ -774,20 +688,13 @@ const HomeScreen = () => {
                 style={[
                   styles.closeButton,
                   {
-                    backgroundColor:
-                      colors.surfaceSecondary,
+                    backgroundColor: colors.surfaceSecondary,
                   },
                 ]}
                 activeOpacity={0.7}
-                onPress={() =>
-                  setIsTimeModalVisible(false)
-                }
+                onPress={() => setIsTimeModalVisible(false)}
               >
-                <X
-                  size={19}
-                  color={colors.text}
-                  strokeWidth={2}
-                />
+                <X size={19} color={colors.text} strokeWidth={2} />
               </TouchableOpacity>
             </View>
 
@@ -798,14 +705,10 @@ const HomeScreen = () => {
                 styles.timeOption,
                 {
                   borderColor:
-                    departureTimeMode === "now"
-                      ? "#A78BFA"
-                      : colors.border,
+                    departureTimeMode === "now" ? "#A78BFA" : colors.border,
 
                   backgroundColor:
-                    departureTimeMode === "now"
-                      ? "#A78BFA12"
-                      : colors.surface,
+                    departureTimeMode === "now" ? "#A78BFA12" : colors.surface,
                 },
               ]}
               activeOpacity={0.7}
@@ -836,11 +739,7 @@ const HomeScreen = () => {
               </View>
 
               {departureTimeMode === "now" && (
-                <Check
-                  size={20}
-                  color="#A78BFA"
-                  strokeWidth={2.5}
-                />
+                <Check size={20} color="#A78BFA" strokeWidth={2.5} />
               )}
             </TouchableOpacity>
 
@@ -889,11 +788,7 @@ const HomeScreen = () => {
               </View>
 
               {departureTimeMode === "scheduled" && (
-                <Check
-                  size={20}
-                  color="#A78BFA"
-                  strokeWidth={2.5}
-                />
+                <Check size={20} color="#A78BFA" strokeWidth={2.5} />
               )}
             </TouchableOpacity>
 
@@ -903,8 +798,7 @@ const HomeScreen = () => {
                   style={[
                     styles.timePicker,
                     {
-                      backgroundColor:
-                        colors.surfaceSecondary,
+                      backgroundColor: colors.surfaceSecondary,
                     },
                   ]}
                 >
@@ -912,21 +806,11 @@ const HomeScreen = () => {
 
                   <View style={styles.timeColumn}>
                     <TouchableOpacity
-                      style={[
-                        styles.timeAdjustButton,
-                        {
-                          backgroundColor:
-                            colors.surface,
-                        },
-                      ]}
+                      style={styles.timeAdjustButton}
                       activeOpacity={0.7}
                       onPress={() => changeHour(1)}
                     >
-                      <Plus
-                        size={18}
-                        color={colors.text}
-                        strokeWidth={2}
-                      />
+                      <Plus size={18} color={colors.text} strokeWidth={2} />
                     </TouchableOpacity>
 
                     <Text
@@ -934,6 +818,9 @@ const HomeScreen = () => {
                         styles.timeNumber,
                         {
                           color: colors.text,
+                          fontFamily: fontsLoaded
+                            ? "Orbitron_700Bold"
+                            : undefined,
                         },
                       ]}
                     >
@@ -941,21 +828,11 @@ const HomeScreen = () => {
                     </Text>
 
                     <TouchableOpacity
-                      style={[
-                        styles.timeAdjustButton,
-                        {
-                          backgroundColor:
-                            colors.surface,
-                        },
-                      ]}
+                      style={styles.timeAdjustButton}
                       activeOpacity={0.7}
                       onPress={() => changeHour(-1)}
                     >
-                      <Minus
-                        size={18}
-                        color={colors.text}
-                        strokeWidth={2}
-                      />
+                      <Minus size={18} color={colors.text} strokeWidth={2} />
                     </TouchableOpacity>
                   </View>
 
@@ -964,6 +841,9 @@ const HomeScreen = () => {
                       styles.timeColon,
                       {
                         color: colors.text,
+                        fontFamily: fontsLoaded
+                          ? "Orbitron_700Bold"
+                          : undefined,
                       },
                     ]}
                   >
@@ -974,21 +854,11 @@ const HomeScreen = () => {
 
                   <View style={styles.timeColumn}>
                     <TouchableOpacity
-                      style={[
-                        styles.timeAdjustButton,
-                        {
-                          backgroundColor:
-                            colors.surface,
-                        },
-                      ]}
+                      style={styles.timeAdjustButton}
                       activeOpacity={0.7}
                       onPress={() => changeMinute(5)}
                     >
-                      <Plus
-                        size={18}
-                        color={colors.text}
-                        strokeWidth={2}
-                      />
+                      <Plus size={18} color={colors.text} strokeWidth={2} />
                     </TouchableOpacity>
 
                     <Text
@@ -996,6 +866,9 @@ const HomeScreen = () => {
                         styles.timeNumber,
                         {
                           color: colors.text,
+                          fontFamily: fontsLoaded
+                            ? "Orbitron_700Bold"
+                            : undefined,
                         },
                       ]}
                     >
@@ -1003,21 +876,11 @@ const HomeScreen = () => {
                     </Text>
 
                     <TouchableOpacity
-                      style={[
-                        styles.timeAdjustButton,
-                        {
-                          backgroundColor:
-                            colors.surface,
-                        },
-                      ]}
+                      style={styles.timeAdjustButton}
                       activeOpacity={0.7}
                       onPress={() => changeMinute(-5)}
                     >
-                      <Minus
-                        size={18}
-                        color={colors.text}
-                        strokeWidth={2}
-                      />
+                      <Minus size={18} color={colors.text} strokeWidth={2} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -1027,9 +890,7 @@ const HomeScreen = () => {
                   activeOpacity={0.8}
                   onPress={handleConfirmScheduledTime}
                 >
-                  <Text
-                    style={styles.confirmTimeButtonText}
-                  >
+                  <Text style={styles.confirmTimeButtonText}>
                     {scheduledTimeLabel} 출발
                   </Text>
                 </TouchableOpacity>
@@ -1342,27 +1203,24 @@ const styles = StyleSheet.create({
   },
 
   timeAdjustButton: {
-    width: 38,
-    height: 32,
-    borderRadius: 10,
+    width: 48,
+    height: 40,
     alignItems: "center",
     justifyContent: "center",
   },
 
   timeNumber: {
-    minWidth: 66,
+    minWidth: 72,
     marginVertical: 10,
     textAlign: "center",
     fontSize: 32,
-    lineHeight: 38,
-    fontWeight: "900",
+    lineHeight: 42,
   },
 
   timeColon: {
-    marginHorizontal: 4,
+    marginHorizontal: 5,
     fontSize: 30,
-    lineHeight: 38,
-    fontWeight: "900",
+    lineHeight: 42,
   },
 
   confirmTimeButton: {
