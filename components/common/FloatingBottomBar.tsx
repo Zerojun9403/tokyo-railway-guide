@@ -40,33 +40,61 @@ const FloatingBottomBar = () => {
   const { colors } = useAppTheme();
 
   const isActive = (tab: TabItem) => {
+    /*
+     * 검색
+     */
     if (tab.id === "search") {
       return pathname === "/" || pathname === "/route-result";
     }
 
+    /*
+     * 노선
+     */
     if (tab.id === "lines") {
       return (
         pathname === "/map" ||
         pathname.startsWith("/company") ||
-        pathname.startsWith("/line") ||
-        pathname.startsWith("/railway") ||
+        pathname.startsWith("/line/") ||
+        pathname.startsWith("/railway/") ||
         pathname.startsWith("/station")
       );
     }
 
+    /*
+     * 더보기
+     *
+     * 더보기에서 진입하는 하위 페이지에서도
+     * 더보기 탭을 활성 상태로 유지
+     */
     if (tab.id === "more") {
-      return pathname === "/more";
+      return (
+        pathname === "/more" ||
+        pathname.startsWith("/airport") ||
+        pathname.startsWith("/travel-passes") ||
+        pathname.startsWith("/travel-pass/") ||
+        pathname.startsWith("/ic-card-guide") ||
+        pathname.startsWith("/contactless-guide") ||
+        pathname.startsWith("/railway-guide") ||
+        pathname.startsWith("/favorite-stations") ||
+        pathname.startsWith("/settings")
+      );
     }
 
     return false;
   };
 
   const handlePress = (tab: TabItem) => {
+    /*
+     * 검색
+     */
     if (tab.id === "search") {
       router.push("/");
       return;
     }
 
+    /*
+     * 노선
+     */
     if (tab.id === "lines") {
       /*
        * 역 상세 페이지에서는
@@ -85,6 +113,9 @@ const FloatingBottomBar = () => {
       return;
     }
 
+    /*
+     * 더보기
+     */
     if (tab.id === "more") {
       router.push("/more");
       return;
@@ -129,7 +160,9 @@ const FloatingBottomBar = () => {
               <Icon
                 size={24}
                 color={
-                  active ? colors.bottomBarActiveIcon : colors.bottomBarIcon
+                  active
+                    ? colors.bottomBarActiveIcon
+                    : colors.bottomBarIcon
                 }
                 strokeWidth={2}
               />

@@ -16,7 +16,6 @@ import {
   CircleDot,
   Clock3,
   Repeat2,
-  TrainFront,
 } from "lucide-react-native";
 
 import { railwayRegistry } from "../data/railwayRegistry";
@@ -134,9 +133,6 @@ const RouteResultScreen = () => {
     return formatTime(routeTime.arrivalTime);
   }, [routeTime]);
 
-  const isScheduledDeparture =
-    params.departureTimeMode === "scheduled";
-
   const getLine = (lineId: string) => {
     return Object.values(railwayRegistry).find(
       (line) => line.id === lineId,
@@ -219,100 +215,236 @@ const RouteResultScreen = () => {
             },
           ]}
         >
-          <View style={styles.summaryStation}>
-            <Text
-              style={[
-                styles.summaryLabel,
-                {
-                  color: colors.textMuted,
-                },
-              ]}
-            >
-              출발
-            </Text>
-
-            <Text
-              style={[
-                styles.summaryName,
-                {
-                  color: colors.text,
-                },
-              ]}
-            >
-              {params.departureNameKo ?? "-"}
-            </Text>
-
-            {!!params.departureNameJa && (
+          <View style={styles.summaryRouteRow}>
+            <View style={styles.summaryStation}>
               <Text
                 style={[
-                  styles.summaryNameJa,
+                  styles.summaryLabel,
                   {
-                    color: colors.textSecondary,
+                    color: colors.textMuted,
                   },
                 ]}
               >
-                {params.departureNameJa}
+                출발
               </Text>
-            )}
-          </View>
 
-          <View
-            style={[
-              styles.summaryArrow,
-              {
-                backgroundColor:
-                  colors.surfaceSecondary,
-              },
-            ]}
-          >
-            <ArrowRight
-              size={18}
-              color={colors.textSecondary}
-              strokeWidth={2}
-            />
-          </View>
-
-          <View
-            style={[
-              styles.summaryStation,
-              styles.summaryStationRight,
-            ]}
-          >
-            <Text
-              style={[
-                styles.summaryLabel,
-                {
-                  color: colors.textMuted,
-                },
-              ]}
-            >
-              도착
-            </Text>
-
-            <Text
-              style={[
-                styles.summaryName,
-                {
-                  color: colors.text,
-                },
-              ]}
-            >
-              {params.arrivalNameKo ?? "-"}
-            </Text>
-
-            {!!params.arrivalNameJa && (
               <Text
                 style={[
-                  styles.summaryNameJa,
+                  styles.summaryName,
                   {
-                    color: colors.textSecondary,
+                    color: colors.text,
                   },
                 ]}
               >
-                {params.arrivalNameJa}
+                {params.departureNameKo ?? "-"}
               </Text>
-            )}
+
+              {!!params.departureNameJa && (
+                <Text
+                  style={[
+                    styles.summaryNameJa,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  {params.departureNameJa}
+                </Text>
+              )}
+            </View>
+
+            <View
+              style={[
+                styles.summaryArrow,
+                {
+                  backgroundColor: colors.surfaceSecondary,
+                },
+              ]}
+            >
+              <ArrowRight
+                size={18}
+                color={colors.textSecondary}
+                strokeWidth={2}
+              />
+            </View>
+
+            <View
+              style={[
+                styles.summaryStation,
+                styles.summaryStationRight,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  {
+                    color: colors.textMuted,
+                  },
+                ]}
+              >
+                도착
+              </Text>
+
+              <Text
+                style={[
+                  styles.summaryName,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+              >
+                {params.arrivalNameKo ?? "-"}
+              </Text>
+
+              {!!params.arrivalNameJa && (
+                <Text
+                  style={[
+                    styles.summaryNameJa,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  {params.arrivalNameJa}
+                </Text>
+              )}
+            </View>
           </View>
+
+          {route && (
+            <>
+              <View
+                style={[
+                  styles.summaryDivider,
+                  {
+                    backgroundColor: colors.border,
+                  },
+                ]}
+              />
+
+              <View style={styles.timeSummaryRow}>
+                <View style={styles.timeSummaryItem}>
+                  <Text
+                    style={[
+                      styles.timeSummaryLabel,
+                      {
+                        color: colors.textMuted,
+                      },
+                    ]}
+                  >
+                    예상 소요시간
+                  </Text>
+
+                  <Text
+                    style={[
+                      styles.timeSummaryValue,
+                      {
+                        color: colors.text,
+                      },
+                    ]}
+                  >
+                    약 {estimatedMinutes}분
+                  </Text>
+                </View>
+
+                <View
+                  style={[
+                    styles.timeSummaryItem,
+                    styles.timeSummaryItemRight,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.timeSummaryLabel,
+                      {
+                        color: colors.textMuted,
+                      },
+                    ]}
+                  >
+                    예상 도착
+                  </Text>
+
+                  <Text
+                    style={[
+                      styles.timeSummaryValue,
+                      {
+                        color: colors.text,
+                      },
+                    ]}
+                  >
+                    {estimatedArrivalTime}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.metaRow}>
+                <View style={styles.metaItem}>
+                  <Clock3
+                    size={14}
+                    color={colors.textSecondary}
+                    strokeWidth={2}
+                  />
+                  <Text
+                    style={[
+                      styles.metaText,
+                      {
+                        color: colors.textSecondary,
+                      },
+                    ]}
+                  >
+                    출발 {departureTimeLabel}
+                  </Text>
+                </View>
+
+                <View
+                  style={[
+                    styles.metaDivider,
+                    {
+                      backgroundColor: colors.border,
+                    },
+                  ]}
+                />
+
+                <View style={styles.metaItem}>
+                  <Repeat2
+                    size={14}
+                    color={colors.textSecondary}
+                    strokeWidth={2}
+                  />
+                  <Text
+                    style={[
+                      styles.metaText,
+                      {
+                        color: colors.textSecondary,
+                      },
+                    ]}
+                  >
+                    환승 {transferCount}회
+                  </Text>
+                </View>
+
+                <View
+                  style={[
+                    styles.metaDivider,
+                    {
+                      backgroundColor: colors.border,
+                    },
+                  ]}
+                />
+
+                <Text
+                  style={[
+                    styles.metaText,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  {rideCount}정거장
+                </Text>
+              </View>
+            </>
+          )}
         </View>
 
         {/* 결과 없음 */}
@@ -356,191 +488,6 @@ const RouteResultScreen = () => {
 
         {route && (
           <>
-            {/* 시간 */}
-
-            <View
-              style={[
-                styles.estimatedTimeCard,
-                {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                },
-              ]}
-            >
-              <View
-                style={[
-                  styles.estimatedTimeIcon,
-                  {
-                    backgroundColor:
-                      colors.surfaceSecondary,
-                  },
-                ]}
-              >
-                <Clock3
-                  size={22}
-                  color={colors.text}
-                  strokeWidth={2}
-                />
-              </View>
-
-              <View style={styles.estimatedTimeTextArea}>
-                <Text
-                  style={[
-                    styles.estimatedTimeLabel,
-                    {
-                      color: colors.textMuted,
-                    },
-                  ]}
-                >
-                  예상 소요시간
-                </Text>
-
-                <Text
-                  style={[
-                    styles.estimatedTimeValue,
-                    {
-                      color: colors.text,
-                    },
-                  ]}
-                >
-                  약 {estimatedMinutes}분
-                </Text>
-              </View>
-
-              <View style={styles.arrivalTimeArea}>
-                <Text
-                  style={[
-                    styles.arrivalTimeLabel,
-                    {
-                      color: colors.textMuted,
-                    },
-                  ]}
-                >
-                  예상 도착
-                </Text>
-
-                <Text
-                  style={[
-                    styles.arrivalTimeValue,
-                    {
-                      color: colors.text,
-                    },
-                  ]}
-                >
-                  {estimatedArrivalTime}
-                </Text>
-              </View>
-            </View>
-
-            {/* 출발 기준 시간 */}
-
-            <View
-              style={[
-                styles.departureTimeInfo,
-                {
-                  backgroundColor:
-                    colors.surfaceSecondary,
-                },
-              ]}
-            >
-              <Clock3
-                size={15}
-                color={colors.textSecondary}
-                strokeWidth={2}
-              />
-
-              <Text
-                style={[
-                  styles.departureTimeInfoText,
-                  {
-                    color: colors.textSecondary,
-                  },
-                ]}
-              >
-                {isScheduledDeparture
-                  ? `지정 출발 ${departureTimeLabel}`
-                  : `지금 출발 ${departureTimeLabel}`}
-              </Text>
-            </View>
-
-            {/* 요약 */}
-
-            <View style={styles.routeStats}>
-              <View
-                style={[
-                  styles.statCard,
-                  {
-                    backgroundColor: colors.surface,
-                  },
-                ]}
-              >
-                <Repeat2
-                  size={19}
-                  color={colors.textSecondary}
-                  strokeWidth={2}
-                />
-
-                <Text
-                  style={[
-                    styles.statValue,
-                    {
-                      color: colors.text,
-                    },
-                  ]}
-                >
-                  {transferCount}회
-                </Text>
-
-                <Text
-                  style={[
-                    styles.statLabel,
-                    {
-                      color: colors.textMuted,
-                    },
-                  ]}
-                >
-                  환승
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  styles.statCard,
-                  {
-                    backgroundColor: colors.surface,
-                  },
-                ]}
-              >
-                <TrainFront
-                  size={19}
-                  color={colors.textSecondary}
-                  strokeWidth={2}
-                />
-
-                <Text
-                  style={[
-                    styles.statValue,
-                    {
-                      color: colors.text,
-                    },
-                  ]}
-                >
-                  {rideCount}구간
-                </Text>
-
-                <Text
-                  style={[
-                    styles.statLabel,
-                    {
-                      color: colors.textMuted,
-                    },
-                  ]}
-                >
-                  승차 이동
-                </Text>
-              </View>
-            </View>
-
             <Text
               style={[
                 styles.routeNotice,
@@ -549,8 +496,8 @@ const RouteResultScreen = () => {
                 },
               ]}
             >
-              현재 예상 시간은 역간 이동 1구간당 평균 2분,
-              환승 1회당 평균 3분을 기준으로 계산합니다.
+              예상 시간은 정거장당 평균 2분, 환승 1회당 평균 3분을
+              기준으로 계산합니다.
             </Text>
 
             {/* 상세 경로 */}
@@ -569,41 +516,31 @@ const RouteResultScreen = () => {
 
               <View style={styles.stepList}>
                 {route.map((step, index) => {
-                  const node =
-                    graph.nodes.get(step.nodeId);
+                  const node = graph.nodes.get(step.nodeId);
 
                   if (!node) {
                     return null;
                   }
 
                   const line = getLine(node.lineId);
-
-                  const isStart =
-                    step.via === "start";
-
-                  const isTransfer =
-                    step.via === "transfer";
+                  const isStart = step.via === "start";
+                  const isTransfer = step.via === "transfer";
 
                   return (
                     <View
                       key={`${step.nodeId}-${index}`}
                       style={styles.stepRow}
                     >
-                      {/* Timeline */}
-
                       <View style={styles.timeline}>
                         <View
                           style={[
                             styles.timelineDot,
                             {
                               borderColor:
-                                line?.color ??
-                                colors.textMuted,
-
+                                line?.color ?? colors.textMuted,
                               backgroundColor:
                                 isStart || isTransfer
-                                  ? line?.color ??
-                                    colors.text
+                                  ? line?.color ?? colors.text
                                   : colors.background,
                             },
                           ]}
@@ -615,26 +552,18 @@ const RouteResultScreen = () => {
                               styles.timelineLine,
                               {
                                 backgroundColor:
-                                  line?.color ??
-                                  colors.border,
+                                  line?.color ?? colors.border,
                               },
                             ]}
                           />
                         )}
                       </View>
 
-                      {/* Content */}
-
                       <View
                         style={[
-                          styles.stepCard,
+                          styles.stepContent,
                           {
-                            backgroundColor:
-                              isTransfer
-                                ? colors.surfaceSecondary
-                                : colors.surface,
-
-                            borderColor: colors.border,
+                            borderBottomColor: colors.border,
                           },
                         ]}
                       >
@@ -655,8 +584,7 @@ const RouteResultScreen = () => {
                               style={[
                                 styles.stationNameJa,
                                 {
-                                  color:
-                                    colors.textSecondary,
+                                  color: colors.textSecondary,
                                 },
                               ]}
                             >
@@ -670,8 +598,7 @@ const RouteResultScreen = () => {
                                 styles.stationCode,
                                 {
                                   borderColor:
-                                    line?.color ??
-                                    colors.border,
+                                    line?.color ?? colors.border,
                                 },
                               ]}
                             >
@@ -680,8 +607,7 @@ const RouteResultScreen = () => {
                                   styles.stationCodeText,
                                   {
                                     color:
-                                      line?.color ??
-                                      colors.text,
+                                      line?.color ?? colors.text,
                                   },
                                 ]}
                               >
@@ -697,8 +623,7 @@ const RouteResultScreen = () => {
                               styles.lineDot,
                               {
                                 backgroundColor:
-                                  line?.color ??
-                                  colors.textMuted,
+                                  line?.color ?? colors.textMuted,
                               },
                             ]}
                           />
@@ -707,8 +632,7 @@ const RouteResultScreen = () => {
                             style={[
                               styles.lineName,
                               {
-                                color:
-                                  colors.textSecondary,
+                                color: colors.textSecondary,
                               },
                             ]}
                           >
@@ -731,8 +655,7 @@ const RouteResultScreen = () => {
                               style={[
                                 styles.actionText,
                                 {
-                                  color:
-                                    colors.textSecondary,
+                                  color: colors.textSecondary,
                                 },
                               ]}
                             >
@@ -834,6 +757,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 18,
     paddingVertical: 18,
+  },
+
+  summaryRouteRow: {
     flexDirection: "row",
     alignItems: "center",
   },
@@ -874,109 +800,66 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
   },
 
-  estimatedTimeCard: {
-    marginTop: 14,
-    minHeight: 88,
-    borderRadius: 20,
-    borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+  summaryDivider: {
+    height: StyleSheet.hairlineWidth,
+    marginTop: 18,
+    marginBottom: 16,
+  },
+
+  timeSummaryRow: {
     flexDirection: "row",
-    alignItems: "center",
-  },
-
-  estimatedTimeIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 15,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  estimatedTimeTextArea: {
-    flex: 1,
-    marginLeft: 13,
-  },
-
-  estimatedTimeLabel: {
-    fontSize: 10,
-    lineHeight: 14,
-    fontWeight: "700",
-  },
-
-  estimatedTimeValue: {
-    marginTop: 2,
-    fontSize: 24,
-    lineHeight: 30,
-    fontWeight: "900",
-  },
-
-  arrivalTimeArea: {
-    marginLeft: 12,
     alignItems: "flex-end",
   },
 
-  arrivalTimeLabel: {
+  timeSummaryItem: {
+    flex: 1,
+  },
+
+  timeSummaryItemRight: {
+    alignItems: "flex-end",
+  },
+
+  timeSummaryLabel: {
     fontSize: 10,
     lineHeight: 14,
     fontWeight: "700",
   },
 
-  arrivalTimeValue: {
+  timeSummaryValue: {
     marginTop: 3,
-    fontSize: 18,
-    lineHeight: 23,
+    fontSize: 22,
+    lineHeight: 28,
     fontWeight: "900",
   },
 
-  departureTimeInfo: {
-    alignSelf: "flex-start",
-    marginTop: 9,
-    paddingHorizontal: 11,
-    paddingVertical: 7,
-    borderRadius: 12,
+  metaRow: {
+    marginTop: 17,
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    flexWrap: "wrap",
+    gap: 8,
   },
 
-  departureTimeInfoText: {
+  metaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+
+  metaDivider: {
+    width: 1,
+    height: 12,
+  },
+
+  metaText: {
     fontSize: 11,
     lineHeight: 15,
-    fontWeight: "800",
-  },
-
-  routeStats: {
-    marginTop: 10,
-    flexDirection: "row",
-    gap: 10,
-  },
-
-  statCard: {
-    flex: 1,
-    minHeight: 82,
-    borderRadius: 18,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-    justifyContent: "center",
-  },
-
-  statValue: {
-    marginTop: 7,
-    fontSize: 17,
-    lineHeight: 21,
-    fontWeight: "900",
-  },
-
-  statLabel: {
-    marginTop: 1,
-    fontSize: 10,
-    lineHeight: 14,
+    fontWeight: "700",
   },
 
   routeNotice: {
-    marginTop: 10,
-    marginLeft: 3,
+    marginTop: 11,
+    marginHorizontal: 3,
     fontSize: 10,
     lineHeight: 15,
   },
@@ -992,7 +875,7 @@ const styles = StyleSheet.create({
   },
 
   stepList: {
-    marginTop: 16,
+    marginTop: 14,
   },
 
   stepRow: {
@@ -1000,7 +883,7 @@ const styles = StyleSheet.create({
   },
 
   timeline: {
-    width: 28,
+    width: 30,
     alignItems: "center",
   },
 
@@ -1009,26 +892,24 @@ const styles = StyleSheet.create({
     height: 14,
     borderRadius: 7,
     borderWidth: 3,
-    marginTop: 20,
+    marginTop: 17,
     zIndex: 2,
   },
 
   timelineLine: {
     position: "absolute",
-    top: 32,
-    bottom: -20,
+    top: 29,
+    bottom: -18,
     width: 3,
   },
 
-  stepCard: {
+  stepContent: {
     flex: 1,
-    minHeight: 100,
-    marginLeft: 5,
-    marginBottom: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 14,
-    borderRadius: 18,
-    borderWidth: 1,
+    minHeight: 92,
+    marginLeft: 7,
+    paddingTop: 12,
+    paddingBottom: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 
   stepTop: {
@@ -1070,7 +951,7 @@ const styles = StyleSheet.create({
   },
 
   lineRow: {
-    marginTop: 9,
+    marginTop: 8,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -1089,7 +970,7 @@ const styles = StyleSheet.create({
   },
 
   actionRow: {
-    marginTop: 9,
+    marginTop: 8,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,

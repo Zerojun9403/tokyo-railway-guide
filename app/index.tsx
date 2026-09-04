@@ -701,7 +701,7 @@ const HomeScreen = () => {
                   },
                 ]}
               >
-                철도 지도
+                철도 노선도
               </Text>
 
               <Text
@@ -799,12 +799,12 @@ const HomeScreen = () => {
                 {
                   borderColor:
                     departureTimeMode === "now"
-                      ? "#1677FF"
+                      ? "#A78BFA"
                       : colors.border,
 
                   backgroundColor:
                     departureTimeMode === "now"
-                      ? "#1677FF12"
+                      ? "#A78BFA12"
                       : colors.surface,
                 },
               ]}
@@ -838,7 +838,7 @@ const HomeScreen = () => {
               {departureTimeMode === "now" && (
                 <Check
                   size={20}
-                  color="#1677FF"
+                  color="#A78BFA"
                   strokeWidth={2.5}
                 />
               )}
@@ -852,12 +852,12 @@ const HomeScreen = () => {
                 {
                   borderColor:
                     departureTimeMode === "scheduled"
-                      ? "#1677FF"
+                      ? "#A78BFA"
                       : colors.border,
 
                   backgroundColor:
                     departureTimeMode === "scheduled"
-                      ? "#1677FF12"
+                      ? "#A78BFA12"
                       : colors.surface,
                 },
               ]}
@@ -891,7 +891,7 @@ const HomeScreen = () => {
               {departureTimeMode === "scheduled" && (
                 <Check
                   size={20}
-                  color="#1677FF"
+                  color="#A78BFA"
                   strokeWidth={2.5}
                 />
               )}
@@ -1191,7 +1191,7 @@ const styles = StyleSheet.create({
     height: 56,
     marginTop: 12,
     borderRadius: 18,
-    backgroundColor: "#1677FF",
+    backgroundColor: "#F4A7B9",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -1369,7 +1369,7 @@ const styles = StyleSheet.create({
     height: 54,
     marginTop: 14,
     borderRadius: 17,
-    backgroundColor: "#1677FF",
+    backgroundColor: "#A78BFA",
     alignItems: "center",
     justifyContent: "center",
   },
