@@ -1,9 +1,11 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import {
+  ChevronRight,
   CircleHelp,
   CreditCard,
   Info,
+  Nfc,
   Plane,
   Settings,
   Star,
@@ -49,6 +51,7 @@ const MenuItem = ({
           borderBottomColor: borderColor,
         },
         pressed && !disabled && styles.pressed,
+        disabled && styles.disabled,
       ]}
     >
       <View style={styles.iconArea}>{icon}</View>
@@ -76,6 +79,14 @@ const MenuItem = ({
           {description}
         </Text>
       </View>
+
+      {!disabled && (
+        <ChevronRight
+          size={18}
+          color={secondaryTextColor}
+          strokeWidth={1.7}
+        />
+      )}
     </Pressable>
   );
 };
@@ -84,8 +95,6 @@ const MoreScreen = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors } = useAppTheme();
-
-  const iconColor = colors.textSecondary;
 
   return (
     <View
@@ -106,24 +115,21 @@ const MoreScreen = () => {
           },
         ]}
       >
+        {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.pageTitle, { color: colors.text }]}>
-            더보기
-          </Text>
-
           <Text
             style={[
-              styles.pageDescription,
+              styles.pageTitle,
               {
-                color: colors.textSecondary,
+                color: colors.text,
               },
             ]}
           >
-            도쿄 여행에 필요한 교통 정보와 앱 설정을 확인할 수 있습니다.
+            더보기
           </Text>
         </View>
 
-        {/* 여행 */}
+        {/* Travel */}
         <View style={styles.section}>
           <Text
             style={[
@@ -136,72 +142,90 @@ const MoreScreen = () => {
             여행
           </Text>
 
-          <MenuItem
-            icon={
-              <Plane
-                size={20}
-                color={iconColor}
-                strokeWidth={1.7}
-              />
-            }
-            title="공항까지 가는 길"
-            description="나리타 · 하네다 공항 교통 안내"
-            disabled
-            textColor={colors.text}
-            secondaryTextColor={colors.textSecondary}
-            borderColor={colors.border}
-          />
+          <View style={styles.menuList}>
+            <MenuItem
+              icon={
+                <Plane
+                  size={21}
+                  color={colors.text}
+                  strokeWidth={1.7}
+                />
+              }
+              title="공항 가는 길"
+              description="나리타 · 하네다 공항 교통 안내"
+              onPress={() => router.push("/airport")}
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+              borderColor={colors.border}
+            />
 
-          <MenuItem
-            icon={
-              <Ticket
-                size={20}
-                color={iconColor}
-                strokeWidth={1.7}
-              />
-            }
-            title="여행자 패스"
-            description="도쿄 교통패스 안내"
-            onPress={() => router.push("/travel-passes")}
-            textColor={colors.text}
-            secondaryTextColor={colors.textSecondary}
-            borderColor={colors.border}
-          />
+            <MenuItem
+              icon={
+                <Ticket
+                  size={21}
+                  color={colors.text}
+                  strokeWidth={1.7}
+                />
+              }
+              title="여행자 패스"
+              description="도쿄 교통패스 안내"
+              onPress={() => router.push("/travel-passes")}
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+              borderColor={colors.border}
+            />
 
-          <MenuItem
-            icon={
-              <CreditCard
-                size={20}
-                color={iconColor}
-                strokeWidth={1.7}
-              />
-            }
-            title="IC카드 이용 가이드"
-            description="Suica · PASMO · 전국 상호이용 IC카드"
-            onPress={() => router.push("/ic-card-guide")}
-            textColor={colors.text}
-            secondaryTextColor={colors.textSecondary}
-            borderColor={colors.border}
-          />
+            <MenuItem
+              icon={
+                <CreditCard
+                  size={21}
+                  color={colors.text}
+                  strokeWidth={1.7}
+                />
+              }
+              title="IC카드 이용 가이드"
+              description="Suica · PASMO · 전국 상호이용 IC카드"
+              onPress={() => router.push("/ic-card-guide")}
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+              borderColor={colors.border}
+            />
 
-          <MenuItem
-            icon={
-              <CircleHelp
-                size={20}
-                color={iconColor}
-                strokeWidth={1.7}
-              />
-            }
-            title="일본 철도 이용 가이드"
-            description="개찰구 · 환승 · 열차 이용 방법"
-            onPress={() => router.push("/railway-guide")}
-            textColor={colors.text}
-            secondaryTextColor={colors.textSecondary}
-            borderColor={colors.border}
-          />
+            <MenuItem
+              icon={
+                <Nfc
+                  size={21}
+                  color={colors.text}
+                  strokeWidth={1.7}
+                />
+              }
+              title="신용카드로 전철 타기"
+              description="컨택리스 카드로 이용하는 오픈루프 승차"
+              onPress={() => router.push("/contactless-guide")}
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+              borderColor={colors.border}
+            />
+
+            <MenuItem
+              icon={
+                <CircleHelp
+                  size={21}
+                  color={colors.text}
+                  strokeWidth={1.7}
+                />
+              }
+              title="일본 철도 이용 가이드"
+              description="개찰구 · 환승 · 열차 이용 방법"
+              onPress={() => router.push("/railway-guide")}
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+              borderColor={colors.border}
+            />
+          </View>
         </View>
 
-        {/* 내 정보 */}
+        {/* My */}
         <View style={styles.section}>
           <Text
             style={[
@@ -214,24 +238,26 @@ const MoreScreen = () => {
             내 정보
           </Text>
 
-          <MenuItem
-            icon={
-              <Star
-                size={20}
-                color={iconColor}
-                strokeWidth={1.7}
-              />
-            }
-            title="즐겨찾는 역"
-            description="저장한 역을 빠르게 확인"
-            onPress={() => router.push("/favorite-stations")}
-            textColor={colors.text}
-            secondaryTextColor={colors.textSecondary}
-            borderColor={colors.border}
-          />
+          <View style={styles.menuList}>
+            <MenuItem
+              icon={
+                <Star
+                  size={21}
+                  color={colors.text}
+                  strokeWidth={1.7}
+                />
+              }
+              title="즐겨찾는 역"
+              description="자주 이용하는 역 관리"
+              onPress={() => router.push("/favorite-stations")}
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+              borderColor={colors.border}
+            />
+          </View>
         </View>
 
-        {/* 앱 */}
+        {/* App */}
         <View style={styles.section}>
           <Text
             style={[
@@ -244,37 +270,39 @@ const MoreScreen = () => {
             앱
           </Text>
 
-          <MenuItem
-            icon={
-              <Settings
-                size={20}
-                color={iconColor}
-                strokeWidth={1.7}
-              />
-            }
-            title="설정"
-            description="앱 설정 및 데이터 정보"
-            onPress={() => router.push("/settings")}
-            textColor={colors.text}
-            secondaryTextColor={colors.textSecondary}
-            borderColor={colors.border}
-          />
+          <View style={styles.menuList}>
+            <MenuItem
+              icon={
+                <Settings
+                  size={21}
+                  color={colors.text}
+                  strokeWidth={1.7}
+                />
+              }
+              title="설정"
+              description="앱 설정 및 데이터 정보"
+              onPress={() => router.push("/settings")}
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+              borderColor={colors.border}
+            />
 
-          <MenuItem
-            icon={
-              <Info
-                size={20}
-                color={iconColor}
-                strokeWidth={1.7}
-              />
-            }
-            title="앱 정보"
-            description="버전 및 서비스 정보"
-            disabled
-            textColor={colors.text}
-            secondaryTextColor={colors.textSecondary}
-            borderColor={colors.border}
-          />
+            <MenuItem
+              icon={
+                <Info
+                  size={21}
+                  color={colors.text}
+                  strokeWidth={1.7}
+                />
+              }
+              title="앱 정보"
+              description="Tokyo Railway Guide"
+              disabled
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+              borderColor={colors.border}
+            />
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -297,19 +325,14 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    marginBottom: 38,
+    marginBottom: 34,
   },
 
   pageTitle: {
     fontSize: 26,
+    lineHeight: 34,
     fontWeight: "700",
-    letterSpacing: -0.5,
-  },
-
-  pageDescription: {
-    marginTop: 7,
-    fontSize: 12.5,
-    lineHeight: 19,
+    letterSpacing: -0.6,
   },
 
   section: {
@@ -319,7 +342,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     marginBottom: 8,
     fontSize: 13,
+    lineHeight: 18,
     fontWeight: "600",
+  },
+
+  menuList: {
+    width: "100%",
   },
 
   menuItem: {
@@ -338,7 +366,8 @@ const styles = StyleSheet.create({
   menuContent: {
     flex: 1,
     justifyContent: "center",
-    paddingVertical: 12,
+    paddingVertical: 11,
+    paddingRight: 12,
   },
 
   menuTitle: {
@@ -356,5 +385,9 @@ const styles = StyleSheet.create({
 
   pressed: {
     opacity: 0.5,
+  },
+
+  disabled: {
+    opacity: 0.48,
   },
 });

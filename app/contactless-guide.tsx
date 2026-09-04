@@ -4,9 +4,10 @@ import {
   Check,
   ChevronLeft,
   CircleAlert,
+  CreditCard,
   Info,
-  Repeat2,
-  Signpost,
+  Nfc,
+  Smartphone,
 } from "lucide-react-native";
 import {
   Pressable,
@@ -17,7 +18,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-type TransferTypeProps = {
+type StepProps = {
   number: string;
   title: string;
   description: string;
@@ -25,25 +26,25 @@ type TransferTypeProps = {
   secondaryTextColor: string;
 };
 
-const TransferType = ({
+const Step = ({
   number,
   title,
   description,
   textColor,
   secondaryTextColor,
-}: TransferTypeProps) => {
+}: StepProps) => {
   return (
-    <View style={styles.transferType}>
-      <Text style={styles.transferNumber}>{number}</Text>
+    <View style={styles.step}>
+      <Text style={styles.stepNumber}>{number}</Text>
 
-      <View style={styles.transferContent}>
-        <Text style={[styles.transferTitle, { color: textColor }]}>
+      <View style={styles.stepContent}>
+        <Text style={[styles.stepTitle, { color: textColor }]}>
           {title}
         </Text>
 
         <Text
           style={[
-            styles.transferDescription,
+            styles.stepDescription,
             { color: secondaryTextColor },
           ]}
         >
@@ -54,7 +55,7 @@ const TransferType = ({
   );
 };
 
-const TransferGuideScreen = () => {
+const ContactlessGuideScreen = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors } = useAppTheme();
@@ -95,28 +96,36 @@ const TransferGuideScreen = () => {
           </Pressable>
 
           <Text style={[styles.headerTitle, { color: colors.text }]}>
-            환승하는 방법
+            신용카드로 전철 타기
           </Text>
         </View>
 
         {/* Intro */}
         <View style={styles.intro}>
-          <Text style={styles.guideNumber}>05</Text>
+          <View style={styles.introIcon}>
+            <Nfc
+              size={25}
+              color="#A78BFA"
+              strokeWidth={1.8}
+            />
+          </View>
 
-          <Text style={[styles.pageTitle, { color: colors.text }]}>
-            환승할 때 어디로 가야 할까요?
-          </Text>
+          <View style={styles.introContent}>
+            <Text style={[styles.pageTitle, { color: colors.text }]}>
+              카드 한 장으로 바로 승차
+            </Text>
 
-          <Text
-            style={[
-              styles.pageDescription,
-              { color: colors.textSecondary },
-            ]}
-          >
-            일본 철도에서는 역과 노선에 따라 개찰구 안에서 환승하거나,
-            환승 개찰구를 이용하거나, 개찰구 밖으로 나가 다시 들어가야
-            하는 경우가 있습니다.
-          </Text>
+            <Text
+              style={[
+                styles.pageDescription,
+                { color: colors.textSecondary },
+              ]}
+            >
+              일부 철도에서는 별도의 교통카드를 구입하지 않아도
+              컨택리스 결제를 지원하는 카드나 스마트폰을 개찰구에
+              터치해 이용할 수 있습니다.
+            </Text>
+          </View>
         </View>
 
         <View
@@ -126,10 +135,10 @@ const TransferGuideScreen = () => {
           ]}
         />
 
-        {/* Transfer Types */}
+        {/* What is Open Loop */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Repeat2
+            <CreditCard
               size={21}
               color={colors.text}
               strokeWidth={1.7}
@@ -142,7 +151,7 @@ const TransferGuideScreen = () => {
                   { color: colors.text },
                 ]}
               >
-                환승 방법은 크게 세 가지예요
+                오픈루프 승차란?
               </Text>
 
               <Text
@@ -151,41 +160,32 @@ const TransferGuideScreen = () => {
                   { color: colors.textSecondary },
                 ]}
               >
-                역의 안내 표지판을 따라 이동하세요
+                교통카드 대신 결제 카드를 사용하는 방식
               </Text>
             </View>
           </View>
 
-          <View style={styles.transferList}>
-            <TransferType
-              number="1"
-              title="개찰구 안에서 환승"
-              description={
-                "개찰구 밖으로 나가지 않고 역 안에서 다른 노선의 승강장으로 이동합니다."
-              }
-              textColor={colors.text}
-              secondaryTextColor={colors.textSecondary}
-            />
+          <View style={styles.explanation}>
+            <Text
+              style={[
+                styles.explanationText,
+                { color: colors.textSecondary },
+              ]}
+            >
+              오픈루프는 대응하는 신용카드·체크카드 또는 모바일 결제
+              수단을 개찰구에 직접 터치하여 승차하는 방식입니다.
+            </Text>
 
-            <TransferType
-              number="2"
-              title="환승 개찰구를 이용"
-              description={
-                "역에 따라 환승 전용 개찰구가 있습니다. 일반 출구와 구분해 환승 안내를 따라 이동하세요."
-              }
-              textColor={colors.text}
-              secondaryTextColor={colors.textSecondary}
-            />
-
-            <TransferType
-              number="3"
-              title="개찰구 밖으로 나가서 환승"
-              description={
-                "노선 사이의 거리가 있거나 역 구조가 분리되어 있으면 개찰구 밖으로 나간 뒤 다른 노선으로 이동해야 할 수 있습니다."
-              }
-              textColor={colors.text}
-              secondaryTextColor={colors.textSecondary}
-            />
+            <Text
+              style={[
+                styles.explanationText,
+                styles.explanationSpacing,
+                { color: colors.textSecondary },
+              ]}
+            >
+              Suica나 PASMO 같은 교통계 IC카드를 별도로 구입하고
+              충전하지 않아도 이용할 수 있다는 점이 특징입니다.
+            </Text>
           </View>
         </View>
 
@@ -196,10 +196,10 @@ const TransferGuideScreen = () => {
           ]}
         />
 
-        {/* Signs */}
+        {/* How to use */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Signpost
+            <Nfc
               size={21}
               color={colors.text}
               strokeWidth={1.7}
@@ -212,7 +212,7 @@ const TransferGuideScreen = () => {
                   { color: colors.text },
                 ]}
               >
-                환승 표지판부터 찾으세요
+                이용 방법
               </Text>
 
               <Text
@@ -221,82 +221,145 @@ const TransferGuideScreen = () => {
                   { color: colors.textSecondary },
                 ]}
               >
-                출구보다 다음 노선의 표시를 먼저 확인하세요
+                승차와 하차 모두 같은 결제 수단을 사용하세요
               </Text>
             </View>
           </View>
 
           <View style={styles.steps}>
-            <View style={styles.step}>
-              <Text style={styles.stepNumber}>1</Text>
+            <Step
+              number="1"
+              title="대응 개찰구를 확인하세요"
+              description="컨택리스 결제를 지원하는 개찰구인지 표시를 확인합니다."
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+            />
 
-              <View style={styles.stepContent}>
+            <Step
+              number="2"
+              title="카드 또는 스마트폰을 터치하세요"
+              description="승차할 때 사용할 결제 수단을 리더기에 터치합니다."
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+            />
+
+            <Step
+              number="3"
+              title="열차를 이용하세요"
+              description="개찰구가 정상적으로 열리면 평소처럼 열차를 이용합니다."
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+            />
+
+            <Step
+              number="4"
+              title="내릴 때 같은 결제 수단을 터치하세요"
+              description="하차역에서도 승차할 때 사용한 것과 동일한 카드 또는 기기를 사용합니다."
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+            />
+          </View>
+        </View>
+
+        <View
+          style={[
+            styles.divider,
+            { backgroundColor: colors.border },
+          ]}
+        />
+
+        {/* Card / Mobile */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Smartphone
+              size={21}
+              color={colors.text}
+              strokeWidth={1.7}
+            />
+
+            <View style={styles.sectionHeaderText}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  { color: colors.text },
+                ]}
+              >
+                카드와 스마트폰으로 이용
+              </Text>
+
+              <Text
+                style={[
+                  styles.sectionSubtitle,
+                  { color: colors.textSecondary },
+                ]}
+              >
+                컨택리스 결제를 지원하는 결제 수단이 필요해요
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.paymentList}>
+            <View style={styles.paymentRow}>
+              <CreditCard
+                size={18}
+                color="#A78BFA"
+                strokeWidth={1.8}
+              />
+
+              <View style={styles.paymentContent}>
                 <Text
                   style={[
-                    styles.stepTitle,
+                    styles.paymentTitle,
                     { color: colors.text },
                   ]}
                 >
-                  내린 뒤 바로 출구로 가지 마세요
+                  컨택리스 카드
                 </Text>
 
                 <Text
                   style={[
-                    styles.stepDescription,
+                    styles.paymentDescription,
                     { color: colors.textSecondary },
                   ]}
                 >
-                  먼저 환승하려는 노선의 안내 표지판을 찾으세요.
+                  비접촉 결제를 지원하는 신용카드·체크카드를 사용할 수
+                  있습니다.
                 </Text>
               </View>
             </View>
 
-            <View style={styles.step}>
-              <Text style={styles.stepNumber}>2</Text>
+            <View
+              style={[
+                styles.innerDivider,
+                { backgroundColor: colors.border },
+              ]}
+            />
 
-              <View style={styles.stepContent}>
+            <View style={styles.paymentRow}>
+              <Smartphone
+                size={18}
+                color="#A78BFA"
+                strokeWidth={1.8}
+              />
+
+              <View style={styles.paymentContent}>
                 <Text
                   style={[
-                    styles.stepTitle,
+                    styles.paymentTitle,
                     { color: colors.text },
                   ]}
                 >
-                  노선기호와 색상을 확인하세요
+                  스마트폰 · 스마트워치
                 </Text>
 
                 <Text
                   style={[
-                    styles.stepDescription,
+                    styles.paymentDescription,
                     { color: colors.textSecondary },
                   ]}
                 >
-                  노선 이름뿐 아니라 노선기호와 색상을 함께 보면 찾기
-                  쉽습니다.
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.step}>
-              <Text style={styles.stepNumber}>3</Text>
-
-              <View style={styles.stepContent}>
-                <Text
-                  style={[
-                    styles.stepTitle,
-                    { color: colors.text },
-                  ]}
-                >
-                  다음 열차의 방면을 확인하세요
-                </Text>
-
-                <Text
-                  style={[
-                    styles.stepDescription,
-                    { color: colors.textSecondary },
-                  ]}
-                >
-                  환승 승강장에 도착하면 목적지 방향의 열차인지 다시
-                  확인하세요.
+                  지원되는 모바일 지갑과 결제 카드가 등록된 기기를 사용할
+                  수 있는 경우도 있습니다.
                 </Text>
               </View>
             </View>
@@ -310,7 +373,94 @@ const TransferGuideScreen = () => {
           ]}
         />
 
-        {/* Outside Gate Transfer */}
+        {/* IC vs Contactless */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Info
+              size={21}
+              color={colors.text}
+              strokeWidth={1.7}
+            />
+
+            <View style={styles.sectionHeaderText}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  { color: colors.text },
+                ]}
+              >
+                Suica · PASMO와는 달라요
+              </Text>
+
+              <Text
+                style={[
+                  styles.sectionSubtitle,
+                  { color: colors.textSecondary },
+                ]}
+              >
+                비슷하게 터치하지만 서로 다른 결제 방식입니다
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.compareArea}>
+            <View style={styles.compareRow}>
+              <Text
+                style={[
+                  styles.compareLabel,
+                  { color: colors.text },
+                ]}
+              >
+                IC카드
+              </Text>
+
+              <Text
+                style={[
+                  styles.compareText,
+                  { color: colors.textSecondary },
+                ]}
+              >
+                Suica · PASMO 등에 미리 충전한 잔액으로 이용
+              </Text>
+            </View>
+
+            <View
+              style={[
+                styles.innerDivider,
+                { backgroundColor: colors.border },
+              ]}
+            />
+
+            <View style={styles.compareRow}>
+              <Text
+                style={[
+                  styles.compareLabel,
+                  { color: colors.text },
+                ]}
+              >
+                오픈루프
+              </Text>
+
+              <Text
+                style={[
+                  styles.compareText,
+                  { color: colors.textSecondary },
+                ]}
+              >
+                대응하는 결제 카드나 모바일 결제를 직접 이용
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View
+          style={[
+            styles.divider,
+            { backgroundColor: colors.border },
+          ]}
+        />
+
+        {/* Warning */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <CircleAlert
@@ -326,7 +476,7 @@ const TransferGuideScreen = () => {
                   { color: colors.text },
                 ]}
               >
-                개찰구 밖 환승은 특히 주의하세요
+                모든 노선에서 사용할 수 있는 건 아니에요
               </Text>
 
               <Text
@@ -335,7 +485,7 @@ const TransferGuideScreen = () => {
                   { color: colors.textSecondary },
                 ]}
               >
-                일반 출구와 환승용 개찰구를 구분하세요
+                이용 가능한 철도회사 · 노선 · 역을 확인하세요
               </Text>
             </View>
           </View>
@@ -347,9 +497,8 @@ const TransferGuideScreen = () => {
                 { color: colors.textSecondary },
               ]}
             >
-              일부 역에서는 다른 노선으로 환승하기 위해 개찰구 밖으로
-              나가야 합니다. 이때 지정된 환승 개찰구나 환승 경로가 있을
-              수 있으므로 역의 안내를 따라 이동하세요.
+              컨택리스 승차를 지원하는 범위는 철도회사와 노선, 역에 따라
+              다를 수 있습니다.
             </Text>
 
             <Text
@@ -359,82 +508,10 @@ const TransferGuideScreen = () => {
                 { color: colors.textSecondary },
               ]}
             >
-              일반 출구로 나가버리면 환승 처리가 되지 않을 수 있으므로
-              개찰구를 통과하기 전에 환승 안내 표시를 확인하는 것이
-              중요합니다.
+              같은 지역의 철도라도 모든 개찰구에서 이용할 수 있다고
+              생각하지 말고, 탑승 전에 대응 여부를 확인하세요.
             </Text>
           </View>
-        </View>
-
-        {/* Orange Gate */}
-        <View
-          style={[
-            styles.orangeGateSection,
-            {
-              borderTopColor: colors.border,
-              borderBottomColor: colors.border,
-            },
-          ]}
-        >
-          <View style={styles.orangeGateHeader}>
-            <View style={styles.orangeGateMark} />
-
-            <View style={styles.orangeGateHeaderText}>
-              <Text
-                style={[
-                  styles.orangeGateTitle,
-                  { color: colors.text },
-                ]}
-              >
-                도쿄메트로의 오렌지색 개찰구
-              </Text>
-
-              <Text
-                style={[
-                  styles.orangeGateSubtitle,
-                  { color: colors.textSecondary },
-                ]}
-              >
-                개찰구 밖 환승이 필요한 일부 역에서 확인하세요
-              </Text>
-            </View>
-          </View>
-
-          <Text
-            style={[
-              styles.orangeGateDescription,
-              { color: colors.textSecondary },
-            ]}
-          >
-            도쿄메트로에서는 일부 환승역에서 개찰구 밖으로 나가 다른
-            승강장이나 연결된 역으로 이동해야 합니다. 이때 오렌지색으로
-            표시된 환승용 개찰구가 있다면 해당 개찰구를 이용하세요.
-          </Text>
-
-          <View style={styles.orangeGateTip}>
-            <Text style={styles.orangeGateTipMark}>●</Text>
-
-            <Text
-              style={[
-                styles.orangeGateTipText,
-                { color: colors.text },
-              ]}
-            >
-              오렌지색 개찰구를 확인하고 환승 안내를 따라 이동
-            </Text>
-          </View>
-
-          <Text
-            style={[
-              styles.orangeGateDescription,
-              styles.orangeGateSpacing,
-              { color: colors.textSecondary },
-            ]}
-          >
-            개찰구 밖 환승은 지정된 개찰구나 경로, 환승 가능한 시간이
-            정해져 있는 경우가 있습니다. 일반 출구가 아닌 역의 환승
-            안내를 확인하세요.
-          </Text>
         </View>
 
         {/* Key Point */}
@@ -442,6 +519,7 @@ const TransferGuideScreen = () => {
           style={[
             styles.keyPoint,
             {
+              borderTopColor: colors.border,
               borderBottomColor: colors.border,
             },
           ]}
@@ -470,7 +548,7 @@ const TransferGuideScreen = () => {
                 { color: colors.text },
               ]}
             >
-              내리자마자 출구로 가지 말고 환승 표지판부터 확인
+              대응 개찰구 확인 → 같은 카드로 승차 · 하차
             </Text>
           </View>
         </View>
@@ -489,8 +567,9 @@ const TransferGuideScreen = () => {
               { color: colors.textSecondary },
             ]}
           >
-            같은 역 이름이라도 노선에 따라 승강장이 멀리 떨어져 있을 수
-            있습니다. 환승이 많은 경로에서는 이동 시간도 함께 고려하세요.
+            지원 카드 브랜드와 이용 가능 구간은 철도회사에 따라 다를 수
+            있습니다. 실제 이용 전 해당 철도회사의 최신 안내를
+            확인하세요.
           </Text>
         </View>
       </ScrollView>
@@ -498,7 +577,7 @@ const TransferGuideScreen = () => {
   );
 };
 
-export default TransferGuideScreen;
+export default ContactlessGuideScreen;
 
 const styles = StyleSheet.create({
   screen: {
@@ -533,14 +612,17 @@ const styles = StyleSheet.create({
   },
 
   intro: {
-    paddingLeft: 46,
+    flexDirection: "row",
+    alignItems: "flex-start",
   },
 
-  guideNumber: {
-    color: "#A78BFA",
-    fontSize: 13,
-    fontWeight: "700",
-    marginBottom: 8,
+  introIcon: {
+    width: 46,
+    paddingTop: 2,
+  },
+
+  introContent: {
+    flex: 1,
   },
 
   pageTitle: {
@@ -588,39 +670,18 @@ const styles = StyleSheet.create({
     lineHeight: 17,
   },
 
-  transferList: {
-    marginTop: 23,
+  explanation: {
+    marginTop: 22,
     paddingLeft: 46,
   },
 
-  transferType: {
-    minHeight: 82,
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-
-  transferNumber: {
-    width: 34,
-    color: "#A78BFA",
+  explanationText: {
     fontSize: 12.5,
-    fontWeight: "700",
+    lineHeight: 20,
   },
 
-  transferContent: {
-    flex: 1,
-  },
-
-  transferTitle: {
-    fontSize: 14,
-    lineHeight: 19,
-    fontWeight: "600",
-    letterSpacing: -0.2,
-  },
-
-  transferDescription: {
-    marginTop: 4,
-    fontSize: 12,
-    lineHeight: 18,
+  explanationSpacing: {
+    marginTop: 12,
   },
 
   steps: {
@@ -658,93 +719,64 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 
-  explanation: {
+  paymentList: {
     marginTop: 22,
-    paddingLeft: 46,
-  },
-
-  explanationText: {
-    fontSize: 12.5,
-    lineHeight: 20,
-  },
-
-  explanationSpacing: {
-    marginTop: 12,
-  },
-
-  orangeGateSection: {
-    marginTop: 30,
     marginLeft: 46,
-    paddingVertical: 22,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 
-  orangeGateHeader: {
+  paymentRow: {
     flexDirection: "row",
     alignItems: "flex-start",
+    paddingVertical: 16,
   },
 
-  orangeGateMark: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#F59E0B",
-    marginTop: 5,
-  },
-
-  orangeGateHeaderText: {
+  paymentContent: {
     flex: 1,
-    marginLeft: 13,
+    marginLeft: 16,
   },
 
-  orangeGateTitle: {
+  paymentTitle: {
     fontSize: 14,
-    lineHeight: 19,
-    fontWeight: "700",
-    letterSpacing: -0.2,
-  },
-
-  orangeGateSubtitle: {
-    marginTop: 3,
-    fontSize: 11.5,
-    lineHeight: 17,
-  },
-
-  orangeGateDescription: {
-    marginTop: 17,
-    fontSize: 12,
-    lineHeight: 19,
-  },
-
-  orangeGateTip: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginTop: 17,
-  },
-
-  orangeGateTipMark: {
-    width: 23,
-    color: "#F59E0B",
-    fontSize: 11,
-    lineHeight: 18,
-  },
-
-  orangeGateTipText: {
-    flex: 1,
-    fontSize: 12.5,
-    lineHeight: 18,
     fontWeight: "600",
   },
 
-  orangeGateSpacing: {
-    marginTop: 15,
+  paymentDescription: {
+    marginTop: 5,
+    fontSize: 12,
+    lineHeight: 18,
+  },
+
+  innerDivider: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: 34,
+  },
+
+  compareArea: {
+    marginTop: 22,
+    marginLeft: 46,
+  },
+
+  compareRow: {
+    paddingVertical: 15,
+  },
+
+  compareLabel: {
+    fontSize: 13.5,
+    fontWeight: "700",
+  },
+
+  compareText: {
+    marginTop: 5,
+    fontSize: 12,
+    lineHeight: 18,
   },
 
   keyPoint: {
     flexDirection: "row",
     alignItems: "center",
+    marginTop: 30,
     paddingVertical: 20,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
 
