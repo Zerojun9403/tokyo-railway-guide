@@ -10,13 +10,7 @@ import {
   MapPin,
   TrainFront,
 } from "lucide-react-native";
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type AccessItemProps = {
@@ -56,37 +50,19 @@ const AccessItem = ({
       <View style={styles.accessIcon}>{icon}</View>
 
       <View style={styles.accessContent}>
-        <Text style={[styles.accessTitle, { color: textColor }]}>
-          {title}
-        </Text>
+        <Text style={[styles.accessTitle, { color: textColor }]}>{title}</Text>
 
-        <Text
-          style={[
-            styles.accessSubtitle,
-            { color: secondaryTextColor },
-          ]}
-        >
+        <Text style={[styles.accessSubtitle, { color: secondaryTextColor }]}>
           {subtitle}
         </Text>
 
         <View style={styles.destinationRow}>
-          <MapPin
-            size={13}
-            color="#7FAF9B"
-            strokeWidth={1.8}
-          />
+          <MapPin size={13} color="#7FAF9B" strokeWidth={1.8} />
 
-          <Text style={styles.destinationText}>
-            {destination}
-          </Text>
+          <Text style={styles.destinationText}>{destination}</Text>
         </View>
 
-        <Text
-          style={[
-            styles.accessDescription,
-            { color: secondaryTextColor },
-          ]}
-        >
+        <Text style={[styles.accessDescription, { color: secondaryTextColor }]}>
           {description}
         </Text>
 
@@ -98,13 +74,9 @@ const AccessItem = ({
               pressed && styles.pressed,
             ]}
           >
-            <Text style={styles.accessActionText}>
-              {actionLabel}
-            </Text>
+            <Text style={styles.accessActionText}>{actionLabel}</Text>
 
-            <Text style={styles.accessActionArrow}>
-              →
-            </Text>
+            <Text style={styles.accessActionArrow}>→</Text>
           </Pressable>
         )}
       </View>
@@ -145,11 +117,7 @@ const NaritaAirportGuideScreen = () => {
               pressed && styles.pressed,
             ]}
           >
-            <ChevronLeft
-              size={25}
-              color={colors.text}
-              strokeWidth={1.8}
-            />
+            <ChevronLeft size={25} color={colors.text} strokeWidth={1.8} />
           </Pressable>
 
           <Text style={[styles.headerTitle, { color: colors.text }]}>
@@ -166,39 +134,22 @@ const NaritaAirportGuideScreen = () => {
           </Text>
 
           <Text
-            style={[
-              styles.pageDescription,
-              { color: colors.textSecondary },
-            ]}
+            style={[styles.pageDescription, { color: colors.textSecondary }]}
           >
-            목적지와 예산에 따라 JR 나리타 익스프레스, 게이세이
-            스카이라이너, 액세스 특급, 공항버스를 선택할 수 있습니다.
+            목적지와 예산에 따라 JR 나리타 익스프레스, 게이세이 스카이라이너,
+            액세스 특급, 공항버스를 선택할 수 있습니다.
           </Text>
         </View>
 
-        <View
-          style={[
-            styles.divider,
-            { backgroundColor: colors.border },
-          ]}
-        />
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         {/* Rail */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <TrainFront
-              size={21}
-              color={colors.text}
-              strokeWidth={1.7}
-            />
+            <TrainFront size={21} color={colors.text} strokeWidth={1.7} />
 
             <View style={styles.sectionHeaderText}>
-              <Text
-                style={[
-                  styles.sectionTitle,
-                  { color: colors.text },
-                ]}
-              >
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>
                 철도로 이동하기
               </Text>
 
@@ -216,13 +167,7 @@ const NaritaAirportGuideScreen = () => {
           <View style={styles.accessList}>
             {/* N'EX */}
             <AccessItem
-              icon={
-                <TrainFront
-                  size={18}
-                  color="#A78BFA"
-                  strokeWidth={1.8}
-                />
-              }
+              icon={<TrainFront size={18} color="#A78BFA" strokeWidth={1.8} />}
               title="나리타 익스프레스"
               subtitle="Narita Express · N'EX"
               destination="도쿄 · 시부야 · 신주쿠 방면"
@@ -234,21 +179,13 @@ const NaritaAirportGuideScreen = () => {
 
             {/* Skyliner */}
             <AccessItem
-              icon={
-                <TrainFront
-                  size={18}
-                  color="#A78BFA"
-                  strokeWidth={1.8}
-                />
-              }
+              icon={<TrainFront size={18} color="#A78BFA" strokeWidth={1.8} />}
               title="게이세이 스카이라이너"
               subtitle="Keisei Skyliner"
               destination="닛포리 · 우에노 방면"
               description="게이세이의 공항 특급입니다. 닛포리나 우에노 방면으로 빠르게 이동하고 싶을 때 유용합니다."
-              actionLabel="Skyliner 시간표 보기"
-              onPress={() =>
-                router.push("/airport/narita-skyliner")
-              }
+              actionLabel="Skyliner 이용 안내"
+              onPress={() => router.push("/airport/narita-skyliner")}
               textColor={colors.text}
               secondaryTextColor={colors.textSecondary}
               borderColor={colors.border}
@@ -256,13 +193,7 @@ const NaritaAirportGuideScreen = () => {
 
             {/* Access Express */}
             <AccessItem
-              icon={
-                <TrainFront
-                  size={18}
-                  color="#A78BFA"
-                  strokeWidth={1.8}
-                />
-              }
+              icon={<TrainFront size={18} color="#A78BFA" strokeWidth={1.8} />}
               title="액세스 특급"
               subtitle="Access Express"
               destination="아사쿠사 · 도심 방면"
@@ -274,29 +205,15 @@ const NaritaAirportGuideScreen = () => {
           </View>
         </View>
 
-        <View
-          style={[
-            styles.divider,
-            { backgroundColor: colors.border },
-          ]}
-        />
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         {/* Bus */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Bus
-              size={21}
-              color={colors.text}
-              strokeWidth={1.7}
-            />
+            <Bus size={21} color={colors.text} strokeWidth={1.7} />
 
             <View style={styles.sectionHeaderText}>
-              <Text
-                style={[
-                  styles.sectionTitle,
-                  { color: colors.text },
-                ]}
-              >
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>
                 저렴하게 도쿄역으로
               </Text>
 
@@ -314,139 +231,80 @@ const NaritaAirportGuideScreen = () => {
           <View style={styles.busArea}>
             <View style={styles.busTitleRow}>
               <View>
-                <Text
-                  style={[
-                    styles.busTitle,
-                    { color: colors.text },
-                  ]}
-                >
+                <Text style={[styles.busTitle, { color: colors.text }]}>
                   AIRPORT BUS TYO-NRT
                 </Text>
 
                 <Text
-                  style={[
-                    styles.busOldName,
-                    { color: colors.textSecondary },
-                  ]}
+                  style={[styles.busOldName, { color: colors.textSecondary }]}
                 >
                   구 1000엔 버스로 알려진 공항버스
                 </Text>
               </View>
 
-              <Text style={styles.busPrice}>
-                ¥1,500
-              </Text>
+              <Text style={styles.busPrice}>¥1,500</Text>
             </View>
 
             <View
-              style={[
-                styles.innerDivider,
-                { backgroundColor: colors.border },
-              ]}
+              style={[styles.innerDivider, { backgroundColor: colors.border }]}
             />
 
             <View style={styles.busInfoRow}>
-              <MapPin
-                size={15}
-                color="#7FAF9B"
-                strokeWidth={1.8}
-              />
+              <MapPin size={15} color="#7FAF9B" strokeWidth={1.8} />
 
               <View style={styles.busInfoContent}>
                 <Text
-                  style={[
-                    styles.busInfoLabel,
-                    { color: colors.textSecondary },
-                  ]}
+                  style={[styles.busInfoLabel, { color: colors.textSecondary }]}
                 >
                   주요 구간
                 </Text>
 
-                <Text
-                  style={[
-                    styles.busInfoValue,
-                    { color: colors.text },
-                  ]}
-                >
+                <Text style={[styles.busInfoValue, { color: colors.text }]}>
                   도쿄역 ↔ 나리타공항
                 </Text>
               </View>
             </View>
 
             <View style={styles.busInfoRow}>
-              <Clock3
-                size={15}
-                color="#7FAF9B"
-                strokeWidth={1.8}
-              />
+              <Clock3 size={15} color="#7FAF9B" strokeWidth={1.8} />
 
               <View style={styles.busInfoContent}>
                 <Text
-                  style={[
-                    styles.busInfoLabel,
-                    { color: colors.textSecondary },
-                  ]}
+                  style={[styles.busInfoLabel, { color: colors.textSecondary }]}
                 >
                   예정 소요시간
                 </Text>
 
-                <Text
-                  style={[
-                    styles.busInfoValue,
-                    { color: colors.text },
-                  ]}
-                >
+                <Text style={[styles.busInfoValue, { color: colors.text }]}>
                   약 62~70분
                 </Text>
               </View>
             </View>
 
             <Text
-              style={[
-                styles.busDescription,
-                { color: colors.textSecondary },
-              ]}
+              style={[styles.busDescription, { color: colors.textSecondary }]}
             >
-              예전에 '1000엔 버스'로 많이 알려졌지만 현재 일반편 성인
-              편도 요금은 1,500엔입니다. 도쿄역과 나리타공항을 환승 없이
-              이동할 수 있어 짐이 많을 때도 편리합니다.
+              예전에 '1000엔 버스'로 많이 알려졌지만 현재 일반편 성인 편도
+              요금은 1,500엔입니다. 도쿄역과 나리타공항을 환승 없이 이동할 수
+              있어 짐이 많을 때도 편리합니다.
             </Text>
 
-            <Text
-              style={[
-                styles.busNotice,
-                { color: colors.textSecondary },
-              ]}
-            >
-              조조·심야편은 성인 3,000엔이며 도로 상황에 따라 소요시간이
-              달라질 수 있습니다.
+            <Text style={[styles.busNotice, { color: colors.textSecondary }]}>
+              조조·심야편은 성인 3,000엔이며 도로 상황에 따라 소요시간이 달라질
+              수 있습니다.
             </Text>
           </View>
         </View>
 
-        <View
-          style={[
-            styles.divider,
-            { backgroundColor: colors.border },
-          ]}
-        />
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         {/* Recommendations */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Check
-              size={21}
-              color="#7FAF9B"
-              strokeWidth={1.9}
-            />
+            <Check size={21} color="#7FAF9B" strokeWidth={1.9} />
 
             <View style={styles.sectionHeaderText}>
-              <Text
-                style={[
-                  styles.sectionTitle,
-                  { color: colors.text },
-                ]}
-              >
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>
                 어디로 갈 때 좋을까요?
               </Text>
 
@@ -463,17 +321,10 @@ const NaritaAirportGuideScreen = () => {
 
           <View style={styles.recommendList}>
             <View style={styles.recommendRow}>
-              <Text style={styles.recommendNumber}>
-                01
-              </Text>
+              <Text style={styles.recommendNumber}>01</Text>
 
               <View style={styles.recommendContent}>
-                <Text
-                  style={[
-                    styles.recommendTitle,
-                    { color: colors.text },
-                  ]}
-                >
+                <Text style={[styles.recommendTitle, { color: colors.text }]}>
                   신주쿠 · 시부야
                 </Text>
 
@@ -489,17 +340,10 @@ const NaritaAirportGuideScreen = () => {
             </View>
 
             <View style={styles.recommendRow}>
-              <Text style={styles.recommendNumber}>
-                02
-              </Text>
+              <Text style={styles.recommendNumber}>02</Text>
 
               <View style={styles.recommendContent}>
-                <Text
-                  style={[
-                    styles.recommendTitle,
-                    { color: colors.text },
-                  ]}
-                >
+                <Text style={[styles.recommendTitle, { color: colors.text }]}>
                   우에노 · 닛포리
                 </Text>
 
@@ -515,17 +359,10 @@ const NaritaAirportGuideScreen = () => {
             </View>
 
             <View style={styles.recommendRow}>
-              <Text style={styles.recommendNumber}>
-                03
-              </Text>
+              <Text style={styles.recommendNumber}>03</Text>
 
               <View style={styles.recommendContent}>
-                <Text
-                  style={[
-                    styles.recommendTitle,
-                    { color: colors.text },
-                  ]}
-                >
+                <Text style={[styles.recommendTitle, { color: colors.text }]}>
                   아사쿠사 방면
                 </Text>
 
@@ -541,17 +378,10 @@ const NaritaAirportGuideScreen = () => {
             </View>
 
             <View style={styles.recommendRow}>
-              <Text style={styles.recommendNumber}>
-                04
-              </Text>
+              <Text style={styles.recommendNumber}>04</Text>
 
               <View style={styles.recommendContent}>
-                <Text
-                  style={[
-                    styles.recommendTitle,
-                    { color: colors.text },
-                  ]}
-                >
+                <Text style={[styles.recommendTitle, { color: colors.text }]}>
                   도쿄역 · 비용 절약
                 </Text>
 
@@ -585,44 +415,25 @@ const NaritaAirportGuideScreen = () => {
           />
 
           <View style={styles.warningContent}>
-            <Text
-              style={[
-                styles.warningTitle,
-                { color: colors.text },
-              ]}
-            >
+            <Text style={[styles.warningTitle, { color: colors.text }]}>
               터미널을 꼭 확인하세요
             </Text>
 
-            <Text
-              style={[
-                styles.warningText,
-                { color: colors.textSecondary },
-              ]}
-            >
-              이용 항공사의 출발 터미널을 확인한 뒤 열차역과 버스
-              하차 위치를 선택하세요. 제3터미널은 철도역에서 이동 시간이
-              추가로 필요할 수 있습니다.
+            <Text style={[styles.warningText, { color: colors.textSecondary }]}>
+              이용 항공사의 출발 터미널을 확인한 뒤 열차역과 버스 하차 위치를
+              선택하세요. 제3터미널은 철도역에서 이동 시간이 추가로 필요할 수
+              있습니다.
             </Text>
           </View>
         </View>
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Info
-            size={15}
-            color={colors.textSecondary}
-            strokeWidth={1.7}
-          />
+          <Info size={15} color={colors.textSecondary} strokeWidth={1.7} />
 
-          <Text
-            style={[
-              styles.footerText,
-              { color: colors.textSecondary },
-            ]}
-          >
-            요금·시간표·정차역은 변경될 수 있습니다. 실제 이용 전 각
-            교통기관의 최신 운행 정보를 확인하세요.
+          <Text style={[styles.footerText, { color: colors.textSecondary }]}>
+            요금·시간표·정차역은 변경될 수 있습니다. 실제 이용 전 각 교통기관의
+            최신 운행 정보를 확인하세요.
           </Text>
         </View>
       </ScrollView>
