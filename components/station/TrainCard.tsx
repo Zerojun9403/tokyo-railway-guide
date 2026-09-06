@@ -1,9 +1,9 @@
+import { Orbitron_700Bold, useFonts } from "@expo-google-fonts/orbitron";
 import { StyleSheet, Text, View } from "react-native";
-
-import { useAppTheme } from "../../hooks/useAppTheme";
 
 import { Plane } from "lucide-react-native";
 
+import { useAppTheme } from "../../hooks/useAppTheme";
 import { isAirportName } from "../../utils/airport";
 
 type TrainCardProps = {
@@ -32,6 +32,10 @@ export const TrainCard = ({
   isOrigin = false,
 }: TrainCardProps) => {
   const { colors, isDark } = useAppTheme();
+
+  const [fontsLoaded] = useFonts({
+    Orbitron_700Bold,
+  });
 
   /*
    * =========================================================
@@ -106,6 +110,7 @@ export const TrainCard = ({
             styles.time,
             {
               color: colors.text,
+              fontFamily: fontsLoaded ? "Orbitron_700Bold" : undefined,
             },
           ]}
         >
@@ -124,47 +129,43 @@ export const TrainCard = ({
         </Text>
       </View>
 
-{/* =====================================================
-    행선지
-===================================================== */}
+      {/* =====================================================
+          행선지
+      ===================================================== */}
 
-{destinationKo ? (
-  <View style={styles.destinationArea}>
-    <View style={styles.destinationKoRow}>
-      <Text
-        style={[
-          styles.destinationKo,
-          {
-            color: colors.text,
-          },
-        ]}
-      >
-        {destinationKo}
-      </Text>
+      {destinationKo ? (
+        <View style={styles.destinationArea}>
+          <View style={styles.destinationKoRow}>
+            <Text
+              style={[
+                styles.destinationKo,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              {destinationKo}
+            </Text>
 
-      {isAirportName(destinationKo, destinationJa) && (
-        <Plane
-          size={16}
-          color={colors.textSecondary}
-          strokeWidth={2.2}
-        />
-      )}
-    </View>
+            {isAirportName(destinationKo, destinationJa) && (
+              <Plane size={16} color={colors.textSecondary} strokeWidth={2.2} />
+            )}
+          </View>
 
-    {destinationJa ? (
-      <Text
-        style={[
-          styles.destinationJa,
-          {
-            color: colors.textSecondary,
-          },
-        ]}
-      >
-        {destinationJa}
-      </Text>
-    ) : null}
-  </View>
-) : null}
+          {destinationJa ? (
+            <Text
+              style={[
+                styles.destinationJa,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
+              {destinationJa}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
     </View>
   );
 };
@@ -310,8 +311,8 @@ const styles = StyleSheet.create({
    */
 
   destinationKoRow: {
-  flexDirection: "row",
-  alignItems: "center",
-  gap: 6,
-},
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
 });

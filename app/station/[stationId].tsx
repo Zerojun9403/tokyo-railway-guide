@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { StationTopActions } from "../../components/station/StationTopActions";
 
+import { Orbitron_700Bold, useFonts } from "@expo-google-fonts/orbitron";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { DirectionSelector } from "../../components/station/DirectionSelector";
@@ -46,6 +47,7 @@ import { useFavoriteStations } from "../../hooks/useFavoriteStations";
 import { useAppTheme } from "../../hooks/useAppTheme";
 import { useRecentStations } from "../../hooks/useRecentStations";
 
+import stationCoordinates from "@/data/stationCoordinates.json";
 /*
  * =========================================================
  * 일본 현재 요일
@@ -200,16 +202,119 @@ const resolveJrRailway = (lineId?: string): JrEastRailway => {
       return "SaikyoKawagoe";
 
     case "yokosuka-sobu":
-       return "YokosukaSobu";
+      return "YokosukaSobu";
 
     case "narita":
       return "NaritaAirport";
+
+    case "keiyo":
+      return "Keiyo";
 
     case "yamanote":
     default:
       return "Yamanote";
   }
 };
+
+type LastTrainItem = {
+  id: string;
+  departureTime: string;
+  trainType?: string;
+  trainTypeKo?: string;
+  trainTypeJa?: string;
+  destinationStation?: string;
+  destinationKo?: string;
+  destinationJa?: string;
+};
+
+type LastTrainResponse = {
+  operator: string;
+  lineId: string;
+  stationId: string;
+  directionId: string;
+  supported: boolean;
+  found: boolean;
+  updatedAt: string;
+  lastTrain: LastTrainItem | null;
+};
+
+type StationCoordinateItem = {
+  operatorId: string;
+  odptOperatorId: string;
+  odptStationId: string;
+  railwayId: string;
+  stationCode: string | null;
+  nameJa: string;
+  nameEn: string;
+  latitude: number;
+  longitude: number;
+};
+
+const JR_EAST_ODPT_RAILWAY_BY_LINE_ID: Record<string, string> = {
+  yamanote: "odpt.Railway:JR-East.Yamanote",
+  "chuo-rapid": "odpt.Railway:JR-East.ChuoRapid",
+  "chuo-sobu-local": "odpt.Railway:JR-East.ChuoSobuLocal",
+  "chuo-sobu": "odpt.Railway:JR-East.ChuoSobuLocal",
+  saikyo: "odpt.Railway:JR-East.SaikyoKawagoe",
+  "shonan-shinjuku": "odpt.Railway:JR-East.ShonanShinjuku",
+  tokaido: "odpt.Railway:JR-East.Tokaido",
+  "keihin-tohoku": "odpt.Railway:JR-East.KeihinTohokuNegishi",
+  keiyo: "odpt.Railway:JR-East.Keiyo",
+  yokosuka: "odpt.Railway:JR-East.Yokosuka",
+  sobu: "odpt.Railway:JR-East.Sobu",
+  "sobu-rapid": "odpt.Railway:JR-East.SobuRapid",
+  narita: "odpt.Railway:JR-East.Narita",
+  "narita-airport": "odpt.Railway:JR-East.Narita",
+};
+
+const stationCoordinateItems = stationCoordinates as StationCoordinateItem[];
+
+const resolveLastTrainStationId = ({
+  operatorId,
+  lineId,
+  stationId,
+}: {
+  operatorId: string;
+  lineId: string;
+  stationId: string;
+}) => {
+  if (operatorId !== "jr-east") {
+    return stationId;
+  }
+
+  const railwayId = JR_EAST_ODPT_RAILWAY_BY_LINE_ID[lineId];
+
+  if (!railwayId) {
+    return stationId;
+  }
+
+  const matchedStation = stationCoordinateItems.find(
+    (item) =>
+      item.operatorId === operatorId &&
+      item.railwayId === railwayId &&
+      item.stationCode === stationId,
+  );
+
+  if (!matchedStation) {
+    return stationId;
+  }
+
+  const odptStationId = matchedStation.odptStationId;
+  const lastSegment = odptStationId.split(".").pop();
+
+  return lastSegment || matchedStation.nameEn || stationId;
+};
+
+const LAST_TRAIN_SUPPORTED_OPERATORS = new Set([
+  "jr-east",
+  "keikyu",
+  "seibu",
+  "tokyu",
+]);
+
+const LAST_TRAIN_API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_BASE_URL ??
+  "https://tokyo-railway-api.vercel.app";
 
 /*
  * =========================================================
@@ -219,6 +324,9 @@ const resolveJrRailway = (lineId?: string): JrEastRailway => {
 
 export default function StationScreen() {
   const { colors, isDark } = useAppTheme();
+  const [fontsLoaded] = useFonts({
+    Orbitron_700Bold,
+  });
   /*
    * =======================================================
    * URL
@@ -331,6 +439,108 @@ export default function StationScreen() {
 
   /*
    * =======================================================
+   * 막차
+   * =======================================================
+   */
+
+  const [lastTrain, setLastTrain] = useState<LastTrainItem | null>(null);
+  const [lastTrainLoading, setLastTrainLoading] = useState(false);
+  const [lastTrainError, setLastTrainError] = useState<string | null>(null);
+
+  const lastTrainSupported =
+    !!station && LAST_TRAIN_SUPPORTED_OPERATORS.has(station.operatorId);
+
+  const loadLastTrain = useCallback(async () => {
+    if (!station || !selectedDirection || !lastTrainSupported) {
+      setLastTrain(null);
+      setLastTrainError(null);
+      setLastTrainLoading(false);
+      return;
+    }
+
+    try {
+      setLastTrainLoading(true);
+      setLastTrainError(null);
+
+      const lastTrainStationId = resolveLastTrainStationId({
+        operatorId: station.operatorId,
+        lineId: station.lineId,
+        stationId: station.id,
+      });
+
+      const query = new URLSearchParams({
+        operator: station.operatorId,
+        lineId: station.lineId,
+        stationId: lastTrainStationId,
+        directionId: selectedDirection.id,
+      });
+
+      console.log("🌙 막차 API 요청", {
+        apiBaseUrl: LAST_TRAIN_API_BASE_URL,
+        operator: station.operatorId,
+        lineId: station.lineId,
+        guideStationId: station.id,
+        stationId: lastTrainStationId,
+        directionId: selectedDirection.id,
+        url: `${LAST_TRAIN_API_BASE_URL}/api/last-train?${query.toString()}`,
+      });
+
+      const response = await fetch(
+        `${LAST_TRAIN_API_BASE_URL}/api/last-train?${query.toString()}`,
+        {
+          cache: "no-store",
+        },
+      );
+
+      const data = (await response.json()) as
+        | LastTrainResponse
+        | { error?: string };
+
+      console.log("🌙 막차 API 응답", {
+        status: response.status,
+        ok: response.ok,
+        data,
+      });
+
+      if (response.status === 404) {
+        setLastTrain(null);
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          "error" in data && data.error
+            ? data.error
+            : "막차 정보를 불러오지 못했습니다.",
+        );
+      }
+
+      if (
+        "supported" in data &&
+        data.supported &&
+        data.found &&
+        data.lastTrain
+      ) {
+        setLastTrain(data.lastTrain);
+        return;
+      }
+
+      setLastTrain(null);
+    } catch (lastTrainLoadError) {
+      console.error("막차 정보 로딩 오류:", lastTrainLoadError);
+      setLastTrain(null);
+      setLastTrainError("막차 정보를 불러오지 못했습니다.");
+    } finally {
+      setLastTrainLoading(false);
+    }
+  }, [station, selectedDirection, lastTrainSupported]);
+
+  useEffect(() => {
+    void loadLastTrain();
+  }, [loadLastTrain]);
+
+  /*
+   * =======================================================
    * 노선 판별
    * =======================================================
    */
@@ -338,7 +548,6 @@ export default function StationScreen() {
   const isKeisei = station?.operatorId === "keisei";
 
   const isKeikyu = station?.operatorId === "keikyu";
-  
 
   const isSeibu = station?.operatorId === "seibu";
 
@@ -433,9 +642,6 @@ export default function StationScreen() {
     enabled: isKeikyu,
   });
 
-
-
-
   /*
    * =======================================================
    * 도큐 실제 시간표
@@ -458,8 +664,7 @@ export default function StationScreen() {
     enabled: isTokyu,
   });
 
-
-   /*
+  /*
    * =======================================================
    * 세이부 실제 시간표
    * =======================================================
@@ -598,6 +803,10 @@ export default function StationScreen() {
         await reloadTokyoMetro();
       }
 
+      if (lastTrainSupported) {
+        await loadLastTrain();
+      }
+
       const now = new Date();
 
       setLastUpdatedAt(now);
@@ -626,6 +835,10 @@ export default function StationScreen() {
     reloadToei,
 
     reloadTokyoMetro,
+
+    lastTrainSupported,
+
+    loadLastTrain,
   ]);
 
   /*
@@ -712,7 +925,6 @@ export default function StationScreen() {
     trains = keikyuTrains;
   }
 
-
   /*
    * 도큐
    */
@@ -720,7 +932,6 @@ export default function StationScreen() {
   if (isTokyu) {
     trains = tokyuTrains;
   }
-
 
   /*
    * 세이부
@@ -847,14 +1058,14 @@ export default function StationScreen() {
       : isSeibu
         ? seibuError
         : isJrEast
-         ? jrError
-         : isTokyu
-          ? tokyuError
-          : isToei
-            ? toeiError
-            : isTokyoMetro
-              ? tokyoMetroError
-            : null;
+          ? jrError
+          : isTokyu
+            ? tokyuError
+            : isToei
+              ? toeiError
+              : isTokyoMetro
+                ? tokyoMetroError
+                : null;
 
   /*
    * =======================================================
@@ -929,7 +1140,7 @@ export default function StationScreen() {
             역 Header
         ================================================= */}
 
-       <StationHeader
+        <StationHeader
           lineCode={station.lineCode}
           stationCode={station.code}
           stationNameKo={station.nameKo}
@@ -1011,6 +1222,194 @@ export default function StationScreen() {
             />
           ))}
         </View>
+
+        {/* =================================================
+            막차
+        ================================================= */}
+
+        {lastTrainSupported && (
+          <View style={styles.lastTrainSection}>
+            <View style={styles.lastTrainTitleRow}>
+              <Text style={[styles.lastTrainTitle, { color: colors.text }]}>
+                막차
+              </Text>
+
+              <Text
+                style={[styles.lastTrainDirection, { color: station.color }]}
+              >
+                {directionDescription}
+              </Text>
+            </View>
+
+            {lastTrainLoading ? (
+              <View
+                style={[
+                  styles.lastTrainCard,
+                  { backgroundColor: colors.surface },
+                ]}
+              >
+                <ActivityIndicator size="small" color={station.color} />
+
+                <Text
+                  style={[
+                    styles.lastTrainLoadingText,
+                    { color: colors.textSecondary },
+                  ]}
+                >
+                  막차 정보를 확인하는 중입니다.
+                </Text>
+              </View>
+            ) : lastTrainError ? (
+              <View
+                style={[
+                  styles.lastTrainCard,
+                  { backgroundColor: colors.surface },
+                ]}
+              >
+                <Text style={styles.lastTrainErrorText}>{lastTrainError}</Text>
+
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    void loadLastTrain();
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.lastTrainRetryText,
+                      { color: station.color },
+                    ]}
+                  >
+                    다시 확인
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : lastTrain ? (
+              <View
+                style={[
+                  styles.lastTrainCard,
+                  { backgroundColor: colors.surface },
+                ]}
+              >
+                <View style={styles.lastTrainMainRow}>
+                  <View style={styles.lastTrainTimeArea}>
+                    <Text
+                      style={[
+                        styles.lastTrainTime,
+                        {
+                          color: colors.text,
+                          fontFamily: fontsLoaded
+                            ? "Orbitron_700Bold"
+                            : undefined,
+                        },
+                      ]}
+                    >
+                      {lastTrain.departureTime}
+                    </Text>
+
+                    <Text
+                      style={[
+                        styles.lastTrainDepartureLabel,
+                        { color: colors.textMuted },
+                      ]}
+                    >
+                      마지막 출발
+                    </Text>
+                  </View>
+
+                  <View style={styles.lastTrainDetailArea}>
+                    {!!(
+                      lastTrain.trainTypeKo ||
+                      lastTrain.trainTypeJa ||
+                      lastTrain.trainType
+                    ) && (
+                      <Text
+                        style={[
+                          styles.lastTrainTrainType,
+                          { color: station.color },
+                        ]}
+                      >
+                        {lastTrain.trainTypeKo ??
+                          lastTrain.trainTypeJa ??
+                          lastTrain.trainType}
+                      </Text>
+                    )}
+
+                    {!!(
+                      lastTrain.destinationKo ||
+                      lastTrain.destinationJa ||
+                      lastTrain.destinationStation
+                    ) && (
+                      <>
+                        <Text
+                          style={[
+                            styles.lastTrainDestination,
+                            { color: colors.text },
+                          ]}
+                        >
+                          {lastTrain.destinationKo ??
+                            lastTrain.destinationJa ??
+                            lastTrain.destinationStation}
+                          행
+                        </Text>
+
+                        {!!lastTrain.destinationJa &&
+                          lastTrain.destinationJa !==
+                            lastTrain.destinationKo && (
+                            <Text
+                              style={[
+                                styles.lastTrainDestinationJa,
+                                { color: colors.textMuted },
+                              ]}
+                            >
+                              {lastTrain.destinationJa}
+                            </Text>
+                          )}
+                      </>
+                    )}
+                  </View>
+                </View>
+
+                <View
+                  style={[
+                    styles.lastTrainNotice,
+                    {
+                      borderTopColor: isDark
+                        ? "rgba(255,255,255,0.08)"
+                        : "rgba(39,50,74,0.08)",
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.lastTrainNoticeText,
+                      { color: colors.textMuted },
+                    ]}
+                  >
+                    이 역에서 현재 방향으로 출발하는 마지막 열차입니다.
+                    목적지까지 환승 가능한 최종 막차와는 다를 수 있습니다.
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <View
+                style={[
+                  styles.lastTrainCard,
+                  { backgroundColor: colors.surface },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.lastTrainEmptyText,
+                    { color: colors.textMuted },
+                  ]}
+                >
+                  현재 방향의 막차 정보를 찾을 수 없습니다.
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
 
         {/* =================================================
             다음 도착
@@ -1356,6 +1755,128 @@ const styles = StyleSheet.create({
 
   nextStationList: {
     gap: 10,
+  },
+
+  lastTrainSection: {
+    marginTop: 28,
+  },
+
+  lastTrainTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+
+  lastTrainTitle: {
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: "800",
+  },
+
+  lastTrainDirection: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "700",
+  },
+
+  lastTrainCard: {
+    minHeight: 112,
+    paddingHorizontal: 18,
+    paddingVertical: 18,
+    borderRadius: 20,
+    justifyContent: "center",
+  },
+
+  lastTrainMainRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  lastTrainTimeArea: {
+    minWidth: 96,
+    paddingRight: 18,
+  },
+
+  lastTrainTime: {
+    fontSize: 32,
+    lineHeight: 38,
+    fontWeight: "900",
+    letterSpacing: -0.8,
+  },
+
+  lastTrainDepartureLabel: {
+    marginTop: 2,
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "600",
+  },
+
+  lastTrainDetailArea: {
+    flex: 1,
+    minWidth: 0,
+  },
+
+  lastTrainTrainType: {
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "800",
+  },
+
+  lastTrainDestination: {
+    marginTop: 3,
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: "800",
+  },
+
+  lastTrainDestinationJa: {
+    marginTop: 1,
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "500",
+  },
+
+  lastTrainNotice: {
+    marginTop: 16,
+    paddingTop: 13,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+
+  lastTrainNoticeText: {
+    fontSize: 10,
+    lineHeight: 15,
+    fontWeight: "500",
+  },
+
+  lastTrainLoadingText: {
+    marginTop: 10,
+    fontSize: 12,
+    lineHeight: 17,
+    textAlign: "center",
+  },
+
+  lastTrainErrorText: {
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "600",
+    color: "#C62828",
+    textAlign: "center",
+  },
+
+  lastTrainRetryText: {
+    marginTop: 10,
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "800",
+    textAlign: "center",
+  },
+
+  lastTrainEmptyText: {
+    fontSize: 12,
+    lineHeight: 17,
+    textAlign: "center",
   },
 
   nextSection: {

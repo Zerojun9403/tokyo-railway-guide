@@ -20,6 +20,7 @@
  */
 
 const JR_EAST_API_BASE_URL = "https://tokyo-metro-sigma.vercel.app";
+import stationCoordinates from "@/data/stationCoordinates.json";
 
 /*
  * =========================================================
@@ -34,7 +35,8 @@ export type JrRailway =
   | "KeihinTohokuNegishi"
   | "SaikyoKawagoe"
   | "YokosukaSobu"
-  | "NaritaAirport";
+  | "NaritaAirport"
+  | "Keiyo";
 
 /*
  * =========================================================
@@ -344,7 +346,7 @@ const KEIHIN_TOHOKU_NEGISHI_STATION_MAP: Record<string, string> = {
   JK01: "Ofuna",
 };
 
- /*
+/*
  * =========================================================
  * 사이쿄선 Station Map
  * =========================================================
@@ -440,7 +442,6 @@ const YOKOSUKA_SOBU_STATION_MAP: Record<string, string> = {
   JO28: "Chiba",
 };
 
-
 const NARITA_AIRPORT_STATION_MAP: Record<string, string> = {
   JO28: "Chiba",
   JO29: "HigashiChiba",
@@ -453,6 +454,35 @@ const NARITA_AIRPORT_STATION_MAP: Record<string, string> = {
   JO36: "NaritaAirportTerminal2and3",
   JO37: "NaritaAirportTerminal1",
 };
+
+type StationCoordinateItem = {
+  operatorId: string;
+  odptOperatorId: string;
+  odptStationId: string;
+  railwayId: string;
+  stationCode: string | null;
+  nameJa: string;
+  nameEn: string;
+  latitude: number;
+  longitude: number;
+};
+
+const stationCoordinateItems = stationCoordinates as StationCoordinateItem[];
+
+const KEIYO_STATION_MAP: Record<string, string> = Object.fromEntries(
+  stationCoordinateItems
+    .filter(
+      (item) =>
+        item.operatorId === "jr-east" &&
+        item.railwayId === "odpt.Railway:JR-East.Keiyo" &&
+        !!item.stationCode,
+    )
+    .map((item) => {
+      const odptStationId = item.odptStationId.split(".").pop() ?? item.nameEn;
+
+      return [item.stationCode as string, odptStationId];
+    }),
+);
 /*
  * =========================================================
  * 노선별 Station Map
@@ -467,6 +497,7 @@ const JR_STATION_MAPS: Record<JrRailway, Record<string, string>> = {
   SaikyoKawagoe: SAIKYO_KAWAGOE_STATION_MAP,
   YokosukaSobu: YOKOSUKA_SOBU_STATION_MAP,
   NaritaAirport: NARITA_AIRPORT_STATION_MAP,
+  Keiyo: KEIYO_STATION_MAP,
 };
 
 /*
@@ -612,15 +643,10 @@ export const fetchJrEastTrains = async (
    */
 
   if (railway === "ChuoRapid") {
-    const odptStationId = getJrEastOdptStationId(
-      railway,
-      stationId,
-    );
+    const odptStationId = getJrEastOdptStationId(railway, stationId);
 
     if (!odptStationId) {
-      throw new Error(
-        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
-      );
+      throw new Error(`${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`);
     }
 
     const normalizedDirection = directionId.trim().toLowerCase();
@@ -645,27 +671,21 @@ export const fetchJrEastTrains = async (
       "https://tokyo-railway-api.vercel.app" +
       `/api/timetable?${params.toString()}`;
 
-    const response =
-      await fetchJson<JrTimetableApiResponse>(url);
+    const response = await fetchJson<JrTimetableApiResponse>(url);
 
     return response.timetable ?? [];
   }
- /*
+  /*
    * =====================================================
    * 주오·소부선 각역정차 - Tokyo Railway API
    * =====================================================
    */
 
   if (railway === "ChuoSobuLocal") {
-    const odptStationId = getJrEastOdptStationId(
-      railway,
-      stationId,
-    );
+    const odptStationId = getJrEastOdptStationId(railway, stationId);
 
     if (!odptStationId) {
-      throw new Error(
-        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
-      );
+      throw new Error(`${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`);
     }
 
     const normalizedDirection = directionId.trim().toLowerCase();
@@ -690,8 +710,7 @@ export const fetchJrEastTrains = async (
       "https://tokyo-railway-api.vercel.app" +
       `/api/timetable?${params.toString()}`;
 
-    const response =
-      await fetchJson<JrTimetableApiResponse>(url);
+    const response = await fetchJson<JrTimetableApiResponse>(url);
 
     return response.timetable ?? [];
   }
@@ -703,15 +722,10 @@ export const fetchJrEastTrains = async (
    */
 
   if (railway === "KeihinTohokuNegishi") {
-    const odptStationId = getJrEastOdptStationId(
-      railway,
-      stationId,
-    );
+    const odptStationId = getJrEastOdptStationId(railway, stationId);
 
     if (!odptStationId) {
-      throw new Error(
-        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
-      );
+      throw new Error(`${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`);
     }
 
     const normalizedDirection = directionId.trim().toLowerCase();
@@ -736,28 +750,22 @@ export const fetchJrEastTrains = async (
       "https://tokyo-railway-api.vercel.app" +
       `/api/timetable?${params.toString()}`;
 
-    const response =
-      await fetchJson<JrTimetableApiResponse>(url);
+    const response = await fetchJson<JrTimetableApiResponse>(url);
 
     return response.timetable ?? [];
   }
 
-   /*
+  /*
    * =====================================================
    * 사이쿄선 - Tokyo Railway API
    * =====================================================
    */
 
   if (railway === "SaikyoKawagoe") {
-    const odptStationId = getJrEastOdptStationId(
-      railway,
-      stationId,
-    );
+    const odptStationId = getJrEastOdptStationId(railway, stationId);
 
     if (!odptStationId) {
-      throw new Error(
-        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
-      );
+      throw new Error(`${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`);
     }
 
     const normalizedDirection = directionId.trim().toLowerCase();
@@ -782,8 +790,7 @@ export const fetchJrEastTrains = async (
       "https://tokyo-railway-api.vercel.app" +
       `/api/timetable?${params.toString()}`;
 
-    const response =
-      await fetchJson<JrTimetableApiResponse>(url);
+    const response = await fetchJson<JrTimetableApiResponse>(url);
 
     return response.timetable ?? [];
   }
@@ -807,22 +814,15 @@ export const fetchJrEastTrains = async (
    */
 
   if (railway === "YokosukaSobu") {
-    const odptStationId = getJrEastOdptStationId(
-      railway,
-      stationId,
-    );
+    const odptStationId = getJrEastOdptStationId(railway, stationId);
 
     if (!odptStationId) {
-      throw new Error(
-        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
-      );
+      throw new Error(`${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`);
     }
 
     const normalizedDirection = directionId.trim().toLowerCase();
 
-    const stationNumber = Number(
-      stationId.replace("JO", ""),
-    );
+    const stationNumber = Number(stationId.replace("JO", ""));
 
     const isTokyo = stationId === "JO19";
 
@@ -844,16 +844,14 @@ export const fetchJrEastTrains = async (
       apiLineId = "yokosuka";
 
       apiDirection =
-        normalizedDirection === "northbound" ||
-        normalizedDirection === "tokyo"
+        normalizedDirection === "northbound" || normalizedDirection === "tokyo"
           ? "Inbound"
           : "Outbound";
     } else {
       apiLineId = "sobu-rapid";
 
       apiDirection =
-        normalizedDirection === "northbound" ||
-        normalizedDirection === "chiba"
+        normalizedDirection === "northbound" || normalizedDirection === "chiba"
           ? "Outbound"
           : "Inbound";
     }
@@ -871,14 +869,12 @@ export const fetchJrEastTrains = async (
       "https://tokyo-railway-api.vercel.app" +
       `/api/timetable?${params.toString()}`;
 
-    const response =
-      await fetchJson<JrTimetableApiResponse>(url);
+    const response = await fetchJson<JrTimetableApiResponse>(url);
 
     return response.timetable ?? [];
   }
 
-
-    /*
+  /*
    * =====================================================
    * 나리타선 · 나리타공항지선 - Tokyo Railway API
    * =====================================================
@@ -895,22 +891,15 @@ export const fetchJrEastTrains = async (
    */
 
   if (railway === "NaritaAirport") {
-    const odptStationId = getJrEastOdptStationId(
-      railway,
-      stationId,
-    );
+    const odptStationId = getJrEastOdptStationId(railway, stationId);
 
     if (!odptStationId) {
-      throw new Error(
-        `${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`,
-      );
+      throw new Error(`${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`);
     }
 
     const normalizedDirection = directionId.trim().toLowerCase();
 
-    const stationNumber = Number(
-      stationId.replace("JO", ""),
-    );
+    const stationNumber = Number(stationId.replace("JO", ""));
 
     const isNarita = stationId === "JO35";
 
@@ -962,49 +951,50 @@ export const fetchJrEastTrains = async (
       "https://tokyo-railway-api.vercel.app" +
       `/api/timetable?${params.toString()}`;
 
-    const response =
-      await fetchJson<JrTimetableApiResponse>(url);
+    const response = await fetchJson<JrTimetableApiResponse>(url);
 
     return response.timetable ?? [];
   }
 
+  /*
+   * =====================================================
+   * 게이요선 - Tokyo Railway API
+   * =====================================================
+   */
 
+  if (railway === "Keiyo") {
+    const odptStationId = getJrEastOdptStationId(railway, stationId);
 
+    if (!odptStationId) {
+      throw new Error(`${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`);
+    }
 
+    const normalizedDirection = directionId.trim().toLowerCase();
 
+    const apiDirection =
+      normalizedDirection === "inbound"
+        ? "Inbound"
+        : normalizedDirection === "outbound"
+          ? "Outbound"
+          : directionId;
 
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: "keiyo",
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
 
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
 
+    const response = await fetchJson<JrTimetableApiResponse>(url);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return response.timetable ?? [];
+  }
 
   /*
    * =====================================================
@@ -1034,7 +1024,7 @@ export const fetchJrEastTrains = async (
 
     return [];
   }
- return [];
+  return [];
 };
 
 /*

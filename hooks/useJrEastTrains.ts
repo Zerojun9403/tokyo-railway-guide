@@ -10,16 +10,6 @@ import { adaptJrEastTrains } from "../adapters/jrEastTrainAdapter";
  * =========================================================
  * JR동일본 지원 노선
  * =========================================================
- *
- * 여기부터 하나씩 확장한다.
- *
- * Yamanote
- * ChuoRapid
- * ChuoSobuLocal
- * KeihinTohokuNegishi
- * SaikyoKawagoe
- * ...
- * =========================================================
  */
 
 export type JrEastRailway =
@@ -29,7 +19,8 @@ export type JrEastRailway =
   | "KeihinTohokuNegishi"
   | "SaikyoKawagoe"
   | "YokosukaSobu"
-  | "NaritaAirport";
+  | "NaritaAirport"
+  | "Keiyo";
 
 /*
  * =========================================================
@@ -126,7 +117,8 @@ const resolveJrEastDirection = (
       return "southbound";
     }
   }
- /*
+
+  /*
    * =======================================================
    * 사이쿄선
    * =======================================================
@@ -149,16 +141,10 @@ const resolveJrEastDirection = (
       return "southbound";
     }
   }
+
   /*
    * =======================================================
    * 요코스카선 · 소부쾌속선
-   * =======================================================
-   *
-   * northbound
-   * → 도쿄 · 긴시초 · 지바 방면
-   *
-   * southbound
-   * → 시나가와 · 요코하마 · 구리하마 방면
    * =======================================================
    */
 
@@ -179,7 +165,8 @@ const resolveJrEastDirection = (
       return "southbound";
     }
   }
-   /*
+
+  /*
    * =======================================================
    * 나리타선 · 나리타공항지선
    * =======================================================
@@ -194,11 +181,28 @@ const resolveJrEastDirection = (
       return "outbound";
     }
 
-    if (
-      normalized === "inbound" ||
-      normalized === "chiba"
-    ) {
+    if (normalized === "inbound" || normalized === "chiba") {
       return "inbound";
+    }
+  }
+
+  /*
+   * =======================================================
+   * 게이요선
+   * =======================================================
+   */
+
+  if (railway === "Keiyo") {
+    if (normalized === "inbound" || normalized === "tokyo") {
+      return "inbound";
+    }
+
+    if (
+      normalized === "outbound" ||
+      normalized === "soga" ||
+      normalized === "kaihimmakuhari"
+    ) {
+      return "outbound";
     }
   }
 
@@ -295,13 +299,6 @@ export const useJrEastTrains = (
       /*
        * =================================================
        * 10대 보관
-       * =================================================
-       *
-       * Station 화면에서는 3대만 보여주더라도
-       * Hook에서는 여유 있게 받아둔다.
-       *
-       * 앞 열차가 자동으로 사라졌을 때
-       * 뒤 열차가 올라올 수 있다.
        * =================================================
        */
 
