@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import { Orbitron_700Bold, useFonts } from "@expo-google-fonts/orbitron";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
 import { router, useLocalSearchParams } from "expo-router";
 import {
@@ -18,6 +19,7 @@ import {
   Check,
   ChevronRight,
   Clock3,
+  House,
   Map,
   MapPin,
   Minus,
@@ -106,6 +108,16 @@ const findNearestStationCoordinate = (
   return nearest;
 };
 
+const ACCOMMODATION_STORAGE_KEY = "tokyo-railway-guide:accommodation";
+
+type AccommodationData = {
+  name: string;
+  stationId: string;
+  lineId: string;
+  stationNameKo: string;
+  stationNameJa: string;
+};
+
 const HomeScreen = () => {
   const { colors } = useAppTheme();
 
@@ -149,6 +161,10 @@ const HomeScreen = () => {
   const [isTimeModalVisible, setIsTimeModalVisible] = useState(false);
   const [isLocatingDeparture, setIsLocatingDeparture] = useState(false);
   const [locationMessage, setLocationMessage] = useState<string | null>(null);
+  const [accommodation, setAccommodation] = useState<AccommodationData | null>(
+    null,
+  );
+  const [isLoadingAccommodation, setIsLoadingAccommodation] = useState(false);
 
   useEffect(() => {
     if (params.departureStationId) {
@@ -201,6 +217,110 @@ const HomeScreen = () => {
     params.arrivalNameKo,
     params.arrivalNameJa,
   ]);
+
+  const handleGoToAccommodation = async () => {
+    try {
+      setIsLoadingAccommodation(true);
+      setLocationMessage(null);
+
+      const saved = await AsyncStorage.getItem(ACCOMMODATION_STORAGE_KEY);
+
+      if (!saved) {
+        router.push("/accommodation" as any);
+        return;
+      }
+
+      const savedAccommodation = JSON.parse(saved) as AccommodationData;
+      setAccommodation(savedAccommodation);
+
+      if (!savedAccommodation.stationId || !savedAccommodation.stationNameKo) {
+        router.push("/accommodation" as any);
+        return;
+      }
+
+      const { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        setArrival({
+          stationId: savedAccommodation.stationId,
+          lineId: savedAccommodation.lineId,
+          nameKo: savedAccommodation.stationNameKo,
+          nameJa: savedAccommodation.stationNameJa,
+        });
+
+        setLocationMessage(
+          "숙소역을 도착역으로 설정했어요. 출발역을 직접 선택해 주세요.",
+        );
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+      const nearest = findNearestStationCoordinate(
+        location.coords.latitude,
+        location.coords.longitude,
+      );
+
+      if (!nearest?.nameJa) {
+        setArrival({
+          stationId: savedAccommodation.stationId,
+          lineId: savedAccommodation.lineId,
+          nameKo: savedAccommodation.stationNameKo,
+          nameJa: savedAccommodation.stationNameJa,
+        });
+
+        setLocationMessage(
+          "숙소역을 도착역으로 설정했어요. 가까운 출발역은 찾지 못했어요.",
+        );
+        return;
+      }
+
+      const guideStations = getAllStations().filter(
+        (station) => station.nameJa === nearest.nameJa,
+      );
+
+      if (guideStations.length === 0) {
+        setArrival({
+          stationId: savedAccommodation.stationId,
+          lineId: savedAccommodation.lineId,
+          nameKo: savedAccommodation.stationNameKo,
+          nameJa: savedAccommodation.stationNameJa,
+        });
+
+        setLocationMessage(
+          `${nearest.nameJa}역은 현재 GUIDE 노선에서 검색할 수 없어요. 출발역을 직접 선택해 주세요.`,
+        );
+        return;
+      }
+
+      const representativeStation = guideStations[0];
+
+      setDeparture({
+        stationId: representativeStation.id,
+        lineId: representativeStation.lineId,
+        nameKo: representativeStation.nameKo,
+        nameJa: representativeStation.nameJa,
+      });
+
+      setArrival({
+        stationId: savedAccommodation.stationId,
+        lineId: savedAccommodation.lineId,
+        nameKo: savedAccommodation.stationNameKo,
+        nameJa: savedAccommodation.stationNameJa,
+      });
+
+      setLocationMessage(
+        `${representativeStation.nameKo} → ${savedAccommodation.stationNameKo} 숙소 경로를 준비했어요.`,
+      );
+    } catch (error) {
+      console.error("Go to accommodation error:", error);
+      setLocationMessage("숙소 경로를 준비하지 못했어요.");
+    } finally {
+      setIsLoadingAccommodation(false);
+    }
+  };
 
   const handleUseCurrentLocation = async () => {
     try {
@@ -660,6 +780,53 @@ const HomeScreen = () => {
                 "GPS로 가장 가까운 역을 출발역으로 설정합니다."}
             </Text>
           </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.accommodationButton,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
+          activeOpacity={0.72}
+          disabled={isLoadingAccommodation}
+          onPress={handleGoToAccommodation}
+        >
+          <View
+            style={[
+              styles.accommodationIcon,
+              {
+                backgroundColor: colors.surfaceSecondary,
+              },
+            ]}
+          >
+            <House size={19} color="#7FAF9B" strokeWidth={2} />
+          </View>
+
+          <View style={styles.accommodationTextArea}>
+            <Text style={[styles.accommodationTitle, { color: colors.text }]}>
+              {isLoadingAccommodation
+                ? "숙소 경로 준비 중..."
+                : "숙소로 돌아가기"}
+            </Text>
+
+            <Text
+              style={[
+                styles.accommodationDescription,
+                {
+                  color: colors.textMuted,
+                },
+              ]}
+            >
+              {accommodation?.stationNameKo
+                ? `${accommodation.stationNameKo}역을 도착역으로 설정합니다.`
+                : "현재 위치에서 저장한 숙소역까지 경로를 준비합니다."}
+            </Text>
+          </View>
+
+          <ChevronRight size={20} color={colors.textMuted} strokeWidth={2} />
         </TouchableOpacity>
 
         {/* 출발 시간 */}
@@ -1172,6 +1339,42 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 4,
+  },
+
+  accommodationButton: {
+    minHeight: 68,
+    marginTop: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 18,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  accommodationIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  accommodationTextArea: {
+    flex: 1,
+    marginLeft: 12,
+  },
+
+  accommodationTitle: {
+    fontSize: 14,
+    lineHeight: 19,
+    fontWeight: "800",
+  },
+
+  accommodationDescription: {
+    marginTop: 2,
+    fontSize: 10.5,
+    lineHeight: 15,
   },
 
   departureTimeCard: {

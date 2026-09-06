@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 
-import { router, useLocalSearchParams  } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 import { searchStations } from "../data/railwayRegistry";
 import { useAppTheme } from "../hooks/useAppTheme";
@@ -35,26 +35,23 @@ const OPERATOR_NAMES: Record<string, string> = {
 
 export default function SearchScreen() {
   const { colors } = useAppTheme();
- const params = useLocalSearchParams<{
-  mode?: "departure" | "arrival";
+  const params = useLocalSearchParams<{
+    mode?: "departure" | "arrival" | "accommodation";
 
-  departureStationId?: string;
-  departureLineId?: string;
-  departureNameKo?: string;
-  departureNameJa?: string;
+    departureStationId?: string;
+    departureLineId?: string;
+    departureNameKo?: string;
+    departureNameJa?: string;
 
-  arrivalStationId?: string;
-  arrivalLineId?: string;
-  arrivalNameKo?: string;
-  arrivalNameJa?: string;
-}>();
-
+    arrivalStationId?: string;
+    arrivalLineId?: string;
+    arrivalNameKo?: string;
+    arrivalNameJa?: string;
+  }>();
 
   const mode = params.mode;
   const isRouteSelection =
-    mode === "departure" || mode === "arrival";
-
-
+    mode === "departure" || mode === "arrival" || mode === "accommodation";
 
   /*
    * =======================================================
@@ -87,63 +84,77 @@ export default function SearchScreen() {
    * 역 상세 이동
    * =======================================================
    */
-const handlePressStation = (
-  stationId: string,
-  lineId: string,
-  nameKo: string,
-  nameJa: string,
-) => {
-  if (mode === "departure") {
-    router.replace({
-      pathname: "/",
-      params: {
-        mode: "departure",
+  const handlePressStation = (
+    stationId: string,
+    lineId: string,
+    nameKo: string,
+    nameJa: string,
+  ) => {
+    if (mode === "departure") {
+      router.replace({
+        pathname: "/",
+        params: {
+          mode: "departure",
 
+          stationId,
+          lineId,
+          nameKo,
+          nameJa,
+
+          arrivalStationId: params.arrivalStationId ?? "",
+          arrivalLineId: params.arrivalLineId ?? "",
+          arrivalNameKo: params.arrivalNameKo ?? "",
+          arrivalNameJa: params.arrivalNameJa ?? "",
+        },
+      });
+
+      return;
+    }
+
+    if (mode === "arrival") {
+      router.replace({
+        pathname: "/",
+        params: {
+          mode: "arrival",
+
+          stationId,
+          lineId,
+          nameKo,
+          nameJa,
+
+          departureStationId: params.departureStationId ?? "",
+          departureLineId: params.departureLineId ?? "",
+          departureNameKo: params.departureNameKo ?? "",
+          departureNameJa: params.departureNameJa ?? "",
+        },
+      });
+
+      return;
+    }
+
+    if (mode === "accommodation") {
+      router.replace({
+        pathname: "/accommodation" as any,
+        params: {
+          stationId,
+          lineId,
+          nameKo,
+          nameJa,
+        },
+      });
+
+      return;
+    }
+
+    router.push({
+      pathname: "/station/[stationId]",
+
+      params: {
         stationId,
         lineId,
-        nameKo,
-        nameJa,
-
-        arrivalStationId: params.arrivalStationId ?? "",
-        arrivalLineId: params.arrivalLineId ?? "",
-        arrivalNameKo: params.arrivalNameKo ?? "",
-        arrivalNameJa: params.arrivalNameJa ?? "",
       },
     });
-
-    return;
-  }
-
-  if (mode === "arrival") {
-    router.replace({
-      pathname: "/",
-      params: {
-        mode: "arrival",
-
-        stationId,
-        lineId,
-        nameKo,
-        nameJa,
-
-        departureStationId: params.departureStationId ?? "",
-        departureLineId: params.departureLineId ?? "",
-        departureNameKo: params.departureNameKo ?? "",
-        departureNameJa: params.departureNameJa ?? "",
-      },
-    });
-
-    return;
-  }
-
-  router.push({
-    pathname: "/station/[stationId]",
-
-    params: {
-      stationId,
-      lineId,
-    },
-  });
-};
+  };
 
   /*
    * =======================================================
@@ -213,7 +224,9 @@ const handlePressStation = (
                 ? "출발역 선택"
                 : mode === "arrival"
                   ? "도착역 선택"
-                  : "역 검색"}
+                  : mode === "accommodation"
+                    ? "숙소역 선택"
+                    : "역 검색"}
             </Text>
 
             <Text
@@ -225,9 +238,11 @@ const handlePressStation = (
               ]}
             >
               {mode === "departure"
-                  ? "출발할 역을 검색해서 선택하세요."
-                  : mode === "arrival"
-                    ? "도착할 역을 검색해서 선택하세요."
+                ? "출발할 역을 검색해서 선택하세요."
+                : mode === "arrival"
+                  ? "도착할 역을 검색해서 선택하세요."
+                  : mode === "accommodation"
+                    ? "숙소에서 가장 가까운 역을 검색해서 선택하세요."
                     : "원하는 역을 바로 찾아보세요."}
             </Text>
           </View>

@@ -4,6 +4,7 @@ import {
   ChevronRight,
   CircleHelp,
   CreditCard,
+  House,
   Info,
   Nfc,
   Plane,
@@ -11,13 +12,7 @@ import {
   Star,
   Ticket,
 } from "lucide-react-native";
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type MenuItemProps = {
@@ -81,11 +76,7 @@ const MenuItem = ({
       </View>
 
       {!disabled && (
-        <ChevronRight
-          size={18}
-          color={secondaryTextColor}
-          strokeWidth={1.7}
-        />
+        <ChevronRight size={18} color={secondaryTextColor} strokeWidth={1.7} />
       )}
     </Pressable>
   );
@@ -144,13 +135,7 @@ const MoreScreen = () => {
 
           <View style={styles.menuList}>
             <MenuItem
-              icon={
-                <Plane
-                  size={21}
-                  color={colors.text}
-                  strokeWidth={1.7}
-                />
-              }
+              icon={<Plane size={21} color={colors.text} strokeWidth={1.7} />}
               title="공항 가는 길"
               description="나리타 · 하네다 공항 교통 안내"
               onPress={() => router.push("/airport")}
@@ -160,13 +145,7 @@ const MoreScreen = () => {
             />
 
             <MenuItem
-              icon={
-                <Ticket
-                  size={21}
-                  color={colors.text}
-                  strokeWidth={1.7}
-                />
-              }
+              icon={<Ticket size={21} color={colors.text} strokeWidth={1.7} />}
               title="여행자 패스"
               description="도쿄 교통패스 안내"
               onPress={() => router.push("/travel-passes")}
@@ -177,11 +156,7 @@ const MoreScreen = () => {
 
             <MenuItem
               icon={
-                <CreditCard
-                  size={21}
-                  color={colors.text}
-                  strokeWidth={1.7}
-                />
+                <CreditCard size={21} color={colors.text} strokeWidth={1.7} />
               }
               title="IC카드 이용 가이드"
               description="Suica · PASMO · 전국 상호이용 IC카드"
@@ -192,13 +167,7 @@ const MoreScreen = () => {
             />
 
             <MenuItem
-              icon={
-                <Nfc
-                  size={21}
-                  color={colors.text}
-                  strokeWidth={1.7}
-                />
-              }
+              icon={<Nfc size={21} color={colors.text} strokeWidth={1.7} />}
               title="신용카드로 전철 타기"
               description="컨택리스 카드로 이용하는 오픈루프 승차"
               onPress={() => router.push("/contactless-guide")}
@@ -209,11 +178,7 @@ const MoreScreen = () => {
 
             <MenuItem
               icon={
-                <CircleHelp
-                  size={21}
-                  color={colors.text}
-                  strokeWidth={1.7}
-                />
+                <CircleHelp size={21} color={colors.text} strokeWidth={1.7} />
               }
               title="일본 철도 이용 가이드"
               description="개찰구 · 환승 · 열차 이용 방법"
@@ -240,13 +205,17 @@ const MoreScreen = () => {
 
           <View style={styles.menuList}>
             <MenuItem
-              icon={
-                <Star
-                  size={21}
-                  color={colors.text}
-                  strokeWidth={1.7}
-                />
-              }
+              icon={<House size={21} color={colors.text} strokeWidth={1.7} />}
+              title="내 숙소"
+              description="숙소와 가까운 역을 기기에 저장"
+              onPress={() => router.push("/accommodation")}
+              textColor={colors.text}
+              secondaryTextColor={colors.textSecondary}
+              borderColor={colors.border}
+            />
+
+            <MenuItem
+              icon={<Star size={21} color={colors.text} strokeWidth={1.7} />}
               title="즐겨찾는 역"
               description="자주 이용하는 역 관리"
               onPress={() => router.push("/favorite-stations")}
@@ -273,11 +242,7 @@ const MoreScreen = () => {
           <View style={styles.menuList}>
             <MenuItem
               icon={
-                <Settings
-                  size={21}
-                  color={colors.text}
-                  strokeWidth={1.7}
-                />
+                <Settings size={21} color={colors.text} strokeWidth={1.7} />
               }
               title="설정"
               description="앱 설정 및 데이터 정보"
@@ -288,13 +253,7 @@ const MoreScreen = () => {
             />
 
             <MenuItem
-              icon={
-                <Info
-                  size={21}
-                  color={colors.text}
-                  strokeWidth={1.7}
-                />
-              }
+              icon={<Info size={21} color={colors.text} strokeWidth={1.7} />}
               title="앱 정보"
               description="Tokyo Railway Guide"
               disabled
