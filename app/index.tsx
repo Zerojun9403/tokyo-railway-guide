@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import { Orbitron_700Bold, useFonts } from "@expo-google-fonts/orbitron";
+import * as Location from "expo-location";
 import { router, useLocalSearchParams } from "expo-router";
 import {
   ArrowDownUp,
@@ -26,6 +27,8 @@ import {
   X,
 } from "lucide-react-native";
 
+import stationCoordinates from "../data/stationCoordinates.json";
+import { getAllStations } from "../data/railwayRegistry";
 import { useAppTheme } from "../hooks/useAppTheme";
 
 type SelectedStation = {
@@ -39,6 +42,68 @@ type DepartureTimeMode = "now" | "scheduled";
 
 const padTime = (value: number) => {
   return value.toString().padStart(2, "0");
+};
+
+type StationCoordinate = {
+  operatorId: string;
+  odptOperatorId: string;
+  odptStationId: string | null;
+  railwayId: string | null;
+  stationCode: string | null;
+  nameJa: string | null;
+  nameEn: string | null;
+  latitude: number;
+  longitude: number;
+};
+
+type NearestStationCoordinate = StationCoordinate & {
+  distance: number;
+};
+
+const toRadians = (degree: number) => (degree * Math.PI) / 180;
+
+const calculateDistance = (
+  latitude1: number,
+  longitude1: number,
+  latitude2: number,
+  longitude2: number,
+) => {
+  const earthRadius = 6371000;
+  const latitudeDifference = toRadians(latitude2 - latitude1);
+  const longitudeDifference = toRadians(longitude2 - longitude1);
+  const firstLatitude = toRadians(latitude1);
+  const secondLatitude = toRadians(latitude2);
+
+  const a =
+    Math.sin(latitudeDifference / 2) ** 2 +
+    Math.cos(firstLatitude) *
+      Math.cos(secondLatitude) *
+      Math.sin(longitudeDifference / 2) ** 2;
+
+  return earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+
+const findNearestStationCoordinate = (
+  latitude: number,
+  longitude: number,
+): NearestStationCoordinate | null => {
+  const stations = stationCoordinates as StationCoordinate[];
+  let nearest: NearestStationCoordinate | null = null;
+
+  for (const station of stations) {
+    const distance = calculateDistance(
+      latitude,
+      longitude,
+      station.latitude,
+      station.longitude,
+    );
+
+    if (!nearest || distance < nearest.distance) {
+      nearest = { ...station, distance };
+    }
+  }
+
+  return nearest;
 };
 
 const HomeScreen = () => {
@@ -82,6 +147,8 @@ const HomeScreen = () => {
   );
 
   const [isTimeModalVisible, setIsTimeModalVisible] = useState(false);
+  const [isLocatingDeparture, setIsLocatingDeparture] = useState(false);
+  const [locationMessage, setLocationMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (params.departureStationId) {
@@ -134,6 +201,62 @@ const HomeScreen = () => {
     params.arrivalNameKo,
     params.arrivalNameJa,
   ]);
+
+  const handleUseCurrentLocation = async () => {
+    try {
+      setIsLocatingDeparture(true);
+      setLocationMessage(null);
+
+      const { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        setLocationMessage("위치 권한을 허용해 주세요.");
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+      const nearest = findNearestStationCoordinate(
+        location.coords.latitude,
+        location.coords.longitude,
+      );
+      if (!nearest?.nameJa) {
+        setLocationMessage("가까운 역을 찾지 못했어요.");
+        return;
+      }
+
+      const guideStations = getAllStations().filter(
+        (station) => station.nameJa === nearest.nameJa,
+      );
+
+      if (guideStations.length === 0) {
+        setLocationMessage(
+          `${nearest.nameJa}역은 현재 GUIDE 노선에서 검색할 수 없어요.`,
+        );
+        return;
+      }
+
+      const representativeStation = guideStations[0];
+
+      setDeparture({
+        stationId: representativeStation.id,
+        lineId: representativeStation.lineId,
+        nameKo: representativeStation.nameKo,
+        nameJa: representativeStation.nameJa,
+      });
+
+      setLocationMessage(
+        `현재 위치에서 가장 가까운 역: ${representativeStation.nameKo}`,
+      );
+    } catch (error) {
+      console.error("Current location error:", error);
+      setLocationMessage("현재 위치를 가져오지 못했어요.");
+    } finally {
+      setIsLocatingDeparture(false);
+    }
+  };
 
   const handleSelectDeparture = () => {
     router.push({
@@ -499,6 +622,45 @@ const HomeScreen = () => {
             <ChevronRight size={22} color={colors.textMuted} strokeWidth={2} />
           </TouchableOpacity>
         </View>
+
+        <TouchableOpacity
+          style={[
+            styles.currentLocationButton,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
+          activeOpacity={0.72}
+          disabled={isLocatingDeparture}
+          onPress={handleUseCurrentLocation}
+        >
+          <View
+            style={[
+              styles.currentLocationIcon,
+              { backgroundColor: colors.surfaceSecondary },
+            ]}
+          >
+            <Navigation size={19} color="#A78BFA" strokeWidth={2} />
+          </View>
+
+          <View style={styles.currentLocationTextArea}>
+            <Text style={[styles.currentLocationTitle, { color: colors.text }]}>
+              {isLocatingDeparture
+                ? "현재 위치 확인 중..."
+                : "현재 위치에서 출발"}
+            </Text>
+            <Text
+              style={[
+                styles.currentLocationDescription,
+                { color: colors.textMuted },
+              ]}
+            >
+              {locationMessage ??
+                "GPS로 가장 가까운 역을 출발역으로 설정합니다."}
+            </Text>
+          </View>
+        </TouchableOpacity>
 
         {/* 출발 시간 */}
 
@@ -1068,6 +1230,42 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
     fontWeight: "900",
+  },
+
+  currentLocationButton: {
+    minHeight: 68,
+    marginTop: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 18,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  currentLocationIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  currentLocationTextArea: {
+    flex: 1,
+    marginLeft: 12,
+  },
+
+  currentLocationTitle: {
+    fontSize: 14,
+    lineHeight: 19,
+    fontWeight: "800",
+  },
+
+  currentLocationDescription: {
+    marginTop: 2,
+    fontSize: 10.5,
+    lineHeight: 15,
   },
 
   section: {
