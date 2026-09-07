@@ -238,6 +238,38 @@ type LastTrainResponse = {
   lastTrain: LastTrainItem | null;
 };
 
+type TrainInformationStatus =
+  | "normal"
+  | "delay"
+  | "suspended"
+  | "partial-suspension"
+  | "through-service-suspended"
+  | "resuming"
+  | "information"
+  | "unknown";
+
+type TrainInformationItem = {
+  id: string;
+  operator: string;
+  lineId: string;
+  status: TrainInformationStatus;
+  title: string;
+  message: string;
+  cause?: string;
+  affectedSection?: string;
+  rawStatus?: string;
+  updatedAt?: string;
+};
+
+type TrainInformationResponse = {
+  operator: string;
+  lineId: string;
+  supported: boolean;
+  found: boolean;
+  updatedAt: string;
+  information: TrainInformationItem[];
+};
+
 type StationCoordinateItem = {
   operatorId: string;
   odptOperatorId: string;
@@ -305,6 +337,42 @@ const resolveLastTrainStationId = ({
   return lastSegment || matchedStation.nameEn || stationId;
 };
 
+/*
+ * =========================================================
+ * GUIDE lineId → 막차 API lineId
+ * =========================================================
+ */
+
+const LAST_TRAIN_API_LINE_ID_MAP: Record<string, string> = {
+  "keikyu-main": "main",
+  "keikyu-airport": "airport",
+  "seibu-ikebukuro": "ikebukuro",
+  "seibu-shinjuku": "shinjuku",
+  "tokyu-toyoko": "toyoko",
+  "tokyu-meguro": "meguro",
+  "tokyu-den-en-toshi": "den-en-toshi",
+  "tokyu-oimachi": "oimachi",
+  "tokyu-shin-yokohama": "tokyu-shin-yokohama",
+};
+
+const resolveLastTrainLineId = ({
+  operatorId,
+  lineId,
+}: {
+  operatorId: string;
+  lineId: string;
+}) => {
+  if (
+    operatorId !== "keikyu" &&
+    operatorId !== "seibu" &&
+    operatorId !== "tokyu"
+  ) {
+    return lineId;
+  }
+
+  return LAST_TRAIN_API_LINE_ID_MAP[lineId] ?? lineId;
+};
+
 const LAST_TRAIN_SUPPORTED_OPERATORS = new Set([
   "jr-east",
   "keikyu",
@@ -317,6 +385,121 @@ const LAST_TRAIN_SUPPORTED_OPERATORS = new Set([
 const LAST_TRAIN_API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL ??
   "https://tokyo-railway-api.vercel.app";
+
+const TRAIN_INFORMATION_SUPPORTED_OPERATORS = new Set([
+  "jr-east",
+  "tokyo-metro",
+  "toei",
+  "tokyu",
+  "seibu",
+  "keikyu",
+]);
+
+const TRAIN_INFORMATION_STATUS_PRIORITY: Record<
+  TrainInformationStatus,
+  number
+> = {
+  suspended: 7,
+  "partial-suspension": 6,
+  "through-service-suspended": 5,
+  delay: 4,
+  resuming: 3,
+  information: 2,
+  unknown: 1,
+  normal: 0,
+};
+
+const detectTrainInformationCause = (
+  information: TrainInformationItem,
+): string | undefined => {
+  const source = [
+    information.cause,
+    information.title,
+    information.message,
+    information.rawStatus,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const causeRules: Array<[RegExp, string]> = [
+    [/大雨|豪雨|集中豪雨/, "폭우 영향으로"],
+    [/強風|暴風/, "강풍 영향으로"],
+    [/台風/, "태풍 영향으로"],
+    [/大雪|降雪|積雪|雪/, "폭설 영향으로"],
+    [/地震/, "지진 영향으로"],
+    [/落雷|雷/, "낙뢰 영향으로"],
+    [/人身事故/, "인명 사고로"],
+    [/車両故障/, "차량 고장으로"],
+    [/車両点検|車両確認/, "차량 점검으로"],
+    [/信号故障|信号トラブル/, "신호 장애로"],
+    [/信号確認/, "신호 확인으로"],
+    [/線路内人立入|線路内立入/, "선로 내 사람 진입으로"],
+    [/踏切事故/, "건널목 사고로"],
+    [/踏切.*安全確認|踏切安全確認/, "건널목 안전 확인으로"],
+    [/停電/, "정전으로"],
+    [/設備故障|設備点検/, "설비 점검으로"],
+    [/お客さま救護|お客様救護|急病人/, "승객 구조로"],
+    [/混雑|混雑の影響/, "혼잡으로"],
+    [/安全確認/, "안전 확인으로"],
+  ];
+
+  return causeRules.find(([pattern]) => pattern.test(source))?.[1];
+};
+
+const getTrainInformationSummary = (
+  information: TrainInformationItem,
+): string | undefined => {
+  if (information.status === "normal") {
+    return undefined;
+  }
+
+  const cause = detectTrainInformationCause(information);
+
+  if (!cause) {
+    return undefined;
+  }
+
+  return cause
+    .replace(/ 영향으로$/, " 영향")
+    .replace(/으로$/, "")
+    .replace(/로$/, "");
+};
+
+const getTrainInformationDisplay = (
+  information: TrainInformationItem[],
+): { label: string; color: string; message?: string } => {
+  if (information.length === 0) {
+    return { label: "정상운행", color: "#16A34A" };
+  }
+
+  const primary = [...information].sort(
+    (a, b) =>
+      TRAIN_INFORMATION_STATUS_PRIORITY[b.status] -
+      TRAIN_INFORMATION_STATUS_PRIORITY[a.status],
+  )[0];
+
+  const message = getTrainInformationSummary(primary);
+
+  switch (primary.status) {
+    case "delay":
+      return { label: "지연", color: "#D97706", message };
+    case "suspended":
+      return { label: "운행 중지", color: "#DC2626", message };
+    case "partial-suspension":
+      return { label: "일부 운휴", color: "#DC2626", message };
+    case "through-service-suspended":
+      return { label: "직통 운행 중지", color: "#DC2626", message };
+    case "resuming":
+      return { label: "운행 재개 예정", color: "#D97706", message };
+    case "information":
+      return { label: "운행 안내", color: "#2563EB", message };
+    case "unknown":
+      return { label: "운행정보 확인 필요", color: "#6B7280", message };
+    case "normal":
+    default:
+      return { label: "정상운행", color: "#16A34A" };
+  }
+};
 
 /*
  * =========================================================
@@ -470,9 +653,14 @@ export default function StationScreen() {
         stationId: station.id,
       });
 
+      const lastTrainLineId = resolveLastTrainLineId({
+        operatorId: station.operatorId,
+        lineId: station.lineId,
+      });
+
       const query = new URLSearchParams({
         operator: station.operatorId,
-        lineId: station.lineId,
+        lineId: lastTrainLineId,
         stationId: lastTrainStationId,
         directionId: selectedDirection.id,
       });
@@ -480,7 +668,8 @@ export default function StationScreen() {
       console.log("🌙 막차 API 요청", {
         apiBaseUrl: LAST_TRAIN_API_BASE_URL,
         operator: station.operatorId,
-        lineId: station.lineId,
+        guideLineId: station.lineId,
+        lineId: lastTrainLineId,
         guideStationId: station.id,
         stationId: lastTrainStationId,
         directionId: selectedDirection.id,
@@ -540,6 +729,93 @@ export default function StationScreen() {
   useEffect(() => {
     void loadLastTrain();
   }, [loadLastTrain]);
+
+  /*
+   * =======================================================
+   * 운행 정보
+   * =======================================================
+   */
+
+  const [trainInformation, setTrainInformation] = useState<
+    TrainInformationItem[]
+  >([]);
+  const [trainInformationLoading, setTrainInformationLoading] = useState(false);
+  const [trainInformationError, setTrainInformationError] = useState<
+    string | null
+  >(null);
+
+  const trainInformationSupported =
+    !!station && TRAIN_INFORMATION_SUPPORTED_OPERATORS.has(station.operatorId);
+
+  const loadTrainInformation = useCallback(async () => {
+    if (!station || !trainInformationSupported) {
+      setTrainInformation([]);
+      setTrainInformationError(null);
+      setTrainInformationLoading(false);
+      return;
+    }
+
+    try {
+      setTrainInformationLoading(true);
+      setTrainInformationError(null);
+
+      const trainInformationLineId = resolveLastTrainLineId({
+        operatorId: station.operatorId,
+        lineId: station.lineId,
+      });
+
+      const query = new URLSearchParams({
+        operator: station.operatorId,
+        lineId: trainInformationLineId,
+      });
+
+      const response = await fetch(
+        `${LAST_TRAIN_API_BASE_URL}/api/train-information?${query.toString()}`,
+        { cache: "no-store" },
+      );
+
+      const data = (await response.json()) as
+        | TrainInformationResponse
+        | { error?: string };
+
+      if (!response.ok) {
+        throw new Error(
+          "error" in data && data.error
+            ? data.error
+            : "운행 정보를 불러오지 못했습니다.",
+        );
+      }
+
+      if ("supported" in data && data.supported) {
+        setTrainInformation(data.information ?? []);
+        return;
+      }
+
+      setTrainInformation([]);
+    } catch (trainInformationLoadError) {
+      console.error("운행 정보 로딩 오류:", trainInformationLoadError);
+      setTrainInformation([]);
+      setTrainInformationError("운행 정보를 불러오지 못했습니다.");
+    } finally {
+      setTrainInformationLoading(false);
+    }
+  }, [station, trainInformationSupported]);
+
+  useEffect(() => {
+    void loadTrainInformation();
+  }, [loadTrainInformation]);
+
+  const trainInformationDisplay = useMemo(() => {
+    if (trainInformationLoading) {
+      return { label: "운행정보 확인 중", color: "#6B7280" };
+    }
+
+    if (trainInformationError) {
+      return { label: "운행정보 확인 실패", color: "#6B7280" };
+    }
+
+    return getTrainInformationDisplay(trainInformation);
+  }, [trainInformation, trainInformationLoading, trainInformationError]);
 
   /*
    * =======================================================
@@ -809,6 +1085,10 @@ export default function StationScreen() {
         await loadLastTrain();
       }
 
+      if (trainInformationSupported) {
+        await loadTrainInformation();
+      }
+
       const now = new Date();
 
       setLastUpdatedAt(now);
@@ -841,6 +1121,10 @@ export default function StationScreen() {
     lastTrainSupported,
 
     loadLastTrain,
+
+    trainInformationSupported,
+
+    loadTrainInformation,
   ]);
 
   /*
@@ -1156,10 +1440,23 @@ export default function StationScreen() {
         ================================================= */}
 
         <View style={styles.operationStatus}>
-          <View style={styles.operationDot} />
+          <View
+            style={[
+              styles.operationDot,
+              { backgroundColor: trainInformationDisplay.color },
+            ]}
+          />
 
-          <Text style={[styles.operationText, { color: colors.text }]}>
-            정상운행
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[styles.operationText, { color: colors.text }]}
+          >
+            {trainInformationSupported
+              ? trainInformationDisplay.message
+                ? `${trainInformationDisplay.label} · ${trainInformationDisplay.message}`
+                : trainInformationDisplay.label
+              : "운행정보 미지원"}
           </Text>
         </View>
 
@@ -1733,7 +2030,14 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
 
+  operationMessage: {
+    marginTop: 8,
+    fontSize: 13,
+    lineHeight: 20,
+  },
+
   operationText: {
+    flex: 1,
     fontSize: 14,
 
     lineHeight: 18,
