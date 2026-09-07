@@ -310,6 +310,7 @@ const LAST_TRAIN_SUPPORTED_OPERATORS = new Set([
   "keikyu",
   "seibu",
   "tokyu",
+   "tokyo-metro",
 ]);
 
 const LAST_TRAIN_API_BASE_URL =
