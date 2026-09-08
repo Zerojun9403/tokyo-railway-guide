@@ -44,7 +44,7 @@ const route = findStationRoute(
 
 if (!route) {
   console.log("Route not found.");
-  process.exit(0);
+  throw new Error("Route not found.");
 }
 
 let transferCount = 0;
