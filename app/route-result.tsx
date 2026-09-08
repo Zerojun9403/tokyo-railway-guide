@@ -26,6 +26,11 @@ import { calculateRouteTime } from "../utils/routing/calculateRouteTime";
 import { findStationRoute } from "../utils/routing/findStationRoute";
 import { resolveLiveJourney } from "../utils/routing/resolveLiveJourney";
 import { getJrEastDirection } from "../utils/routing/getJrEastDirection";
+import { getTokyoMetroDirection } from "../utils/routing/getTokyoMetroDirection";
+import { getToeiDirection } from "../utils/routing/getToeiDirection";
+import { getTokyuDirection } from "../utils/routing/getTokyuDirection";
+import { getKeikyuDirection } from "../utils/routing/getKeikyuDirection";
+import { getSeibuDirection } from "../utils/routing/getSeibuDirection";
 import type { JourneyResolverResult } from "../utils/routing/resolveJourney";
 
 
@@ -151,11 +156,37 @@ if (!segment) {
   setLiveJourney(null);
   return;
 }
-const directionId = getJrEastDirection(
-  segment.lineId,
-  segment.fromStationId,
-  segment.toStationId,
-);
+const directionId =
+  getJrEastDirection(
+    segment.lineId,
+    segment.fromStationId,
+    segment.toStationId,
+  ) ??
+  getTokyoMetroDirection(
+    segment.lineId,
+    segment.fromStationId,
+    segment.toStationId,
+  ) ??
+  getToeiDirection(
+    segment.lineId,
+    segment.fromStationId,
+    segment.toStationId,
+  ) ??
+  getTokyuDirection(
+    segment.lineId,
+    segment.fromStationId,
+    segment.toStationId,
+  ) ??
+  getKeikyuDirection(
+    segment.lineId,
+    segment.fromStationId,
+    segment.toStationId,
+  ) ??
+  getSeibuDirection(
+    segment.lineId,
+    segment.fromStationId,
+    segment.toStationId,
+  );
 
 if (!directionId) {
   setLiveJourney(null);
@@ -652,7 +683,7 @@ const displayMinutes = useMemo(() => {
               ]}
             >
               {resolvedLiveJourney
-                ? "JR East 실제 시간표를 기준으로 안내합니다."
+                ? "실제 시간표를 기준으로 안내합니다."
                 : "예상 시간은 정거장당 평균 2분, 환승 1회당 평균 3분을 기준으로 계산합니다."}
             </Text>
 
