@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   SafeAreaView,
@@ -24,6 +24,9 @@ import { buildJourneySegments } from "../utils/routing/buildJourneySegments";
 import { buildRailwayGraph } from "../utils/routing/buildRailwayGraph";
 import { calculateRouteTime } from "../utils/routing/calculateRouteTime";
 import { findStationRoute } from "../utils/routing/findStationRoute";
+import { getYamanoteDirection } from "../utils/routing/getYamanoteDirection";
+import { resolveLiveJourney } from "../utils/routing/resolveLiveJourney";
+import type { JourneyResolverResult } from "../utils/routing/resolveJourney";
 
 const formatTime = (date: Date) => {
   return date.toLocaleTimeString("ko-KR", {
@@ -122,6 +125,84 @@ const RouteResultScreen = () => {
     return structure;
   }, [graph, route]);
 
+    const [liveJourney, setLiveJourney] =
+    useState<JourneyResolverResult | null>(null);
+
+  useEffect(() => {
+    if (!journeyStructure) {
+      setLiveJourney(null);
+      return;
+    }
+
+    /*
+     * v3.5 첫 Live 연결:
+     * JR East 야마노테선 단일 Segment
+     */
+    if (journeyStructure.segments.length !== 1) {
+      setLiveJourney(null);
+      return;
+    }
+
+    const segment =
+      journeyStructure.segments[0];
+
+    if (
+      !segment ||
+      segment.lineId !== "yamanote"
+    ) {
+      setLiveJourney(null);
+      return;
+    }
+
+    const directionId =
+      getYamanoteDirection(
+        segment.fromStationId,
+        segment.toStationId,
+      );
+
+    if (!directionId) {
+      setLiveJourney(null);
+      return;
+    }
+
+    const run = async () => {
+      try {
+        const currentTime =
+          departureDate
+            .toTimeString()
+            .slice(0, 5);
+
+        const result =
+          await resolveLiveJourney({
+            journey: journeyStructure,
+            currentTime,
+            apiBaseUrl:
+              "http://localhost:3000",
+            directionId,
+          });
+
+        console.log(
+          "🚃 [v3.5 LiveJourney]",
+          result,
+        );
+
+        setLiveJourney(result);
+      } catch (error) {
+        console.error(
+          "🚃 [v3.5 LiveJourney Error]",
+          error,
+        );
+
+        setLiveJourney(null);
+      }
+    };
+
+    void run();
+  }, [
+    journeyStructure,
+    departureDate,
+  ]);
+
   const routeTime = useMemo(() => {
     if (!route) {
       return null;
@@ -137,20 +218,62 @@ const RouteResultScreen = () => {
     routeTime?.totalMinutes ?? 0;
 
   const departureTimeLabel = useMemo(() => {
-    if (!routeTime) {
-      return "-";
-    }
+  if (!routeTime) {
+    return "-";
+  }
 
-    return formatTime(routeTime.departureTime);
-  }, [routeTime]);
+  return formatTime(routeTime.departureTime);
+}, [routeTime]);
 
-  const estimatedArrivalTime = useMemo(() => {
-    if (!routeTime) {
-      return "-";
-    }
+const estimatedArrivalTime = useMemo(() => {
+  if (!routeTime) {
+    return "-";
+  }
 
-    return formatTime(routeTime.arrivalTime);
-  }, [routeTime]);
+  return formatTime(routeTime.arrivalTime);
+}, [routeTime]);
+
+const resolvedLiveJourney =
+  liveJourney?.status === "resolved"
+    ? liveJourney
+    : null;
+
+const liveTrain =
+  resolvedLiveJourney?.segments[0]?.train.candidate ??
+  null;
+
+const displayDepartureTime =
+  resolvedLiveJourney?.departureTime ??
+  departureTimeLabel;
+
+const displayArrivalTime =
+  resolvedLiveJourney?.arrivalTime ??
+  estimatedArrivalTime;
+
+const displayMinutes = useMemo(() => {
+  if (!resolvedLiveJourney) {
+    return estimatedMinutes;
+  }
+
+  const [departureHour, departureMinute] =
+    resolvedLiveJourney.departureTime
+      .split(":")
+      .map(Number);
+
+  const [arrivalHour, arrivalMinute] =
+    resolvedLiveJourney.arrivalTime
+      .split(":")
+      .map(Number);
+
+  const departureTotal =
+    departureHour * 60 + departureMinute;
+
+  const arrivalTotal =
+    arrivalHour * 60 + arrivalMinute;
+
+  return arrivalTotal - departureTotal;
+}, [resolvedLiveJourney, estimatedMinutes]);
+
 
   const getLine = (lineId: string) => {
     return Object.values(railwayRegistry).find(
@@ -362,7 +485,7 @@ const RouteResultScreen = () => {
                       },
                     ]}
                   >
-                    약 {estimatedMinutes}분
+                    약 {displayMinutes}분
                   </Text>
                 </View>
 
@@ -391,11 +514,27 @@ const RouteResultScreen = () => {
                       },
                     ]}
                   >
-                    {estimatedArrivalTime}
+                    {displayArrivalTime}
                   </Text>
                 </View>
               </View>
-
+                  {liveTrain && (
+                    <Text
+                      style={[
+                        styles.metaText,
+                        {
+                          color: colors.textSecondary,
+                          marginTop: 12,
+                        },
+                      ]}
+                    >
+                      실제 열차 {liveTrain.trainNumber ?? "-"} ·{" "}
+                      {liveTrain.trainTypeKo ?? liveTrain.trainType}
+                      {liveTrain.trainTypeJa
+                        ? ` · ${liveTrain.trainTypeJa}`
+                        : ""}
+                    </Text>
+                  )}
               <View style={styles.metaRow}>
                 <View style={styles.metaItem}>
                   <Clock3
@@ -411,7 +550,7 @@ const RouteResultScreen = () => {
                       },
                     ]}
                   >
-                    출발 {departureTimeLabel}
+                    출발 {displayDepartureTime}
                   </Text>
                 </View>
 
@@ -515,8 +654,9 @@ const RouteResultScreen = () => {
                 },
               ]}
             >
-              예상 시간은 정거장당 평균 2분, 환승 1회당 평균 3분을
-              기준으로 계산합니다.
+              {resolvedLiveJourney
+                ? "JR East 실제 시간표를 기준으로 안내합니다."
+                : "예상 시간은 정거장당 평균 2분, 환승 1회당 평균 3분을 기준으로 계산합니다."}
             </Text>
 
             {/* 상세 경로 */}
