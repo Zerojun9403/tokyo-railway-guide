@@ -15,8 +15,8 @@ import {
 } from "./resolveJourney";
 
 import {
-  fetchJrEastTrainCandidates,
-} from "./fetchJrEastTrainCandidates";
+  fetchLiveCandidates,
+} from "./liveCandidateRegistry";
 
 /*
  * =========================================================
@@ -78,40 +78,18 @@ export const resolveLiveJourney = async ({
    * 각 Journey Segment의 실제 열차 후보 수집
    * =======================================================
    */
-  for (const segment of journey.segments) {
-    /*
-     * 현재 Live 연결은 Yamanote만 지원한다.
-     *
-     * 다른 노선은 기존 Mock/정적 처리와 섞지 않고
-     * Provider Adapter가 준비될 때 하나씩 추가한다.
-     */
-    if (segment.lineId !== "yamanote") {
-      continue;
-    }
+for (const segment of journey.segments) {
+  const segmentCandidates =
+    await fetchLiveCandidates({
+      segment,
+      apiBaseUrl,
+      directionId,
+    });
 
-    const segmentCandidates =
-      await fetchJrEastTrainCandidates({
-        apiBaseUrl,
-        lineId: segment.lineId,
-        directionId,
-
-        fromNodeId:
-          segment.fromNodeId,
-
-        fromStationId:
-          segment.fromStationId,
-
-        toNodeId:
-          segment.toNodeId,
-
-        toStationId:
-          segment.toStationId,
-      });
-
-    candidates.push(
-      ...segmentCandidates,
-    );
-  }
+  candidates.push(
+    ...segmentCandidates,
+  );
+}
 
   /*
    * 실제 API에서 만든 TrainCandidate를

@@ -25,6 +25,7 @@ import { buildRailwayGraph } from "../utils/routing/buildRailwayGraph";
 import { calculateRouteTime } from "../utils/routing/calculateRouteTime";
 import { findStationRoute } from "../utils/routing/findStationRoute";
 import { getYamanoteDirection } from "../utils/routing/getYamanoteDirection";
+import { getSaikyoDirection } from "../utils/routing/getSaikyoDirection";
 import { resolveLiveJourney } from "../utils/routing/resolveLiveJourney";
 import type { JourneyResolverResult } from "../utils/routing/resolveJourney";
 
@@ -146,25 +147,29 @@ const RouteResultScreen = () => {
     const segment =
       journeyStructure.segments[0];
 
-    if (
-      !segment ||
-      segment.lineId !== "yamanote"
-    ) {
-      setLiveJourney(null);
-      return;
-    }
+if (!segment) {
+  setLiveJourney(null);
+  return;
+}
 
-    const directionId =
-      getYamanoteDirection(
-        segment.fromStationId,
-        segment.toStationId,
-      );
+let directionId: string | null = null;
 
-    if (!directionId) {
-      setLiveJourney(null);
-      return;
-    }
+if (segment.lineId === "yamanote") {
+  directionId = getYamanoteDirection(
+    segment.fromStationId,
+    segment.toStationId,
+  );
+} else if (segment.lineId === "saikyo") {
+  directionId = getSaikyoDirection(
+    segment.fromStationId,
+    segment.toStationId,
+  );
+}
 
+if (!directionId) {
+  setLiveJourney(null);
+  return;
+}
     const run = async () => {
       try {
         const currentTime =
