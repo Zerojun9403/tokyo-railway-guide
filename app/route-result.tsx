@@ -20,6 +20,7 @@ import {
 
 import { railwayRegistry } from "../data/railwayRegistry";
 import { useAppTheme } from "../hooks/useAppTheme";
+import { buildJourneySegments } from "../utils/routing/buildJourneySegments";
 import { buildRailwayGraph } from "../utils/routing/buildRailwayGraph";
 import { calculateRouteTime } from "../utils/routing/calculateRouteTime";
 import { findStationRoute } from "../utils/routing/findStationRoute";
@@ -102,6 +103,24 @@ const RouteResultScreen = () => {
 
     return parsedDate;
   }, [params.departureTime]);
+
+  const journeyStructure = useMemo(() => {
+    if (!route) {
+      return null;
+    }
+
+    const structure = buildJourneySegments(
+      graph,
+      route,
+    );
+
+    console.log(
+      "🚃 [v3 JourneyStructure]",
+      JSON.stringify(structure, null, 2),
+    );
+
+    return structure;
+  }, [graph, route]);
 
   const routeTime = useMemo(() => {
     if (!route) {

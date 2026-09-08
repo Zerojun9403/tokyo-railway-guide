@@ -1,0 +1,270 @@
+import type {
+  ResolvedTrain,
+  TrainCandidate,
+  TrainResolverResult,
+} from "./trainResolverTypes";
+
+/*
+ * =========================================================
+ * HH:mm → 분 단위 숫자 변환
+ * =========================================================
+ *
+ * 예:
+ * 21:13
+ *
+ * 21 * 60 + 13
+ * = 1273
+ */
+const timeToMinutes = (
+  time: string,
+): number | null => {
+  const [hourText, minuteText] = time.split(":");
+
+  const hour = Number(hourText);
+  const minute = Number(minuteText);
+
+  if (
+    !Number.isInteger(hour) ||
+    !Number.isInteger(minute)
+  ) {
+    return null;
+  }
+
+  if (
+    hour < 0 ||
+    hour > 23 ||
+    minute < 0 ||
+    minute > 59
+  ) {
+    return null;
+  }
+
+  return hour * 60 + minute;
+};
+
+/*
+ * =========================================================
+ * TrainCandidate → ResolvedTrain
+ * =========================================================
+ */
+const createResolvedTrain = (
+  candidate: TrainCandidate,
+): ResolvedTrain | null => {
+  const departureMinutes = timeToMinutes(
+    candidate.departureTime,
+  );
+
+  const arrivalMinutes = timeToMinutes(
+    candidate.arrivalTime,
+  );
+
+  if (
+    departureMinutes === null ||
+    arrivalMinutes === null
+  ) {
+    return null;
+  }
+
+  /*
+   * 현재 Mock 단계에서는
+   * 같은 날짜 안의 열차만 비교한다.
+   *
+   * 자정을 넘는 열차는
+   * 막차 / 심야 처리 단계에서 별도로 확장한다.
+   */
+  if (arrivalMinutes < departureMinutes) {
+    return null;
+  }
+
+  return {
+    candidate,
+
+    departureTime: candidate.departureTime,
+    arrivalTime: candidate.arrivalTime,
+
+    departureMinutes,
+    arrivalMinutes,
+  };
+};
+
+/*
+ * =========================================================
+ * 가장 좋은 열차 비교
+ * =========================================================
+ *
+ * 1순위:
+ * 목적지에 가장 빨리 도착하는 열차
+ *
+ * 2순위:
+ * 도착시간이 같다면 더 빨리 출발하는 열차
+ */
+const isBetterTrain = (
+  candidate: ResolvedTrain,
+  currentBest: ResolvedTrain,
+): boolean => {
+  if (
+    candidate.arrivalMinutes <
+    currentBest.arrivalMinutes
+  ) {
+    return true;
+  }
+
+  if (
+    candidate.arrivalMinutes >
+    currentBest.arrivalMinutes
+  ) {
+    return false;
+  }
+
+  return (
+    candidate.departureMinutes <
+    currentBest.departureMinutes
+  );
+};
+
+/*
+ * =========================================================
+ * Best Train Resolver
+ * =========================================================
+ *
+ * 현재 시각 이후 출발 가능한 열차 중에서:
+ *
+ * 1. 운휴 열차 제외
+ * 2. 목적지에 정차하지 않는 열차 제외
+ * 3. 이미 출발한 열차 제외
+ * 4. 잘못된 시간 데이터 제외
+ * 5. 가장 빨리 목적지에 도착하는 열차 선택
+ *
+ * 중요:
+ *
+ * "가장 먼저 출발하는 열차"를 선택하는 것이 아니다.
+ *
+ * 예:
+ *
+ * 현재 21:08
+ *
+ * Local
+ * 21:10 → 21:34
+ *
+ * Express
+ * 21:13 → 21:29
+ *
+ * Express가 목적지에 정차한다면
+ * 21:13 Express가 최종 선택된다.
+ */
+export const resolveBestTrain = (
+  candidates: TrainCandidate[],
+  currentTime: string,
+): TrainResolverResult => {
+  const currentMinutes = timeToMinutes(
+    currentTime,
+  );
+
+  /*
+   * 현재 시각 자체가 잘못된 경우
+   */
+  if (currentMinutes === null) {
+    return {
+      status: "not-found",
+      train: null,
+    };
+  }
+
+  let bestTrain: ResolvedTrain | null = null;
+
+  for (const candidate of candidates) {
+    /*
+     * =====================================================
+     * 운휴 열차 제외
+     * =====================================================
+     */
+    if (candidate.status === "cancelled") {
+      continue;
+    }
+
+    /*
+     * =====================================================
+     * 목적지 통과 열차 제외
+     * =====================================================
+     */
+    if (!candidate.stopsAtDestination) {
+      continue;
+    }
+
+    /*
+     * =====================================================
+     * 시간 데이터 변환
+     * =====================================================
+     */
+    const resolvedTrain =
+      createResolvedTrain(candidate);
+
+    if (!resolvedTrain) {
+      continue;
+    }
+
+    /*
+     * =====================================================
+     * 이미 출발한 열차 제외
+     * =====================================================
+     *
+     * 현재 21:08인데
+     * 21:07 출발 열차라면 탈 수 없다.
+     *
+     * 현재 시각과 출발 시각이 정확히 같다면
+     * 현재 Mock 단계에서는 탑승 가능한 것으로 본다.
+     */
+    if (
+      resolvedTrain.departureMinutes <
+      currentMinutes
+    ) {
+      continue;
+    }
+
+    /*
+     * =====================================================
+     * 첫 번째 유효 열차
+     * =====================================================
+     */
+    if (!bestTrain) {
+      bestTrain = resolvedTrain;
+      continue;
+    }
+
+    /*
+     * =====================================================
+     * 더 빨리 도착하는 열차인지 비교
+     * =====================================================
+     */
+    if (
+      isBetterTrain(
+        resolvedTrain,
+        bestTrain,
+      )
+    ) {
+      bestTrain = resolvedTrain;
+    }
+  }
+
+  /*
+   * =========================================================
+   * 탑승 가능한 열차가 없는 경우
+   * =========================================================
+   */
+  if (!bestTrain) {
+    return {
+      status: "not-found",
+      train: null,
+    };
+  }
+
+  /*
+   * =========================================================
+   * 최종 선택 완료
+   * =========================================================
+   */
+  return {
+    status: "resolved",
+    train: bestTrain,
+  };
+};
