@@ -24,11 +24,10 @@ import { buildJourneySegments } from "../utils/routing/buildJourneySegments";
 import { buildRailwayGraph } from "../utils/routing/buildRailwayGraph";
 import { calculateRouteTime } from "../utils/routing/calculateRouteTime";
 import { findStationRoute } from "../utils/routing/findStationRoute";
-import { getYamanoteDirection } from "../utils/routing/getYamanoteDirection";
-import { getSaikyoDirection } from "../utils/routing/getSaikyoDirection";
-import { getChuoRapidDirection } from "../utils/routing/getChuoRapidDirection";
 import { resolveLiveJourney } from "../utils/routing/resolveLiveJourney";
+import { getJrEastDirection } from "../utils/routing/getJrEastDirection";
 import type { JourneyResolverResult } from "../utils/routing/resolveJourney";
+
 
 const formatTime = (date: Date) => {
   return date.toLocaleTimeString("ko-KR", {
@@ -152,30 +151,17 @@ if (!segment) {
   setLiveJourney(null);
   return;
 }
-
-let directionId: string | null = null;
-
-if (segment.lineId === "yamanote") {
-  directionId = getYamanoteDirection(
-    segment.fromStationId,
-    segment.toStationId,
-  );
-} else if (segment.lineId === "saikyo") {
-  directionId = getSaikyoDirection(
-    segment.fromStationId,
-    segment.toStationId,
-  );
-} else if (segment.lineId === "chuo-rapid") {
-  directionId = getChuoRapidDirection(
-    segment.fromStationId,
-    segment.toStationId,
-  );
-}
+const directionId = getJrEastDirection(
+  segment.lineId,
+  segment.fromStationId,
+  segment.toStationId,
+);
 
 if (!directionId) {
   setLiveJourney(null);
   return;
 }
+
     const run = async () => {
       try {
         const currentTime =

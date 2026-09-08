@@ -54,10 +54,22 @@ export const fetchLiveCandidates = async ({
    * =======================================================
    */
 
-  if (  segment.lineId === "yamanote" ||
-        segment.lineId === "saikyo"   ||
-        segment.lineId === "chuo-rapid"
-    ) 
+   if (
+  segment.lineId === "yamanote" ||
+  segment.lineId === "saikyo" ||
+  segment.lineId === "chuo-rapid" ||
+  segment.lineId === "chuo-sobu" ||
+  segment.lineId === "shonan-shinjuku" ||
+  segment.lineId === "tokaido" ||
+  segment.lineId === "keihin-tohoku" ||
+  segment.lineId === "keiyo" ||
+  segment.lineId === "yokosuka" ||
+  segment.lineId === "sobu" ||
+  segment.lineId === "sobu-rapid" ||
+  segment.lineId === "narita" ||
+  segment.lineId === "narita-airport"
+) 
+    
     {
     return fetchJrEastTrainCandidates({
       apiBaseUrl,
