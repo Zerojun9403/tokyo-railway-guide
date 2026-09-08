@@ -21,11 +21,7 @@ const journey: JourneyStructure = {
 };
 
 const run = async () => {
-  const directionId = getJrEastDirection(
-    "chuo-sobu",
-    "JB10",
-    "JB11",
-  );
+  const directionId = getJrEastDirection("chuo-sobu", "JB10", "JB11");
 
   console.log("=== CHUO SOBU LIVE JOURNEY TEST ===");
   console.log("Direction:", directionId);
@@ -38,7 +34,6 @@ const run = async () => {
     journey,
     currentTime: "04:25",
     apiBaseUrl: API_BASE_URL,
-    directionId,
   });
 
   console.dir(result, { depth: null });
@@ -55,9 +50,7 @@ const run = async () => {
 
   console.log("");
   console.log("PASS: LIVE CHUO SOBU JOURNEY");
-  console.log(
-    `신주쿠 ${train.departureTime} -> 요요기 ${train.arrivalTime}`,
-  );
+  console.log(`신주쿠 ${train.departureTime} -> 요요기 ${train.arrivalTime}`);
   console.log(`Train: ${train.trainNumber ?? "-"}`);
 };
 

@@ -22,9 +22,7 @@ const SEIBU_API_LINE_IDS: Record<string, string> = {
   "seibu-shinjuku": "shinjuku",
 };
 
-export const getSeibuApiLineId = (
-  guideLineId: string,
-): string | null => {
+export const getSeibuApiLineId = (guideLineId: string): string | null => {
   return SEIBU_API_LINE_IDS[guideLineId] ?? null;
 };
 
@@ -51,40 +49,41 @@ export const adaptSeibuTimetableToTrainCandidates = ({
     return [];
   }
 
-  return originTimetable.flatMap((origin) => {
+  const candidates: TrainCandidate[] = [];
+
+  for (const origin of originTimetable) {
     if (!origin.trainNumber) {
-      return [];
+      continue;
     }
 
     const destination = destinationTimetable.find(
       (item) =>
-        item.lineId === apiLineId &&
-        item.trainNumber === origin.trainNumber,
+        item.lineId === apiLineId && item.trainNumber === origin.trainNumber,
     );
 
     if (!destination) {
-      return [];
+      continue;
     }
 
-    return [
-      {
-        id: `seibu:${lineId}:${origin.trainNumber}:${fromStationId}:${toStationId}`,
-        lineId,
-        fromNodeId,
-        toNodeId,
-        fromStationId,
-        toStationId,
-        departureTime: origin.departureTime,
-        arrivalTime: destination.departureTime,
-        trainType: origin.trainType ?? "Unknown",
-        trainTypeKo: origin.trainTypeKo,
-        trainTypeJa: origin.trainTypeJa,
-        trainNumber: origin.trainNumber,
-        destinationKo: origin.destinationKo,
-        destinationJa: origin.destinationJa,
-        stopsAtDestination: true,
-        status: "unknown",
-      },
-    ];
-  });
+    candidates.push({
+      id: `seibu:${lineId}:${origin.trainNumber}:${fromStationId}:${toStationId}`,
+      lineId,
+      fromNodeId,
+      toNodeId,
+      fromStationId,
+      toStationId,
+      departureTime: origin.departureTime,
+      arrivalTime: destination.departureTime,
+      trainType: origin.trainType ?? "Unknown",
+      trainTypeKo: origin.trainTypeKo,
+      trainTypeJa: origin.trainTypeJa,
+      trainNumber: origin.trainNumber,
+      destinationKo: origin.destinationKo,
+      destinationJa: origin.destinationJa,
+      stopsAtDestination: true,
+      status: "unknown",
+    });
+  }
+
+  return candidates;
 };

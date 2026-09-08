@@ -25,14 +25,7 @@ import { buildRailwayGraph } from "../utils/routing/buildRailwayGraph";
 import { calculateRouteTime } from "../utils/routing/calculateRouteTime";
 import { findStationRoute } from "../utils/routing/findStationRoute";
 import { resolveLiveJourney } from "../utils/routing/resolveLiveJourney";
-import { getJrEastDirection } from "../utils/routing/getJrEastDirection";
-import { getTokyoMetroDirection } from "../utils/routing/getTokyoMetroDirection";
-import { getToeiDirection } from "../utils/routing/getToeiDirection";
-import { getTokyuDirection } from "../utils/routing/getTokyuDirection";
-import { getKeikyuDirection } from "../utils/routing/getKeikyuDirection";
-import { getSeibuDirection } from "../utils/routing/getSeibuDirection";
 import type { JourneyResolverResult } from "../utils/routing/resolveJourney";
-
 
 const formatTime = (date: Date) => {
   return date.toLocaleTimeString("ko-KR", {
@@ -59,10 +52,7 @@ const RouteResultScreen = () => {
   }, []);
 
   const route = useMemo(() => {
-    if (
-      !params.departureNameKo ||
-      !params.arrivalNameKo
-    ) {
+    if (!params.departureNameKo || !params.arrivalNameKo) {
       return null;
     }
 
@@ -71,20 +61,14 @@ const RouteResultScreen = () => {
       params.departureNameKo,
       params.arrivalNameKo,
     );
-  }, [
-    graph,
-    params.departureNameKo,
-    params.arrivalNameKo,
-  ]);
+  }, [graph, params.departureNameKo, params.arrivalNameKo]);
 
   const transferCount = useMemo(() => {
     if (!route) {
       return 0;
     }
 
-    return route.filter(
-      (step) => step.via === "transfer",
-    ).length;
+    return route.filter((step) => step.via === "transfer").length;
   }, [route]);
 
   const rideCount = useMemo(() => {
@@ -92,9 +76,7 @@ const RouteResultScreen = () => {
       return 0;
     }
 
-    return route.filter(
-      (step) => step.via === "ride",
-    ).length;
+    return route.filter((step) => step.via === "ride").length;
   }, [route]);
 
   const departureDate = useMemo(() => {
@@ -102,9 +84,7 @@ const RouteResultScreen = () => {
       return new Date();
     }
 
-    const parsedDate = new Date(
-      params.departureTime,
-    );
+    const parsedDate = new Date(params.departureTime);
 
     if (Number.isNaN(parsedDate.getTime())) {
       return new Date();
@@ -118,21 +98,16 @@ const RouteResultScreen = () => {
       return null;
     }
 
-    const structure = buildJourneySegments(
-      graph,
-      route,
-    );
+    const structure = buildJourneySegments(graph, route);
 
-    console.log(
-      "🚃 [v3 JourneyStructure]",
-      JSON.stringify(structure, null, 2),
-    );
+    console.log("🚃 [v3 JourneyStructure]", JSON.stringify(structure, null, 2));
 
     return structure;
   }, [graph, route]);
 
-    const [liveJourney, setLiveJourney] =
-    useState<JourneyResolverResult | null>(null);
+  const [liveJourney, setLiveJourney] = useState<JourneyResolverResult | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!journeyStructure) {
@@ -140,173 +115,90 @@ const RouteResultScreen = () => {
       return;
     }
 
-    /*
-     * v3.5 첫 Live 연결:
-     * JR East 야마노테선 단일 Segment
-     */
-    if (journeyStructure.segments.length !== 1) {
-      setLiveJourney(null);
-      return;
-    }
-
-    const segment =
-      journeyStructure.segments[0];
-
-if (!segment) {
-  setLiveJourney(null);
-  return;
-}
-const directionId =
-  getJrEastDirection(
-    segment.lineId,
-    segment.fromStationId,
-    segment.toStationId,
-  ) ??
-  getTokyoMetroDirection(
-    segment.lineId,
-    segment.fromStationId,
-    segment.toStationId,
-  ) ??
-  getToeiDirection(
-    segment.lineId,
-    segment.fromStationId,
-    segment.toStationId,
-  ) ??
-  getTokyuDirection(
-    segment.lineId,
-    segment.fromStationId,
-    segment.toStationId,
-  ) ??
-  getKeikyuDirection(
-    segment.lineId,
-    segment.fromStationId,
-    segment.toStationId,
-  ) ??
-  getSeibuDirection(
-    segment.lineId,
-    segment.fromStationId,
-    segment.toStationId,
-  );
-
-if (!directionId) {
-  setLiveJourney(null);
-  return;
-}
+    /* 각 Segment의 방향은 resolveLiveJourney 내부에서 자동 판별한다. */
 
     const run = async () => {
       try {
-        const currentTime =
-          departureDate
-            .toTimeString()
-            .slice(0, 5);
+        const currentTime = departureDate.toTimeString().slice(0, 5);
 
-        const result =
-          await resolveLiveJourney({
-            journey: journeyStructure,
-            currentTime,
-            apiBaseUrl:
-              "http://localhost:3000",
-            directionId,
-          });
+        const result = await resolveLiveJourney({
+          journey: journeyStructure,
+          currentTime,
+          apiBaseUrl: "https://tokyo-railway-api.vercel.app",
+        });
 
-        console.log(
-          "🚃 [v3.5 LiveJourney]",
-          result,
-        );
+        console.log("🚃 [v3.5 LiveJourney]", result);
 
         setLiveJourney(result);
       } catch (error) {
-        console.error(
-          "🚃 [v3.5 LiveJourney Error]",
-          error,
-        );
+        console.error("🚃 [v3.5 LiveJourney Error]", error);
 
         setLiveJourney(null);
       }
     };
 
     void run();
-  }, [
-    journeyStructure,
-    departureDate,
-  ]);
+  }, [journeyStructure, departureDate]);
 
   const routeTime = useMemo(() => {
     if (!route) {
       return null;
     }
 
-    return calculateRouteTime(
-      route,
-      departureDate,
-    );
+    return calculateRouteTime(route, departureDate);
   }, [route, departureDate]);
 
-  const estimatedMinutes =
-    routeTime?.totalMinutes ?? 0;
+  const estimatedMinutes = routeTime?.totalMinutes ?? 0;
 
   const departureTimeLabel = useMemo(() => {
-  if (!routeTime) {
-    return "-";
-  }
+    if (!routeTime) {
+      return "-";
+    }
 
-  return formatTime(routeTime.departureTime);
-}, [routeTime]);
+    return formatTime(routeTime.departureTime);
+  }, [routeTime]);
 
-const estimatedArrivalTime = useMemo(() => {
-  if (!routeTime) {
-    return "-";
-  }
+  const estimatedArrivalTime = useMemo(() => {
+    if (!routeTime) {
+      return "-";
+    }
 
-  return formatTime(routeTime.arrivalTime);
-}, [routeTime]);
+    return formatTime(routeTime.arrivalTime);
+  }, [routeTime]);
 
-const resolvedLiveJourney =
-  liveJourney?.status === "resolved"
-    ? liveJourney
-    : null;
+  const resolvedLiveJourney =
+    liveJourney?.status === "resolved" ? liveJourney : null;
 
-const liveTrain =
-  resolvedLiveJourney?.segments[0]?.train.candidate ??
-  null;
+  const liveTrain = resolvedLiveJourney?.segments[0]?.train.candidate ?? null;
 
-const displayDepartureTime =
-  resolvedLiveJourney?.departureTime ??
-  departureTimeLabel;
+  const displayDepartureTime =
+    resolvedLiveJourney?.departureTime ?? departureTimeLabel;
 
-const displayArrivalTime =
-  resolvedLiveJourney?.arrivalTime ??
-  estimatedArrivalTime;
+  const displayArrivalTime =
+    resolvedLiveJourney?.arrivalTime ?? estimatedArrivalTime;
 
-const displayMinutes = useMemo(() => {
-  if (!resolvedLiveJourney) {
-    return estimatedMinutes;
-  }
+  const displayMinutes = useMemo(() => {
+    if (!resolvedLiveJourney) {
+      return estimatedMinutes;
+    }
 
-  const [departureHour, departureMinute] =
-    resolvedLiveJourney.departureTime
+    const [departureHour, departureMinute] = resolvedLiveJourney.departureTime
       .split(":")
       .map(Number);
 
-  const [arrivalHour, arrivalMinute] =
-    resolvedLiveJourney.arrivalTime
+    const [arrivalHour, arrivalMinute] = resolvedLiveJourney.arrivalTime
       .split(":")
       .map(Number);
 
-  const departureTotal =
-    departureHour * 60 + departureMinute;
+    const departureTotal = departureHour * 60 + departureMinute;
 
-  const arrivalTotal =
-    arrivalHour * 60 + arrivalMinute;
+    const arrivalTotal = arrivalHour * 60 + arrivalMinute;
 
-  return arrivalTotal - departureTotal;
-}, [resolvedLiveJourney, estimatedMinutes]);
-
+    return arrivalTotal - departureTotal;
+  }, [resolvedLiveJourney, estimatedMinutes]);
 
   const getLine = (lineId: string) => {
-    return Object.values(railwayRegistry).find(
-      (line) => line.id === lineId,
-    );
+    return Object.values(railwayRegistry).find((line) => line.id === lineId);
   };
 
   return (
@@ -342,11 +234,7 @@ const displayMinutes = useMemo(() => {
             activeOpacity={0.7}
             onPress={() => router.back()}
           >
-            <ArrowLeft
-              size={20}
-              color={colors.text}
-              strokeWidth={2}
-            />
+            <ArrowLeft size={20} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
 
           <View style={styles.headerTextArea}>
@@ -438,12 +326,7 @@ const displayMinutes = useMemo(() => {
               />
             </View>
 
-            <View
-              style={[
-                styles.summaryStation,
-                styles.summaryStationRight,
-              ]}
-            >
+            <View style={[styles.summaryStation, styles.summaryStationRight]}>
               <Text
                 style={[
                   styles.summaryLabel,
@@ -518,10 +401,7 @@ const displayMinutes = useMemo(() => {
                 </View>
 
                 <View
-                  style={[
-                    styles.timeSummaryItem,
-                    styles.timeSummaryItemRight,
-                  ]}
+                  style={[styles.timeSummaryItem, styles.timeSummaryItemRight]}
                 >
                   <Text
                     style={[
@@ -546,23 +426,21 @@ const displayMinutes = useMemo(() => {
                   </Text>
                 </View>
               </View>
-                  {liveTrain && (
-                    <Text
-                      style={[
-                        styles.metaText,
-                        {
-                          color: colors.textSecondary,
-                          marginTop: 12,
-                        },
-                      ]}
-                    >
-                      실제 열차 {liveTrain.trainNumber ?? "-"} ·{" "}
-                      {liveTrain.trainTypeKo ?? liveTrain.trainType}
-                      {liveTrain.trainTypeJa
-                        ? ` · ${liveTrain.trainTypeJa}`
-                        : ""}
-                    </Text>
-                  )}
+              {liveTrain && (
+                <Text
+                  style={[
+                    styles.metaText,
+                    {
+                      color: colors.textSecondary,
+                      marginTop: 12,
+                    },
+                  ]}
+                >
+                  실제 열차 {liveTrain.trainNumber ?? "-"} ·{" "}
+                  {liveTrain.trainTypeKo ?? liveTrain.trainType}
+                  {liveTrain.trainTypeJa ? ` · ${liveTrain.trainTypeJa}` : ""}
+                </Text>
+              )}
               <View style={styles.metaRow}>
                 <View style={styles.metaItem}>
                   <Clock3
@@ -723,11 +601,10 @@ const displayMinutes = useMemo(() => {
                           style={[
                             styles.timelineDot,
                             {
-                              borderColor:
-                                line?.color ?? colors.textMuted,
+                              borderColor: line?.color ?? colors.textMuted,
                               backgroundColor:
                                 isStart || isTransfer
-                                  ? line?.color ?? colors.text
+                                  ? (line?.color ?? colors.text)
                                   : colors.background,
                             },
                           ]}
@@ -738,8 +615,7 @@ const displayMinutes = useMemo(() => {
                             style={[
                               styles.timelineLine,
                               {
-                                backgroundColor:
-                                  line?.color ?? colors.border,
+                                backgroundColor: line?.color ?? colors.border,
                               },
                             ]}
                           />
@@ -784,8 +660,7 @@ const displayMinutes = useMemo(() => {
                               style={[
                                 styles.stationCode,
                                 {
-                                  borderColor:
-                                    line?.color ?? colors.border,
+                                  borderColor: line?.color ?? colors.border,
                                 },
                               ]}
                             >
@@ -793,8 +668,7 @@ const displayMinutes = useMemo(() => {
                                 style={[
                                   styles.stationCodeText,
                                   {
-                                    color:
-                                      line?.color ?? colors.text,
+                                    color: line?.color ?? colors.text,
                                   },
                                 ]}
                               >
@@ -831,10 +705,7 @@ const displayMinutes = useMemo(() => {
                           <View style={styles.actionRow}>
                             <CircleDot
                               size={14}
-                              color={
-                                line?.color ??
-                                colors.textSecondary
-                              }
+                              color={line?.color ?? colors.textSecondary}
                               strokeWidth={2}
                             />
 
@@ -855,10 +726,7 @@ const displayMinutes = useMemo(() => {
                           <View style={styles.actionRow}>
                             <Repeat2
                               size={15}
-                              color={
-                                line?.color ??
-                                colors.textSecondary
-                              }
+                              color={line?.color ?? colors.textSecondary}
                               strokeWidth={2}
                             />
 

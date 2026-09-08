@@ -36,12 +36,26 @@ const fetchTimetable = async ({
   const response = await fetch(url.toString());
 
   if (!response.ok) {
-    throw new Error(
-      `Seibu timetable request failed: ${response.status}`,
-    );
+    throw new Error(`Seibu timetable request failed: ${response.status}`);
   }
 
-  return response.json();
+  const data = await response.json();
+
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (data && typeof data === "object" && Array.isArray(data.timetable)) {
+    return data.timetable;
+  }
+
+  if (data && typeof data === "object" && Array.isArray(data.trains)) {
+    return data.trains;
+  }
+
+  console.warn("🚃 [Seibu timetable] unexpected response:", data);
+
+  return [];
 };
 
 export const fetchSeibuTrainCandidates = async ({

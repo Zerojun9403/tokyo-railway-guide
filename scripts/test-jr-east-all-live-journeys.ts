@@ -121,7 +121,6 @@ const runTest = async (test: TestCase) => {
     journey,
     currentTime: test.currentTime,
     apiBaseUrl: API_BASE_URL,
-    directionId: detectedDirection,
   });
 
   if (result.status !== "resolved") {

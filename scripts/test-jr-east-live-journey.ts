@@ -10,11 +10,9 @@ const run = async () => {
       {
         lineId: "yamanote",
 
-        fromNodeId:
-          "jr-east:yamanote:JY17" as RailwayNodeId,
+        fromNodeId: "jr-east:yamanote:JY17" as RailwayNodeId,
 
-        toNodeId:
-          "jr-east:yamanote:JY13" as RailwayNodeId,
+        toNodeId: "jr-east:yamanote:JY13" as RailwayNodeId,
 
         fromStationId: "JY17",
         toStationId: "JY13",
@@ -37,8 +35,6 @@ const run = async () => {
     currentTime: "04:40",
 
     apiBaseUrl: "http://localhost:3000",
-
-    directionId: "OuterLoop",
   });
 
   console.dir(result, {
@@ -46,32 +42,22 @@ const run = async () => {
   });
 
   if (result.status !== "resolved") {
-    throw new Error(
-      "LIVE JOURNEY TEST FAILED: journey not resolved",
-    );
+    throw new Error("LIVE JOURNEY TEST FAILED: journey not resolved");
   }
 
-  const firstSegment =
-    result.segments[0];
+  const firstSegment = result.segments[0];
 
   if (!firstSegment) {
-    throw new Error(
-      "LIVE JOURNEY TEST FAILED: segment missing",
-    );
+    throw new Error("LIVE JOURNEY TEST FAILED: segment missing");
   }
 
-  if (
-    firstSegment.train.candidate.trainNumber !== "403G"
-  ) {
+  if (firstSegment.train.candidate.trainNumber !== "403G") {
     throw new Error(
       `Expected 403G but got ${firstSegment.train.candidate.trainNumber}`,
     );
   }
 
-  if (
-    result.departureTime !== "04:44" ||
-    result.arrivalTime !== "04:53"
-  ) {
+  if (result.departureTime !== "04:44" || result.arrivalTime !== "04:53") {
     throw new Error(
       `Unexpected journey time: ${result.departureTime} -> ${result.arrivalTime}`,
     );
@@ -82,9 +68,7 @@ const run = async () => {
   console.log(
     `신주쿠 ${result.departureTime} -> 이케부쿠로 ${result.arrivalTime}`,
   );
-  console.log(
-    `Train: ${firstSegment.train.candidate.trainNumber}`,
-  );
+  console.log(`Train: ${firstSegment.train.candidate.trainNumber}`);
 };
 
 run().catch((error) => {

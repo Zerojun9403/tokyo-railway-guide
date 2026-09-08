@@ -34,7 +34,6 @@ const run = async () => {
     journey,
     currentTime: "04:30",
     apiBaseUrl: API_BASE_URL,
-    directionId,
   });
 
   console.dir(result, { depth: null });
@@ -51,9 +50,7 @@ const run = async () => {
 
   console.log("");
   console.log("PASS: LIVE CHUO RAPID JOURNEY");
-  console.log(
-    `도쿄 ${train.departureTime} -> 신주쿠 ${train.arrivalTime}`,
-  );
+  console.log(`도쿄 ${train.departureTime} -> 신주쿠 ${train.arrivalTime}`);
   console.log(`Train: ${train.trainNumber ?? "-"}`);
 };
 
