@@ -26,6 +26,7 @@ import { calculateRouteTime } from "../utils/routing/calculateRouteTime";
 import { findStationRoute } from "../utils/routing/findStationRoute";
 import { getYamanoteDirection } from "../utils/routing/getYamanoteDirection";
 import { getSaikyoDirection } from "../utils/routing/getSaikyoDirection";
+import { getChuoRapidDirection } from "../utils/routing/getChuoRapidDirection";
 import { resolveLiveJourney } from "../utils/routing/resolveLiveJourney";
 import type { JourneyResolverResult } from "../utils/routing/resolveJourney";
 
@@ -161,6 +162,11 @@ if (segment.lineId === "yamanote") {
   );
 } else if (segment.lineId === "saikyo") {
   directionId = getSaikyoDirection(
+    segment.fromStationId,
+    segment.toStationId,
+  );
+} else if (segment.lineId === "chuo-rapid") {
+  directionId = getChuoRapidDirection(
     segment.fromStationId,
     segment.toStationId,
   );

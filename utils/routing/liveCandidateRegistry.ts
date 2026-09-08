@@ -55,7 +55,8 @@ export const fetchLiveCandidates = async ({
    */
 
   if (  segment.lineId === "yamanote" ||
-        segment.lineId === "saikyo"
+        segment.lineId === "saikyo"   ||
+        segment.lineId === "chuo-rapid"
     ) 
     {
     return fetchJrEastTrainCandidates({
