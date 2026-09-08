@@ -185,37 +185,13 @@ const stations = [
 
 const transfersByStation: Record<string, Transfer[]> = {
   JS09: [
-    transfer(
-      "tokaido",
-      "JT",
-      "도카이도선",
-      "東海道線",
-      "#F68B1E",
-    ),
-    transfer(
-      "yokosuka-sobu",
-      "JO",
-      "요코스카선",
-      "横須賀線",
-      "#0067C0",
-    ),
+    transfer("tokaido", "JT", "도카이도선", "東海道線", "#F68B1E"),
+    transfer("yokosuka-sobu", "JO", "요코스카선", "横須賀線", "#0067C0"),
   ],
 
   JS10: [
-    transfer(
-      "tokaido",
-      "JT",
-      "도카이도선",
-      "東海道線",
-      "#F68B1E",
-    ),
-    transfer(
-      "yokosuka-sobu",
-      "JO",
-      "요코스카선",
-      "横須賀線",
-      "#0067C0",
-    ),
+    transfer("tokaido", "JT", "도카이도선", "東海道線", "#F68B1E"),
+    transfer("yokosuka-sobu", "JO", "요코스카선", "横須賀線", "#0067C0"),
   ],
 
   JS13: [
@@ -226,137 +202,35 @@ const transfersByStation: Record<string, Transfer[]> = {
       "京浜東北・根岸線",
       "#00A7DB",
     ),
-    transfer(
-      "tokaido",
-      "JT",
-      "도카이도선",
-      "東海道線",
-      "#F68B1E",
-    ),
-    transfer(
-      "yokosuka-sobu",
-      "JO",
-      "요코스카선",
-      "横須賀線",
-      "#0067C0",
-    ),
-    transfer(
-      "tokyu-toyoko",
-      "TY",
-      "도큐 도요코선",
-      "東急東横線",
-      "#DA0442",
-    ),
+    transfer("tokaido", "JT", "도카이도선", "東海道線", "#F68B1E"),
+    transfer("yokosuka-sobu", "JO", "요코스카선", "横須賀線", "#0067C0"),
+    transfer("tokyu-toyoko", "TY", "도큐 도요코선", "東急東横線", "#DA0442"),
   ],
 
   JS15: [
-    transfer(
-      "yokosuka-sobu",
-      "JO",
-      "요코스카선",
-      "横須賀線",
-      "#0067C0",
-    ),
-    transfer(
-      "tokyu-toyoko",
-      "TY",
-      "도큐 도요코선",
-      "東急東横線",
-      "#DA0442",
-    ),
-    transfer(
-      "tokyu-meguro",
-      "MG",
-      "도큐 메구로선",
-      "東急目黒線",
-      "#009CD2",
-    ),
+    transfer("yokosuka-sobu", "JO", "요코스카선", "横須賀線", "#0067C0"),
+    transfer("tokyu-toyoko", "TY", "도큐 도요코선", "東急東横線", "#DA0442"),
+    transfer("tokyu-meguro", "MG", "도큐 메구로선", "東急目黒線", "#009CD2"),
   ],
 
   JS17: [
-    transfer(
-      "yamanote",
-      "JY",
-      "야마노테선",
-      "山手線",
-      "#80C41C",
-    ),
-    transfer(
-      "saikyo",
-      "JA",
-      "사이쿄선",
-      "埼京線",
-      "#00AC9A",
-    ),
+    transfer("yamanote", "JY", "야마노테선", "山手線", "#80C41C"),
+    transfer("saikyo", "JA", "사이쿄선", "埼京線", "#00AC9A"),
   ],
 
   JS18: [
-    transfer(
-      "yamanote",
-      "JY",
-      "야마노테선",
-      "山手線",
-      "#80C41C",
-    ),
-    transfer(
-      "saikyo",
-      "JA",
-      "사이쿄선",
-      "埼京線",
-      "#00AC9A",
-    ),
-    transfer(
-      "hibiya",
-      "H",
-      "히비야선",
-      "日比谷線",
-      "#B5B5AC",
-    ),
+    transfer("yamanote", "JY", "야마노테선", "山手線", "#80C41C"),
+    transfer("saikyo", "JA", "사이쿄선", "埼京線", "#00AC9A"),
+    transfer("hibiya", "H", "히비야선", "日比谷線", "#B5B5AC"),
   ],
 
   JS19: [
-    transfer(
-      "yamanote",
-      "JY",
-      "야마노테선",
-      "山手線",
-      "#80C41C",
-    ),
-    transfer(
-      "saikyo",
-      "JA",
-      "사이쿄선",
-      "埼京線",
-      "#00AC9A",
-    ),
-    transfer(
-      "ginza",
-      "G",
-      "긴자선",
-      "銀座線",
-      "#F39700",
-    ),
-    transfer(
-      "hanzomon",
-      "Z",
-      "한조몬선",
-      "半蔵門線",
-      "#8F76D6",
-    ),
-    transfer(
-      "fukutoshin",
-      "F",
-      "후쿠토신선",
-      "副都心線",
-      "#9C5E31",
-    ),
-    transfer(
-      "tokyu-toyoko",
-      "TY",
-      "도큐 도요코선",
-      "東急東横線",
-      "#DA0442",
-    ),
+    transfer("yamanote", "JY", "야마노테선", "山手線", "#80C41C"),
+    transfer("saikyo", "JA", "사이쿄선", "埼京線", "#00AC9A"),
+    transfer("ginza", "G", "긴자선", "銀座線", "#F39700"),
+    transfer("hanzomon", "Z", "한조몬선", "半蔵門線", "#8F76D6"),
+    transfer("fukutoshin", "F", "후쿠토신선", "副都心線", "#9C5E31"),
+    transfer("tokyu-toyoko", "TY", "도큐 도요코선", "東急東横線", "#DA0442"),
     transfer(
       "tokyu-den-en-toshi",
       "DT",
@@ -367,27 +241,9 @@ const transfersByStation: Record<string, Transfer[]> = {
   ],
 
   JS20: [
-    transfer(
-      "yamanote",
-      "JY",
-      "야마노테선",
-      "山手線",
-      "#80C41C",
-    ),
-    transfer(
-      "saikyo",
-      "JA",
-      "사이쿄선",
-      "埼京線",
-      "#00AC9A",
-    ),
-    transfer(
-      "chuo-rapid",
-      "JC",
-      "주오선 쾌속",
-      "中央線快速",
-      "#F15A22",
-    ),
+    transfer("yamanote", "JY", "야마노테선", "山手線", "#80C41C"),
+    transfer("saikyo", "JA", "사이쿄선", "埼京線", "#00AC9A"),
+    transfer("chuo-rapid", "JC", "주오선 쾌속", "中央線快速", "#F15A22"),
     transfer(
       "chuo-sobu-local",
       "JB",
@@ -395,65 +251,17 @@ const transfersByStation: Record<string, Transfer[]> = {
       "中央・総武線各駅停車",
       "#FFD400",
     ),
-    transfer(
-      "marunouchi",
-      "M",
-      "마루노우치선",
-      "丸ノ内線",
-      "#F62E36",
-    ),
-    transfer(
-      "shinjuku",
-      "S",
-      "도에이 신주쿠선",
-      "都営新宿線",
-      "#6CBB5A",
-    ),
-    transfer(
-      "oedo",
-      "E",
-      "도에이 오에도선",
-      "都営大江戸線",
-      "#CE045B",
-    ),
+    transfer("marunouchi", "M", "마루노우치선", "丸ノ内線", "#F62E36"),
+    transfer("shinjuku", "S", "도에이 신주쿠선", "都営新宿線", "#6CBB5A"),
+    transfer("oedo", "E", "도에이 오에도선", "都営大江戸線", "#CE045B"),
   ],
 
   JS21: [
-    transfer(
-      "yamanote",
-      "JY",
-      "야마노테선",
-      "山手線",
-      "#80C41C",
-    ),
-    transfer(
-      "saikyo",
-      "JA",
-      "사이쿄선",
-      "埼京線",
-      "#00AC9A",
-    ),
-    transfer(
-      "marunouchi",
-      "M",
-      "마루노우치선",
-      "丸ノ内線",
-      "#F62E36",
-    ),
-    transfer(
-      "yurakucho",
-      "Y",
-      "유라쿠초선",
-      "有楽町線",
-      "#C1A470",
-    ),
-    transfer(
-      "fukutoshin",
-      "F",
-      "후쿠토신선",
-      "副都心선",
-      "#9C5E31",
-    ),
+    transfer("yamanote", "JY", "야마노테선", "山手線", "#80C41C"),
+    transfer("saikyo", "JA", "사이쿄선", "埼京線", "#00AC9A"),
+    transfer("marunouchi", "M", "마루노우치선", "丸ノ内線", "#F62E36"),
+    transfer("yurakucho", "Y", "유라쿠초선", "有楽町線", "#C1A470"),
+    transfer("fukutoshin", "F", "후쿠토신선", "副都心선", "#9C5E31"),
     transfer(
       "seibu-ikebukuro",
       "SI",
@@ -464,13 +272,7 @@ const transfersByStation: Record<string, Transfer[]> = {
   ],
 
   JS22: [
-    transfer(
-      "saikyo",
-      "JA",
-      "사이쿄선",
-      "埼京線",
-      "#00AC9A",
-    ),
+    transfer("saikyo", "JA", "사이쿄선", "埼京線", "#00AC9A"),
     transfer(
       "keihin-tohoku",
       "JK",
@@ -491,13 +293,7 @@ const transfersByStation: Record<string, Transfer[]> = {
   ],
 
   JS24: [
-    transfer(
-      "saikyo",
-      "JA",
-      "사이쿄선",
-      "埼京線",
-      "#00AC9A",
-    ),
+    transfer("saikyo", "JA", "사이쿄선", "埼京線", "#00AC9A"),
     transfer(
       "keihin-tohoku",
       "JK",
@@ -554,9 +350,7 @@ export const shonanShinjukuStations: Station[] = stations.map(
 
             description: "북행",
 
-            nextStations: nextStation
-              ? [createNextStation(nextStation)]
-              : [],
+            nextStations: nextStation ? [createNextStation(nextStation)] : [],
           },
         ],
       };
@@ -623,9 +417,7 @@ export const shonanShinjukuStations: Station[] = stations.map(
 
           description: "북행",
 
-          nextStations: nextStation
-            ? [createNextStation(nextStation)]
-            : [],
+          nextStations: nextStation ? [createNextStation(nextStation)] : [],
         },
         {
           id: "Southbound",
