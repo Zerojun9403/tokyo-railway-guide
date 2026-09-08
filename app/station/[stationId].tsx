@@ -193,6 +193,7 @@ const resolveJrRailway = (lineId?: string): JrEastRailway => {
       return "ChuoRapid";
 
     case "chuo-sobu-local":
+    case "chuo-sobu":
       return "ChuoSobuLocal";
 
     case "keihin-tohoku":
@@ -201,16 +202,34 @@ const resolveJrRailway = (lineId?: string): JrEastRailway => {
     case "saikyo":
       return "SaikyoKawagoe";
 
+    case "shonan-shinjuku":
+      return "ShonanShinjuku";
+
+    case "tokaido":
+      return "Tokaido";
+
+    case "yokosuka":
+      return "Yokosuka";
+
+    case "sobu":
+      return "Sobu";
+
+    case "sobu-rapid":
+      return "SobuRapid";
+
     case "yokosuka-sobu":
       return "YokosukaSobu";
 
     case "narita":
+    case "narita-airport":
       return "NaritaAirport";
 
     case "keiyo":
       return "Keiyo";
 
     case "yamanote":
+      return "Yamanote";
+
     default:
       return "Yamanote";
   }

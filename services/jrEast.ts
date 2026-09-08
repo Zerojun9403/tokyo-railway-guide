@@ -34,6 +34,11 @@ export type JrRailway =
   | "ChuoSobuLocal"
   | "KeihinTohokuNegishi"
   | "SaikyoKawagoe"
+  | "ShonanShinjuku"
+  | "Tokaido"
+  | "Yokosuka"
+  | "Sobu"
+  | "SobuRapid"
   | "YokosukaSobu"
   | "NaritaAirport"
   | "Keiyo";
@@ -469,6 +474,31 @@ type StationCoordinateItem = {
 
 const stationCoordinateItems = stationCoordinates as StationCoordinateItem[];
 
+const buildJrStationMap = (railwayId: string): Record<string, string> =>
+  Object.fromEntries(
+    stationCoordinateItems
+      .filter(
+        (item) =>
+          item.operatorId === "jr-east" &&
+          item.railwayId === railwayId &&
+          !!item.stationCode,
+      )
+      .map((item) => [
+        item.stationCode as string,
+        item.odptStationId.split(".").pop() ?? item.nameEn,
+      ]),
+  );
+
+const SHONAN_SHINJUKU_STATION_MAP = buildJrStationMap(
+  "odpt.Railway:JR-East.ShonanShinjuku",
+);
+const TOKAIDO_STATION_MAP = buildJrStationMap("odpt.Railway:JR-East.Tokaido");
+const YOKOSUKA_STATION_MAP = buildJrStationMap("odpt.Railway:JR-East.Yokosuka");
+const SOBU_STATION_MAP = buildJrStationMap("odpt.Railway:JR-East.Sobu");
+const SOBU_RAPID_STATION_MAP = buildJrStationMap(
+  "odpt.Railway:JR-East.SobuRapid",
+);
+
 const KEIYO_STATION_MAP: Record<string, string> = Object.fromEntries(
   stationCoordinateItems
     .filter(
@@ -495,6 +525,11 @@ const JR_STATION_MAPS: Record<JrRailway, Record<string, string>> = {
   ChuoSobuLocal: CHUO_SOBU_LOCAL_STATION_MAP,
   KeihinTohokuNegishi: KEIHIN_TOHOKU_NEGISHI_STATION_MAP,
   SaikyoKawagoe: SAIKYO_KAWAGOE_STATION_MAP,
+  ShonanShinjuku: SHONAN_SHINJUKU_STATION_MAP,
+  Tokaido: TOKAIDO_STATION_MAP,
+  Yokosuka: YOKOSUKA_STATION_MAP,
+  Sobu: SOBU_STATION_MAP,
+  SobuRapid: SOBU_RAPID_STATION_MAP,
   YokosukaSobu: YOKOSUKA_SOBU_STATION_MAP,
   NaritaAirport: NARITA_AIRPORT_STATION_MAP,
   Keiyo: KEIYO_STATION_MAP,
@@ -981,6 +1016,74 @@ export const fetchJrEastTrains = async (
     const params = new URLSearchParams({
       operator: "jr-east",
       lineId: "keiyo",
+      stationId: odptStationId,
+      directionId: apiDirection,
+      upcoming: "true",
+      limit: "10",
+    });
+
+    const url =
+      "https://tokyo-railway-api.vercel.app" +
+      `/api/timetable?${params.toString()}`;
+
+    const response = await fetchJson<JrTimetableApiResponse>(url);
+
+    return response.timetable ?? [];
+  }
+
+  /*
+   * =====================================================
+   * 쇼난신주쿠 / 도카이도 / 요코스카 / 소부 / 소부쾌속
+   * Tokyo Railway API
+   * =====================================================
+   */
+
+  const commonRailwayLineId: Partial<Record<JrRailway, string>> = {
+    ShonanShinjuku: "shonan-shinjuku",
+    Tokaido: "tokaido",
+    Yokosuka: "yokosuka",
+    Sobu: "sobu",
+    SobuRapid: "sobu-rapid",
+  };
+
+  const commonLineId = commonRailwayLineId[railway];
+
+  if (commonLineId) {
+    const odptStationId = getJrEastOdptStationId(railway, stationId);
+
+    if (!odptStationId) {
+      throw new Error(`${railway} 역 매핑을 찾을 수 없습니다: ${stationId}`);
+    }
+
+    const normalizedDirection = directionId.trim().toLowerCase();
+
+    let apiDirection = directionId;
+
+    /*
+     * 쇼난신주쿠라인 API는 Northbound / Southbound를 사용한다.
+     * 다른 공통 JR 노선은 기존 Inbound / Outbound 변환을 유지한다.
+     */
+    if (railway === "ShonanShinjuku") {
+      if (normalizedDirection === "northbound") {
+        apiDirection = "Northbound";
+      } else if (normalizedDirection === "southbound") {
+        apiDirection = "Southbound";
+      }
+    } else if (
+      normalizedDirection === "northbound" ||
+      normalizedDirection === "inbound"
+    ) {
+      apiDirection = "Inbound";
+    } else if (
+      normalizedDirection === "southbound" ||
+      normalizedDirection === "outbound"
+    ) {
+      apiDirection = "Outbound";
+    }
+
+    const params = new URLSearchParams({
+      operator: "jr-east",
+      lineId: commonLineId,
       stationId: odptStationId,
       directionId: apiDirection,
       upcoming: "true",

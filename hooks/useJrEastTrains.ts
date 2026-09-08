@@ -18,6 +18,11 @@ export type JrEastRailway =
   | "ChuoSobuLocal"
   | "KeihinTohokuNegishi"
   | "SaikyoKawagoe"
+  | "ShonanShinjuku"
+  | "Tokaido"
+  | "Yokosuka"
+  | "Sobu"
+  | "SobuRapid"
   | "YokosukaSobu"
   | "NaritaAirport"
   | "Keiyo";
@@ -51,11 +56,8 @@ const resolveJrEastDirection = (
   const normalized = directionId.trim().toLowerCase();
 
   /*
-   * =======================================================
    * 야마노테선
-   * =======================================================
    */
-
   if (railway === "Yamanote") {
     if (normalized === "innerloop" || normalized === "inner") {
       return "innerLoop";
@@ -67,11 +69,8 @@ const resolveJrEastDirection = (
   }
 
   /*
-   * =======================================================
    * 주오 쾌속선
-   * =======================================================
    */
-
   if (railway === "ChuoRapid") {
     if (normalized === "inbound" || normalized === "tokyo") {
       return "inbound";
@@ -83,11 +82,8 @@ const resolveJrEastDirection = (
   }
 
   /*
-   * =======================================================
    * 주오·소부 완행선
-   * =======================================================
    */
-
   if (railway === "ChuoSobuLocal") {
     if (normalized === "eastbound" || normalized === "chiba") {
       return "eastbound";
@@ -99,11 +95,8 @@ const resolveJrEastDirection = (
   }
 
   /*
-   * =======================================================
    * 게이힌도호쿠·네기시선
-   * =======================================================
    */
-
   if (railway === "KeihinTohokuNegishi") {
     if (normalized === "northbound" || normalized === "omiya") {
       return "northbound";
@@ -119,11 +112,8 @@ const resolveJrEastDirection = (
   }
 
   /*
-   * =======================================================
    * 사이쿄선
-   * =======================================================
    */
-
   if (railway === "SaikyoKawagoe") {
     if (
       normalized === "northbound" ||
@@ -143,11 +133,106 @@ const resolveJrEastDirection = (
   }
 
   /*
-   * =======================================================
-   * 요코스카선 · 소부쾌속선
-   * =======================================================
+   * 쇼난신주쿠라인
    */
+  if (railway === "ShonanShinjuku") {
+    if (
+      normalized === "northbound" ||
+      normalized === "shinjuku" ||
+      normalized === "ikebukuro" ||
+      normalized === "omiya"
+    ) {
+      return "northbound";
+    }
 
+    if (
+      normalized === "southbound" ||
+      normalized === "yokohama" ||
+      normalized === "ofuna"
+    ) {
+      return "southbound";
+    }
+  }
+
+  /*
+   * 도카이도선
+   */
+  if (railway === "Tokaido") {
+    if (normalized === "inbound" || normalized === "tokyo") {
+      return "inbound";
+    }
+
+    if (
+      normalized === "outbound" ||
+      normalized === "yokohama" ||
+      normalized === "ofuna"
+    ) {
+      return "outbound";
+    }
+  }
+
+  /*
+   * 요코스카선
+   */
+  if (railway === "Yokosuka") {
+    if (normalized === "northbound" || normalized === "tokyo") {
+      return "northbound";
+    }
+
+    if (
+      normalized === "southbound" ||
+      normalized === "yokohama" ||
+      normalized === "kurihama"
+    ) {
+      return "southbound";
+    }
+  }
+
+  /*
+   * 소부선
+   */
+  if (railway === "Sobu") {
+    if (
+      normalized === "inbound" ||
+      normalized === "westbound" ||
+      normalized === "tokyo"
+    ) {
+      return "inbound";
+    }
+
+    if (
+      normalized === "outbound" ||
+      normalized === "eastbound" ||
+      normalized === "chiba"
+    ) {
+      return "outbound";
+    }
+  }
+
+  /*
+   * 소부쾌속선
+   */
+  if (railway === "SobuRapid") {
+    if (
+      normalized === "inbound" ||
+      normalized === "westbound" ||
+      normalized === "tokyo"
+    ) {
+      return "inbound";
+    }
+
+    if (
+      normalized === "outbound" ||
+      normalized === "eastbound" ||
+      normalized === "chiba"
+    ) {
+      return "outbound";
+    }
+  }
+
+  /*
+   * 기존 요코스카·소부 공통
+   */
   if (railway === "YokosukaSobu") {
     if (
       normalized === "northbound" ||
@@ -167,11 +252,8 @@ const resolveJrEastDirection = (
   }
 
   /*
-   * =======================================================
    * 나리타선 · 나리타공항지선
-   * =======================================================
    */
-
   if (railway === "NaritaAirport") {
     if (
       normalized === "outbound" ||
@@ -187,11 +269,8 @@ const resolveJrEastDirection = (
   }
 
   /*
-   * =======================================================
    * 게이요선
-   * =======================================================
    */
-
   if (railway === "Keiyo") {
     if (normalized === "inbound" || normalized === "tokyo") {
       return "inbound";
@@ -209,7 +288,6 @@ const resolveJrEastDirection = (
   /*
    * 이미 API 방향 형식이라면 그대로 사용
    */
-
   return directionId;
 };
 
@@ -230,19 +308,7 @@ export const useJrEastTrains = (
 
   const [error, setError] = useState<string | null>(null);
 
-  /*
-   * =======================================================
-   * 열차 조회
-   * =======================================================
-   */
-
   const loadTrains = useCallback(async () => {
-    /*
-     * 다른 노선 화면에서도
-     * Hook 호출 순서를 유지하기 위해
-     * 빈 값을 허용한다.
-     */
-
     if (!stationId || !directionId) {
       setTrains([]);
 
@@ -258,19 +324,7 @@ export const useJrEastTrains = (
 
       setError(null);
 
-      /*
-       * ===============================================
-       * 앱 방향 → JR API 방향
-       * ===============================================
-       */
-
       const apiDirection = resolveJrEastDirection(railway, directionId);
-
-      /*
-       * ===============================================
-       * JR동일본 API
-       * ===============================================
-       */
 
       const rawTrains = await fetchJrEastTrains(
         railway,
@@ -278,29 +332,11 @@ export const useJrEastTrains = (
         apiDirection,
       );
 
-      /*
-       * ===============================================
-       * 공통 Train[] 변환
-       * ===============================================
-       */
-
       const adaptedTrains = adaptJrEastTrains(rawTrains, directionId);
-
-      /*
-       * ===============================================
-       * 가까운 열차부터 정렬
-       * ===============================================
-       */
 
       const sortedTrains = [...adaptedTrains].sort(
         (a, b) => a.minutesUntilDeparture - b.minutesUntilDeparture,
       );
-
-      /*
-       * =================================================
-       * 10대 보관
-       * =================================================
-       */
 
       setTrains(sortedTrains.slice(0, 10));
     } catch (loadError) {
@@ -317,12 +353,6 @@ export const useJrEastTrains = (
       setLoading(false);
     }
   }, [railway, stationId, directionId]);
-
-  /*
-   * =======================================================
-   * 노선 / 역 / 방향 변경
-   * =======================================================
-   */
 
   useEffect(() => {
     void loadTrains();

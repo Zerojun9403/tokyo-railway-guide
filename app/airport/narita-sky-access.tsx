@@ -24,17 +24,16 @@ type DayType = "weekday" | "weekend";
 type DepartureStation =
   | "narita-airport-terminal-1"
   | "narita-airport-terminal-2-3"
-  | "keisei-ueno"
-  | "nippori";
+  | "oshiage";
 
-type SkylinerTimetableItem = {
+type SkyAccessTimetableItem = {
   departureTime: string;
   trainType: string;
   destination: string;
   firstTrain: boolean;
 };
 
-type SkylinerApiResponse = {
+type SkyAccessApiResponse = {
   supported: boolean;
   found: boolean;
   station: DepartureStation;
@@ -43,7 +42,7 @@ type SkylinerApiResponse = {
   dayType: DayType;
   revisionDate?: string;
   updatedAt: string;
-  timetable: SkylinerTimetableItem[];
+  timetable: SkyAccessTimetableItem[];
   count: number;
 };
 
@@ -69,14 +68,9 @@ const DEPARTURE_STATIONS: Record<
   ],
   narita: [
     {
-      id: "keisei-ueno",
-      name: "게이세이우에노역",
-      subtitle: "Keisei Ueno",
-    },
-    {
-      id: "nippori",
-      name: "닛포리역",
-      subtitle: "JR 야마노테선 등 환승",
+      id: "oshiage",
+      name: "오시아게역",
+      subtitle: "Oshiage",
     },
   ],
 };
@@ -136,7 +130,7 @@ const DirectionButton = ({
       style={({ pressed }) => [
         styles.directionButton,
         {
-          borderColor: selected ? "#A78BFA" : borderColor,
+          borderColor: selected ? "#F28C28" : borderColor,
         },
         selected && styles.directionButtonSelected,
         pressed && styles.pressed,
@@ -146,7 +140,7 @@ const DirectionButton = ({
         style={[
           styles.directionTitle,
           {
-            color: selected ? "#A78BFA" : textColor,
+            color: selected ? "#F28C28" : textColor,
           },
         ]}
       >
@@ -167,7 +161,7 @@ const DirectionButton = ({
   );
 };
 
-const NaritaSkylinerScreen = () => {
+const NaritaSkyAccessScreen = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors } = useAppTheme();
@@ -175,7 +169,7 @@ const NaritaSkylinerScreen = () => {
   const [direction, setDirection] = useState<Direction>("tokyo");
   const [departureStation, setDepartureStation] =
     useState<DepartureStation>("narita-airport-terminal-2-3");
-  const [timetable, setTimetable] = useState<SkylinerTimetableItem[]>([]);
+  const [timetable, setTimetable] = useState<SkyAccessTimetableItem[]>([]);
   const [dayType, setDayType] = useState<DayType>(getTokyoDayType());
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -196,25 +190,25 @@ const NaritaSkylinerScreen = () => {
 
     try {
       const url =
-        `${API_BASE_URL}/api/skyliner` +
+        `${API_BASE_URL}/api/sky-access` +
         `?station=${encodeURIComponent(departureStation)}` +
         `&dayType=${nextDayType}`;
 
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error(`Skyliner API ${response.status}`);
+        throw new Error(`Sky Access API ${response.status}`);
       }
 
-      const data = (await response.json()) as SkylinerApiResponse;
+      const data = (await response.json()) as SkyAccessApiResponse;
 
       if (!data.supported) {
-        throw new Error("Unsupported Skyliner station");
+        throw new Error("Unsupported Sky Access station");
       }
 
       setTimetable(Array.isArray(data.timetable) ? data.timetable : []);
     } catch (error) {
-      console.error("Skyliner timetable error:", error);
+      console.error("Sky Access timetable error:", error);
       setTimetable([]);
       setErrorMessage("시간표를 불러오지 못했습니다.");
     } finally {
@@ -246,8 +240,8 @@ const NaritaSkylinerScreen = () => {
 
   const routeStations =
     direction === "tokyo"
-      ? ["나리타공항", "공항 제2빌딩", "닛포리", "게이세이우에노"]
-      : ["게이세이우에노", "닛포리", "공항 제2빌딩", "나리타공항"];
+      ? ["나리타공항", "공항 제2빌딩", "오시아게"]
+      : ["오시아게", "공항 제2빌딩", "나리타공항"];
 
   return (
     <View
@@ -281,25 +275,25 @@ const NaritaSkylinerScreen = () => {
           </Pressable>
 
           <Text style={[styles.headerTitle, { color: colors.text }]}>
-            Skyliner 안내
+            Sky Access 시간표
           </Text>
         </View>
 
         {/* Intro */}
         <View style={styles.intro}>
           <View style={styles.introIcon}>
-            <TrainFront size={23} color="#A78BFA" strokeWidth={1.8} />
+            <TrainFront size={23} color="#F28C28" strokeWidth={1.8} />
           </View>
 
           <View style={styles.introContent}>
             <Text style={[styles.pageTitle, { color: colors.text }]}>
-              게이세이 스카이라이너
+              게이세이 Sky Access
             </Text>
 
             <Text
               style={[styles.pageDescription, { color: colors.textSecondary }]}
             >
-              나리타공항과 닛포리 · 게이세이우에노 사이의 Skyliner 출발 시간을
+              나리타공항과 오시아게 사이의 Access Express 출발 시간을
               확인하세요.
             </Text>
           </View>
@@ -331,7 +325,7 @@ const NaritaSkylinerScreen = () => {
           <View style={styles.directionSelector}>
             <DirectionButton
               title="도쿄 방면"
-              subtitle="공항 → 닛포리 · 우에노"
+              subtitle="공항 → 오시아게"
               selected={direction === "tokyo"}
               onPress={() => changeDirection("tokyo")}
               textColor={colors.text}
@@ -341,7 +335,7 @@ const NaritaSkylinerScreen = () => {
 
             <DirectionButton
               title="나리타공항 방면"
-              subtitle="우에노 · 닛포리 → 공항"
+              subtitle="오시아게 → 공항"
               selected={direction === "narita"}
               onPress={() => changeDirection("narita")}
               textColor={colors.text}
@@ -368,7 +362,7 @@ const NaritaSkylinerScreen = () => {
                   { color: colors.textSecondary },
                 ]}
               >
-                Skyliner를 탈 역을 선택하세요
+                Sky Access를 탈 역을 선택하세요
               </Text>
             </View>
           </View>
@@ -384,7 +378,7 @@ const NaritaSkylinerScreen = () => {
                   style={({ pressed }) => [
                     styles.stationButton,
                     {
-                      borderColor: selected ? "#A78BFA" : colors.border,
+                      borderColor: selected ? "#F28C28" : colors.border,
                     },
                     selected && styles.stationButtonSelected,
                     pressed && styles.pressed,
@@ -393,7 +387,7 @@ const NaritaSkylinerScreen = () => {
                   <Text
                     style={[
                       styles.stationButtonTitle,
-                      { color: selected ? "#A78BFA" : colors.text },
+                      { color: selected ? "#F28C28" : colors.text },
                     ]}
                   >
                     {station.name}
@@ -430,7 +424,7 @@ const NaritaSkylinerScreen = () => {
                     { color: colors.textSecondary },
                   ]}
                 >
-                  현재 시각 이후 출발하는 Skyliner ·{" "}
+                  현재 시각 이후 출발하는 Sky Access ·{" "}
                   {dayType === "weekday" ? "평일" : "토·휴일"} 시간표
                 </Text>
               </View>
@@ -454,11 +448,11 @@ const NaritaSkylinerScreen = () => {
           <View style={styles.departureList}>
             {loading ? (
               <View style={styles.stateBox}>
-                <ActivityIndicator size="small" color="#A78BFA" />
+                <ActivityIndicator size="small" color="#F28C28" />
                 <Text
                   style={[styles.stateText, { color: colors.textSecondary }]}
                 >
-                  Skyliner 시간표를 불러오는 중입니다
+                  Sky Access 시간표를 불러오는 중입니다
                 </Text>
               </View>
             ) : errorMessage ? (
@@ -484,7 +478,7 @@ const NaritaSkylinerScreen = () => {
                 <Text
                   style={[styles.stateText, { color: colors.textSecondary }]}
                 >
-                  오늘 출발하는 Skyliner 운행이 종료되었습니다
+                  오늘 출발하는 Sky Access 운행이 종료되었습니다
                 </Text>
               </View>
             ) : (
@@ -505,7 +499,7 @@ const NaritaSkylinerScreen = () => {
                     <Text
                       style={[
                         styles.departureMinutes,
-                        { color: "#A78BFA" },
+                        { color: "#F28C28" },
                       ]}
                     >
                       {departure.minutesUntilDeparture === 0
@@ -529,7 +523,7 @@ const NaritaSkylinerScreen = () => {
                         { color: colors.textSecondary },
                       ]}
                     >
-                      Skyliner
+                      Access Express
                     </Text>
                   </View>
                 </View>
@@ -556,7 +550,7 @@ const NaritaSkylinerScreen = () => {
                   { color: colors.textSecondary },
                 ]}
               >
-                Skyliner 주요 정차역
+                Sky Access 주요 이동 구간
               </Text>
             </View>
           </View>
@@ -606,13 +600,13 @@ const NaritaSkylinerScreen = () => {
 
           <View style={styles.keyPointContent}>
             <Text style={[styles.keyPointTitle, { color: colors.text }]}>
-              Skyliner는 별도 요금이 필요한 열차예요
+              별도 라이너권 없이 이용할 수 있어요
             </Text>
 
             <Text
               style={[styles.keyPointText, { color: colors.textSecondary }]}
             >
-              Skyliner를 이용할 때는 일반 운임 외에 필요한 별도 요금과 승차
+              Sky Access를 이용할 때는 일반 운임 외에 필요한 별도 요금과 승차
               조건을 확인하세요.
             </Text>
           </View>
@@ -636,7 +630,7 @@ const NaritaSkylinerScreen = () => {
   );
 };
 
-export default NaritaSkylinerScreen;
+export default NaritaSkyAccessScreen;
 
 const styles = StyleSheet.create({
   screen: {
@@ -882,7 +876,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#A78BFA",
+    backgroundColor: "#F28C28",
   },
 
   routeStationName: {

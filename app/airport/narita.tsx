@@ -193,11 +193,13 @@ const NaritaAirportGuideScreen = () => {
 
             {/* Access Express */}
             <AccessItem
-              icon={<TrainFront size={18} color="#A78BFA" strokeWidth={1.8} />}
-              title="액세스 특급"
-              subtitle="Access Express"
-              destination="아사쿠사 · 도심 방면"
+              icon={<TrainFront size={18} color="#F28C28" strokeWidth={1.8} />}
+              title="스카이액세스"
+              subtitle="Sky Access · Access Express"
+              destination="아사쿠사 · 오시아게 · 도심 방면"
               description="별도의 Skyliner 특급권 없이 이용할 수 있는 열차입니다. 열차에 따라 도에이 아사쿠사선 등으로 직통 운행합니다."
+              actionLabel="Sky Access 시간표"
+              onPress={() => router.push("/airport/narita-sky-access")}
               textColor={colors.text}
               secondaryTextColor={colors.textSecondary}
               borderColor={colors.border}

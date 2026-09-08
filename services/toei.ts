@@ -653,11 +653,43 @@ export const fetchToeiTrains = async (
 
   /*
    * Oedo Line
+   *
+   * E28 Tochomae is a special station with three timetable directions:
+   * InnerLoop / OuterLoop / Hikarigaoka.
    */
   if (railway === "Oedo") {
-    if (directionId === "inner") {
+    const normalizedDirectionId = normalizeDirection(directionId);
+
+    if (
+      normalizedDirectionId === "inner" ||
+      normalizedDirectionId === "innerloop"
+    ) {
       apiDirection = "InnerLoop";
-    } else if (directionId === "outer") {
+    } else if (
+      normalizedDirectionId === "outer" ||
+      normalizedDirectionId === "outerloop"
+    ) {
+      apiDirection = "OuterLoop";
+    } else if (stationId === "E28") {
+      if (
+        normalizedDirectionId.includes("roppongi") ||
+        normalizedDirectionId.includes("daimon")
+      ) {
+        apiDirection = "InnerLoop";
+      } else if (
+        normalizedDirectionId.includes("iidabashi") ||
+        normalizedDirectionId.includes("ryogoku")
+      ) {
+        apiDirection = "OuterLoop";
+      } else if (
+        normalizedDirectionId.includes("nerima") ||
+        normalizedDirectionId.includes("hikarigaoka")
+      ) {
+        apiDirection = "Hikarigaoka";
+      }
+    } else if (normalizedDirectionId.includes("tochomae")) {
+      apiDirection = "InnerLoop";
+    } else if (normalizedDirectionId.includes("hikarigaoka")) {
       apiDirection = "OuterLoop";
     }
   }

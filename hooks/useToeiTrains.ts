@@ -2,10 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import type { Train } from "../types/train";
 
-import {
-  fetchToeiTrains,
-  resolveToeiRailway,
-} from "../services/toei";
+import { fetchToeiTrains, resolveToeiRailway } from "../services/toei";
 
 import { adaptToeiTrains } from "../adapters/toeiTrainAdapter";
 
@@ -137,18 +134,11 @@ export const useToeiTrains = (
 
       setTrains(
         adaptedTrains
-          .sort(
-            (a, b) =>
-              a.minutesUntilDeparture -
-              b.minutesUntilDeparture,
-          )
+          .sort((a, b) => a.minutesUntilDeparture - b.minutesUntilDeparture)
           .slice(0, 3),
       );
     } catch (loadError) {
-      console.error(
-        "도에이 열차 데이터 오류:",
-        loadError,
-      );
+      console.error("도에이 열차 데이터 오류:", loadError);
 
       setTrains([]);
 
