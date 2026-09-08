@@ -1,6 +1,7 @@
 import { buildJrEastTrainCandidates } from "../utils/routing/jrEastTrainCandidateAdapter";
 import type { JrEastTimetableEntry } from "../utils/routing/jrEastTrainCandidateAdapter";
 import type { RailwayNodeId } from "../utils/routing/types";
+import { resolveBestTrain } from "../utils/routing/resolveBestTrain";
 
 const originTimetable: JrEastTimetableEntry[] = [
   {
@@ -163,3 +164,60 @@ console.log("PASS: 401G Shinjuku 05:03 -> Ikebukuro 05:11");
 console.log("PASS: train not stopping at destination excluded");
 console.log("");
 console.log("ALL TESTS PASSED");
+/*
+ * =========================================================
+ * JR East Adapter → Best Train Resolver 통합 테스트
+ * =========================================================
+ *
+ * 현재 시각 04:40
+ *
+ * 403G 04:44 → 04:53
+ * 401G 05:03 → 05:11
+ *
+ * 가장 빨리 목적지에 도착하는
+ * 403G가 선택되어야 한다.
+ */
+
+const resolverResult = resolveBestTrain(
+  candidates,
+  "04:40",
+);
+
+if (resolverResult.status !== "resolved") {
+  throw new Error(
+    "FAIL: Resolver could not find a JR East train",
+  );
+}
+
+if (
+  resolverResult.train.candidate.trainNumber !==
+  "403G"
+) {
+  throw new Error(
+    `FAIL: expected 403G, received ${resolverResult.train.candidate.trainNumber}`,
+  );
+}
+
+if (
+  resolverResult.train.departureTime !== "04:44"
+) {
+  throw new Error(
+    `FAIL: expected departure 04:44, received ${resolverResult.train.departureTime}`,
+  );
+}
+
+if (
+  resolverResult.train.arrivalTime !== "04:53"
+) {
+  throw new Error(
+    `FAIL: expected arrival 04:53, received ${resolverResult.train.arrivalTime}`,
+  );
+}
+
+console.log("");
+console.log("PASS: JR East Adapter -> resolveBestTrain");
+console.log("PASS: selected train 403G");
+console.log("PASS: departure 04:44");
+console.log("PASS: destination station time 04:53");
+console.log("");
+console.log("JR EAST RESOLVER INTEGRATION PASSED");
