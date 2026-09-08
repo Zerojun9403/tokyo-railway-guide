@@ -377,10 +377,29 @@ const LAST_TRAIN_API_LINE_ID_MAP: Record<string, string> = {
 const resolveLastTrainLineId = ({
   operatorId,
   lineId,
+  stationId,
 }: {
   operatorId: string;
   lineId: string;
+  stationId?: string;
 }) => {
+  /*
+   * GUIDE의 yokosuka-sobu는 요코스카선과 소부쾌속선을 하나로 표시한다.
+   * JR East API에서는 두 Railway가 분리되어 있으므로 현재 역 기준으로 나눈다.
+   *
+   * JO01 ~ JO19 → Yokosuka
+   * JO20 ~ JO28 → SobuRapid
+   */
+  if (operatorId === "jr-east" && lineId === "yokosuka-sobu") {
+    const stationNumber = Number(stationId?.replace(/^JO/, ""));
+
+    if (!Number.isNaN(stationNumber) && stationNumber >= 20) {
+      return "sobu-rapid";
+    }
+
+    return "yokosuka";
+  }
+
   if (
     operatorId !== "keikyu" &&
     operatorId !== "seibu" &&
@@ -666,15 +685,16 @@ export default function StationScreen() {
       setLastTrainLoading(true);
       setLastTrainError(null);
 
-      const lastTrainStationId = resolveLastTrainStationId({
+      const lastTrainLineId = resolveLastTrainLineId({
         operatorId: station.operatorId,
         lineId: station.lineId,
         stationId: station.id,
       });
 
-      const lastTrainLineId = resolveLastTrainLineId({
+      const lastTrainStationId = resolveLastTrainStationId({
         operatorId: station.operatorId,
-        lineId: station.lineId,
+        lineId: lastTrainLineId,
+        stationId: station.id,
       });
 
       const query = new URLSearchParams({
@@ -781,6 +801,7 @@ export default function StationScreen() {
       const trainInformationLineId = resolveLastTrainLineId({
         operatorId: station.operatorId,
         lineId: station.lineId,
+        stationId: station.id,
       });
 
       const query = new URLSearchParams({
