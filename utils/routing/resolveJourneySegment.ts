@@ -135,6 +135,41 @@ export const resolveJourneySegment = (
       candidates,
     );
 
+  console.log("🚃 [JourneySegment Match]", {
+    lineId: segment.lineId,
+    fromNodeId: segment.fromNodeId,
+    toNodeId: segment.toNodeId,
+    fromStationId: segment.fromStationId,
+    toStationId: segment.toStationId,
+    inputCandidateCount: candidates.length,
+    matchedCandidateCount: segmentCandidates.length,
+  });
+
+  if (
+    candidates.length > 0 &&
+    segmentCandidates.length === 0
+  ) {
+    console.warn("🚃 [JourneySegment Match Failed]", {
+      expected: {
+        lineId: segment.lineId,
+        fromNodeId: segment.fromNodeId,
+        toNodeId: segment.toNodeId,
+        fromStationId: segment.fromStationId,
+        toStationId: segment.toStationId,
+      },
+      sampleCandidates: candidates.slice(0, 5).map((candidate) => ({
+        lineId: candidate.lineId,
+        fromNodeId: candidate.fromNodeId,
+        toNodeId: candidate.toNodeId,
+        fromStationId: candidate.fromStationId,
+        toStationId: candidate.toStationId,
+        trainNumber: candidate.trainNumber,
+        departureTime: candidate.departureTime,
+        arrivalTime: candidate.arrivalTime,
+      })),
+    });
+  }
+
   /*
    * =====================================================
    * 일치하는 열차가 하나도 없는 경우

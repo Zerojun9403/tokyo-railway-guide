@@ -49,30 +49,79 @@ export const resolveLiveJourney = async ({
    * 각 Journey Segment의 방향 계산 + 실제 열차 후보 수집
    * =======================================================
    */
-  for (const segment of journey.segments) {
+  for (const [segmentIndex, segment] of journey.segments.entries()) {
     const directionId = getSegmentDirection(
       segment.lineId,
       segment.fromStationId,
       segment.toStationId,
     );
 
-    /*
-     * 현재 방향을 계산할 수 없는 Segment는
-     * Live 후보를 만들지 않고 기존 Journey Resolver의
-     * fallback 처리에 맡긴다.
-     */
+    console.log("🚃 [LiveJourney Segment]", {
+      segmentIndex,
+      lineId: segment.lineId,
+      fromStationId: segment.fromStationId,
+      toStationId: segment.toStationId,
+      directionId,
+      currentTime,
+    });
+
     if (!directionId) {
+      console.warn("🚃 [LiveJourney Direction Not Found]", {
+        segmentIndex,
+        lineId: segment.lineId,
+        fromStationId: segment.fromStationId,
+        toStationId: segment.toStationId,
+      });
+
       continue;
     }
 
-    const segmentCandidates = await fetchLiveCandidates({
-      segment,
-      apiBaseUrl,
-      directionId,
-    });
+    try {
+      const segmentCandidates = await fetchLiveCandidates({
+        segment,
+        apiBaseUrl,
+        directionId,
+      });
 
-    candidates.push(...segmentCandidates);
+      console.log("🚃 [LiveJourney Candidates]", {
+        segmentIndex,
+        lineId: segment.lineId,
+        directionId,
+        candidateCount: segmentCandidates.length,
+        firstCandidates: segmentCandidates.slice(0, 5).map((candidate) => ({
+          trainNumber: candidate.trainNumber,
+          departureTime: candidate.departureTime,
+          arrivalTime: candidate.arrivalTime,
+          destinationKo: candidate.destinationKo,
+          stopsAtDestination: candidate.stopsAtDestination,
+        })),
+      });
+
+      candidates.push(...segmentCandidates);
+    } catch (error) {
+      console.error("🚃 [LiveJourney Candidate Fetch Error]", {
+        segmentIndex,
+        lineId: segment.lineId,
+        directionId,
+        error,
+      });
+
+      throw error;
+    }
   }
+
+  console.log("🚃 [LiveJourney Candidate Summary]", {
+    currentTime,
+    segmentCount: journey.segments.length,
+    totalCandidateCount: candidates.length,
+    candidatesByLine: journey.segments.map((segment, segmentIndex) => ({
+      segmentIndex,
+      lineId: segment.lineId,
+      candidateCount: candidates.filter(
+        (candidate) => candidate.lineId === segment.lineId,
+      ).length,
+    })),
+  });
 
   /*
    * 실제 API에서 만든 TrainCandidate를

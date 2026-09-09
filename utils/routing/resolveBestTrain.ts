@@ -172,6 +172,15 @@ export const resolveBestTrain = (
 
   let bestTrain: ResolvedTrain | null = null;
 
+  const diagnostics = {
+    inputCandidateCount: candidates.length,
+    cancelledCount: 0,
+    nonStoppingCount: 0,
+    invalidTimeCount: 0,
+    alreadyDepartedCount: 0,
+    validCandidateCount: 0,
+  };
+
   for (const candidate of candidates) {
     /*
      * =====================================================
@@ -179,6 +188,7 @@ export const resolveBestTrain = (
      * =====================================================
      */
     if (candidate.status === "cancelled") {
+      diagnostics.cancelledCount += 1;
       continue;
     }
 
@@ -188,6 +198,7 @@ export const resolveBestTrain = (
      * =====================================================
      */
     if (!candidate.stopsAtDestination) {
+      diagnostics.nonStoppingCount += 1;
       continue;
     }
 
@@ -200,6 +211,7 @@ export const resolveBestTrain = (
       createResolvedTrain(candidate);
 
     if (!resolvedTrain) {
+      diagnostics.invalidTimeCount += 1;
       continue;
     }
 
@@ -218,8 +230,11 @@ export const resolveBestTrain = (
       resolvedTrain.departureMinutes <
       currentMinutes
     ) {
+      diagnostics.alreadyDepartedCount += 1;
       continue;
     }
+
+    diagnostics.validCandidateCount += 1;
 
     /*
      * =====================================================
@@ -252,11 +267,33 @@ export const resolveBestTrain = (
    * =========================================================
    */
   if (!bestTrain) {
+    console.warn("🚃 [BestTrain Not Found]", {
+      currentTime,
+      ...diagnostics,
+      sampleCandidates: candidates.slice(0, 5).map((candidate) => ({
+        trainNumber: candidate.trainNumber,
+        departureTime: candidate.departureTime,
+        arrivalTime: candidate.arrivalTime,
+        status: candidate.status,
+        stopsAtDestination: candidate.stopsAtDestination,
+      })),
+    });
+
     return {
       status: "not-found",
       train: null,
     };
   }
+
+  console.log("🚃 [BestTrain Resolved]", {
+    currentTime,
+    ...diagnostics,
+    selectedTrain: {
+      trainNumber: bestTrain.candidate.trainNumber,
+      departureTime: bestTrain.departureTime,
+      arrivalTime: bestTrain.arrivalTime,
+    },
+  });
 
   /*
    * =========================================================
