@@ -27,7 +27,7 @@ const VERSIONS: VersionItem[] = [
   {
     version: "3.0",
     codename: "CULLINAN",
-    description: "Realtime Journey Engine",
+    description: "CULLINAN — Realtime Journey Engine",
     status: "current",
   },
   {
@@ -155,8 +155,8 @@ const AboutScreen = () => {
               { color: colors.textSecondary },
             ]}
           >
-            실제 열차 데이터를 이용해 여행자가 지금 어떤 열차를 타야 하는지
-            안내하는 Journey Engine 버전입니다.
+            거대한 다이아몬드처럼 단단하고 강한, Tokyo Railway Guide의
+            디지털 여정 엔진.
           </Text>
         </View>
 
