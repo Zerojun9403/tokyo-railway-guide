@@ -256,7 +256,7 @@ const MoreScreen = () => {
               icon={<Info size={21} color={colors.text} strokeWidth={1.7} />}
               title="앱 정보"
               description="Tokyo Railway Guide"
-              disabled
+              onPress={() => router.push("/about")}
               textColor={colors.text}
               secondaryTextColor={colors.textSecondary}
               borderColor={colors.border}

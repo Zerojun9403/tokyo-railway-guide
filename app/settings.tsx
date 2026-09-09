@@ -164,7 +164,7 @@ export default function SettingsScreen() {
           icon={<Info size={20} color={colors.text} strokeWidth={1.7} />}
           title="Tokyo Railway Guide"
           description="도쿄 철도를 더 쉽고 직관적으로 이용하기 위한 여행자용 철도 가이드"
-          value="Version 1.0.0"
+          value="Version . CULLINAN"
         />
 
         {/* 이용 안내 */}

@@ -3,6 +3,7 @@ import { Href, useRouter } from "expo-router";
 import {
   ChevronLeft,
   ChevronRight,
+  Clock3,
   Info,
   Plane,
 } from "lucide-react-native";
@@ -185,6 +186,77 @@ const AirportGuideScreen = () => {
           </View>
         </View>
 
+               <View
+          style={[
+            styles.divider,
+            {
+              backgroundColor: colors.border,
+            },
+          ]}
+        />
+
+        {/* Airport Journey Planner */}
+        <Pressable
+          onPress={() => router.push("/airport/flight-planner" as Href)}
+          style={({ pressed }) => [
+            styles.plannerCard,
+            {
+              borderColor: colors.border,
+            },
+            pressed && styles.pressed,
+          ]}
+        >
+          <View style={styles.plannerIcon}>
+            <Clock3
+              size={20}
+              color="#7FAF9B"
+              strokeWidth={1.8}
+            />
+          </View>
+
+          <View style={styles.plannerContent}>
+            <Text
+              style={[
+                styles.plannerEyebrow,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
+              AIRPORT JOURNEY
+            </Text>
+
+            <Text
+              style={[
+                styles.plannerTitle,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              귀국일 공항 이동 플래너
+            </Text>
+
+            <Text
+              style={[
+                styles.plannerDescription,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
+              항공편 출발시간에 맞춰 공항 도착 목표시간과 숙소 출발시간을
+              준비합니다.
+            </Text>
+          </View>
+
+          <ChevronRight
+            size={19}
+            color={colors.textSecondary}
+            strokeWidth={1.7}
+          />
+        </Pressable>
+
         <View
           style={[
             styles.divider,
@@ -193,6 +265,7 @@ const AirportGuideScreen = () => {
             },
           ]}
         />
+
 
         {/* Airport List */}
         <View style={styles.section}>
@@ -360,7 +433,55 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     marginVertical: 30,
   },
+    plannerCard: {
+    width: "100%",
+    minHeight: 112,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 18,
+    paddingHorizontal: 4,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 18,
+  },
 
+  plannerIcon: {
+    width: 46,
+    height: 46,
+    marginLeft: 14,
+    marginRight: 14,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#EDF5F1",
+  },
+
+  plannerContent: {
+    flex: 1,
+    paddingVertical: 2,
+    paddingRight: 12,
+  },
+
+  plannerEyebrow: {
+    marginBottom: 4,
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: "700",
+    letterSpacing: 0.8,
+  },
+
+  plannerTitle: {
+    fontSize: 15,
+    lineHeight: 21,
+    fontWeight: "700",
+    letterSpacing: -0.2,
+  },
+
+  plannerDescription: {
+    marginTop: 5,
+    fontSize: 11.5,
+    lineHeight: 17,
+  },
+  
   section: {
     width: "100%",
   },
