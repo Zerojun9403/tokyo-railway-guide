@@ -1,34 +1,18 @@
-import type {
-  JourneySegment,
-} from "./journeyTypes";
+import type { JourneySegment } from "./journeyTypes";
 
-import type {
-  TrainCandidate,
-} from "./trainResolverTypes";
+import type { TrainCandidate } from "./trainResolverTypes";
 
-import {
-  fetchJrEastTrainCandidates,
-} from "./fetchJrEastTrainCandidates";
+import { fetchJrEastTrainCandidates } from "./fetchJrEastTrainCandidates";
 
-import {
-  fetchTokyoMetroTrainCandidates,
-} from "./fetchTokyoMetroTrainCandidates";
+import { fetchTokyoMetroTrainCandidates } from "./fetchTokyoMetroTrainCandidates";
 
-import {
-  fetchToeiTrainCandidates,
-} from "./fetchToeiTrainCandidates";
+import { fetchToeiTrainCandidates } from "./fetchToeiTrainCandidates";
 
-import {
-  fetchTokyuTrainCandidates,
-} from "./fetchTokyuTrainCandidates";
+import { fetchTokyuTrainCandidates } from "./fetchTokyuTrainCandidates";
 
-import {
-  fetchKeikyuTrainCandidates,
-} from "./fetchKeikyuTrainCandidates";
+import { fetchKeikyuTrainCandidates } from "./fetchKeikyuTrainCandidates";
 
-import {
-  fetchSeibuTrainCandidates,
-} from "./fetchSeibuTrainCandidates";
+import { fetchSeibuTrainCandidates } from "./fetchSeibuTrainCandidates";
 
 /*
  * =========================================================
@@ -53,6 +37,7 @@ const JR_EAST_LIVE_LINES = new Set([
   "saikyo",
   "chuo-rapid",
   "chuo-sobu",
+  "chuo-sobu-local",
   "shonan-shinjuku",
   "tokaido",
   "keihin-tohoku",
@@ -74,12 +59,7 @@ const TOKYO_METRO_LIVE_LINES = new Set([
   "fukutoshin",
 ]);
 
-const TOEI_LIVE_LINES = new Set([
-  "asakusa",
-  "mita",
-  "shinjuku",
-  "oedo",
-]);
+const TOEI_LIVE_LINES = new Set(["asakusa", "mita", "shinjuku", "oedo"]);
 
 const TOKYU_LIVE_LINES = new Set([
   "tokyu-toyoko",
@@ -89,15 +69,9 @@ const TOKYU_LIVE_LINES = new Set([
   "tokyu-shin-yokohama",
 ]);
 
-const KEIKYU_LIVE_LINES = new Set([
-  "keikyu-main",
-  "keikyu-airport",
-]);
+const KEIKYU_LIVE_LINES = new Set(["keikyu-main", "keikyu-airport"]);
 
-const SEIBU_LIVE_LINES = new Set([
-  "seibu-ikebukuro",
-  "seibu-shinjuku",
-]);
+const SEIBU_LIVE_LINES = new Set(["seibu-ikebukuro", "seibu-shinjuku"]);
 
 export const fetchLiveCandidates = async ({
   segment,
@@ -116,17 +90,13 @@ export const fetchLiveCandidates = async ({
       lineId: segment.lineId,
       directionId,
 
-      fromNodeId:
-        segment.fromNodeId,
+      fromNodeId: segment.fromNodeId,
 
-      fromStationId:
-        segment.fromStationId,
+      fromStationId: segment.fromStationId,
 
-      toNodeId:
-        segment.toNodeId,
+      toNodeId: segment.toNodeId,
 
-      toStationId:
-        segment.toStationId,
+      toStationId: segment.toStationId,
     });
   }
 
@@ -142,17 +112,13 @@ export const fetchLiveCandidates = async ({
       lineId: segment.lineId,
       directionId,
 
-      fromNodeId:
-        segment.fromNodeId,
+      fromNodeId: segment.fromNodeId,
 
-      fromStationId:
-        segment.fromStationId,
+      fromStationId: segment.fromStationId,
 
-      toNodeId:
-        segment.toNodeId,
+      toNodeId: segment.toNodeId,
 
-      toStationId:
-        segment.toStationId,
+      toStationId: segment.toStationId,
     });
   }
 
@@ -168,17 +134,13 @@ export const fetchLiveCandidates = async ({
       lineId: segment.lineId,
       directionId,
 
-      fromNodeId:
-        segment.fromNodeId,
+      fromNodeId: segment.fromNodeId,
 
-      fromStationId:
-        segment.fromStationId,
+      fromStationId: segment.fromStationId,
 
-      toNodeId:
-        segment.toNodeId,
+      toNodeId: segment.toNodeId,
 
-      toStationId:
-        segment.toStationId,
+      toStationId: segment.toStationId,
     });
   }
 
@@ -194,17 +156,13 @@ export const fetchLiveCandidates = async ({
       lineId: segment.lineId,
       directionId,
 
-      fromNodeId:
-        segment.fromNodeId,
+      fromNodeId: segment.fromNodeId,
 
-      fromStationId:
-        segment.fromStationId,
+      fromStationId: segment.fromStationId,
 
-      toNodeId:
-        segment.toNodeId,
+      toNodeId: segment.toNodeId,
 
-      toStationId:
-        segment.toStationId,
+      toStationId: segment.toStationId,
     });
   }
 
@@ -220,17 +178,13 @@ export const fetchLiveCandidates = async ({
       lineId: segment.lineId,
       directionId,
 
-      fromNodeId:
-        segment.fromNodeId,
+      fromNodeId: segment.fromNodeId,
 
-      fromStationId:
-        segment.fromStationId,
+      fromStationId: segment.fromStationId,
 
-      toNodeId:
-        segment.toNodeId,
+      toNodeId: segment.toNodeId,
 
-      toStationId:
-        segment.toStationId,
+      toStationId: segment.toStationId,
     });
   }
 
@@ -246,17 +200,13 @@ export const fetchLiveCandidates = async ({
       lineId: segment.lineId,
       directionId,
 
-      fromNodeId:
-        segment.fromNodeId,
+      fromNodeId: segment.fromNodeId,
 
-      fromStationId:
-        segment.fromStationId,
+      fromStationId: segment.fromStationId,
 
-      toNodeId:
-        segment.toNodeId,
+      toNodeId: segment.toNodeId,
 
-      toStationId:
-        segment.toStationId,
+      toStationId: segment.toStationId,
     });
   }
 

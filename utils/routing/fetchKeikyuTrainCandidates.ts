@@ -44,7 +44,23 @@ const fetchTimetable = async ({
     );
   }
 
-  return (await response.json()) as KeikyuTimetableEntry[];
+  const data = (await response.json()) as
+    | KeikyuTimetableEntry[]
+    | { timetable?: KeikyuTimetableEntry[]; trains?: KeikyuTimetableEntry[] };
+
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (Array.isArray(data.timetable)) {
+    return data.timetable;
+  }
+
+  if (Array.isArray(data.trains)) {
+    return data.trains;
+  }
+
+  return [];
 };
 
 export const fetchKeikyuTrainCandidates = async ({

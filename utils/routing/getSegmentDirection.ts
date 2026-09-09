@@ -10,6 +10,7 @@ const JR_EAST_LINES = new Set([
   "saikyo",
   "chuo-rapid",
   "chuo-sobu",
+  "chuo-sobu-local",
   "shonan-shinjuku",
   "tokaido",
   "keihin-tohoku",
@@ -31,12 +32,7 @@ const TOKYO_METRO_LINES = new Set([
   "fukutoshin",
 ]);
 
-const TOEI_LINES = new Set([
-  "asakusa",
-  "mita",
-  "shinjuku",
-  "oedo",
-]);
+const TOEI_LINES = new Set(["asakusa", "mita", "shinjuku", "oedo"]);
 
 const TOKYU_LINES = new Set([
   "tokyu-toyoko",
@@ -46,15 +42,9 @@ const TOKYU_LINES = new Set([
   "tokyu-shin-yokohama",
 ]);
 
-const KEIKYU_LINES = new Set([
-  "keikyu-main",
-  "keikyu-airport",
-]);
+const KEIKYU_LINES = new Set(["keikyu-main", "keikyu-airport"]);
 
-const SEIBU_LINES = new Set([
-  "seibu-ikebukuro",
-  "seibu-shinjuku",
-]);
+const SEIBU_LINES = new Set(["seibu-ikebukuro", "seibu-shinjuku"]);
 
 export const getSegmentDirection = (
   lineId: string,
@@ -62,51 +52,27 @@ export const getSegmentDirection = (
   toStationId: string,
 ): string | null => {
   if (JR_EAST_LINES.has(lineId)) {
-    return getJrEastDirection(
-      lineId,
-      fromStationId,
-      toStationId,
-    );
+    return getJrEastDirection(lineId, fromStationId, toStationId);
   }
 
   if (TOKYO_METRO_LINES.has(lineId)) {
-    return getTokyoMetroDirection(
-      lineId,
-      fromStationId,
-      toStationId,
-    );
+    return getTokyoMetroDirection(lineId, fromStationId, toStationId);
   }
 
   if (TOEI_LINES.has(lineId)) {
-    return getToeiDirection(
-      lineId,
-      fromStationId,
-      toStationId,
-    );
+    return getToeiDirection(lineId, fromStationId, toStationId);
   }
 
   if (TOKYU_LINES.has(lineId)) {
-    return getTokyuDirection(
-      lineId,
-      fromStationId,
-      toStationId,
-    );
+    return getTokyuDirection(lineId, fromStationId, toStationId);
   }
 
   if (KEIKYU_LINES.has(lineId)) {
-    return getKeikyuDirection(
-      lineId,
-      fromStationId,
-      toStationId,
-    );
+    return getKeikyuDirection(lineId, fromStationId, toStationId);
   }
 
   if (SEIBU_LINES.has(lineId)) {
-    return getSeibuDirection(
-      lineId,
-      fromStationId,
-      toStationId,
-    );
+    return getSeibuDirection(lineId, fromStationId, toStationId);
   }
 
   return null;

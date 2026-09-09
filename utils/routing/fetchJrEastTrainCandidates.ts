@@ -26,9 +26,11 @@ const fetchTimetable = async (
   stationId: string,
   directionId: string,
 ): Promise<JrEastTimetableEntry[]> => {
+  const apiLineId = lineId === "chuo-sobu-local" ? "chuo-sobu" : lineId;
+
   const params = new URLSearchParams({
     operator: "jr-east",
-    lineId,
+    lineId: apiLineId,
     stationId,
     directionId,
   });
@@ -38,14 +40,17 @@ const fetchTimetable = async (
   );
 
   if (!response.ok) {
-    throw new Error(
-      `JR East timetable request failed: ${response.status}`,
-    );
+    throw new Error(`JR East timetable request failed: ${response.status}`);
   }
 
   const data = (await response.json()) as TimetableResponse;
 
-  return data.timetable ?? [];
+  // API 경계에서 API용 lineId를 CULLINAN 내부 lineId로 되돌린다.
+  // 예: API "chuo-sobu" -> 내부 "chuo-sobu-local"
+  return (data.timetable ?? []).map((item) => ({
+    ...item,
+    lineId,
+  }));
 };
 
 export const fetchJrEastTrainCandidates = async ({
@@ -57,21 +62,10 @@ export const fetchJrEastTrainCandidates = async ({
   toNodeId,
   toStationId,
 }: FetchJrEastTrainCandidatesParams): Promise<TrainCandidate[]> => {
-  const [originTimetable, destinationTimetable] =
-    await Promise.all([
-      fetchTimetable(
-        apiBaseUrl,
-        lineId,
-        fromStationId,
-        directionId,
-      ),
-      fetchTimetable(
-        apiBaseUrl,
-        lineId,
-        toStationId,
-        directionId,
-      ),
-    ]);
+  const [originTimetable, destinationTimetable] = await Promise.all([
+    fetchTimetable(apiBaseUrl, lineId, fromStationId, directionId),
+    fetchTimetable(apiBaseUrl, lineId, toStationId, directionId),
+  ]);
 
   return buildJrEastTrainCandidates({
     lineId,

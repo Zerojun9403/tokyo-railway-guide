@@ -46,7 +46,23 @@ const fetchTimetable = async ({
     );
   }
 
-  return (await response.json()) as TokyuTimetableEntry[];
+  const data = (await response.json()) as
+    | TokyuTimetableEntry[]
+    | { timetable?: TokyuTimetableEntry[]; trains?: TokyuTimetableEntry[] };
+
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (Array.isArray(data.timetable)) {
+    return data.timetable;
+  }
+
+  if (Array.isArray(data.trains)) {
+    return data.trains;
+  }
+
+  return [];
 };
 
 export const fetchTokyuTrainCandidates = async ({

@@ -34,6 +34,18 @@ type BuildTokyoMetroTrainCandidatesParams = {
   destinationTimetable: TokyoMetroTimetableEntry[];
 };
 
+const toServiceMinutes = (time: string): number => {
+  const [hourText, minuteText] = time.split(":");
+  const hour = Number(hourText);
+  const minute = Number(minuteText);
+
+  if (!Number.isFinite(hour) || !Number.isFinite(minute)) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  return (hour < 3 ? hour + 24 : hour) * 60 + minute;
+};
+
 export const buildTokyoMetroTrainCandidates = ({
   lineId,
   fromNodeId,
@@ -57,10 +69,37 @@ export const buildTokyoMetroTrainCandidates = ({
     const destination = destinationTimetable.find(
       (item) =>
         item.lineId === lineId &&
+        item.directionId === origin.directionId &&
         item.trainNumber === origin.trainNumber,
     );
 
-    if (!destination) {
+    let matchedDestination = destination;
+
+    if (!matchedDestination) {
+      const originMinutes = toServiceMinutes(origin.departureTime);
+
+      matchedDestination = destinationTimetable
+        .filter(
+          (item) =>
+            item.lineId === lineId &&
+            item.directionId === origin.directionId &&
+            (!origin.trainType ||
+              !item.trainType ||
+              item.trainType === origin.trainType) &&
+            (!origin.destinationStation ||
+              !item.destinationStation ||
+              item.destinationStation === origin.destinationStation) &&
+            toServiceMinutes(item.departureTime) >= originMinutes &&
+            toServiceMinutes(item.departureTime) - originMinutes <= 180,
+        )
+        .sort(
+          (a, b) =>
+            toServiceMinutes(a.departureTime) -
+            toServiceMinutes(b.departureTime),
+        )[0];
+    }
+
+    if (!matchedDestination) {
       continue;
     }
 
@@ -79,7 +118,7 @@ export const buildTokyoMetroTrainCandidates = ({
 
       // 현재는 목적지역 StationTimetable의 departureTime을
       // station-time estimate로 사용한다.
-      arrivalTime: destination.departureTime,
+      arrivalTime: matchedDestination.departureTime,
 
       trainType: origin.trainType ?? "unknown",
 

@@ -1,5 +1,5 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useRouter } from "expo-router";
+import { Href, useRouter } from "expo-router";
 import {
   ChevronRight,
   CircleHelp,
@@ -256,7 +256,7 @@ const MoreScreen = () => {
               icon={<Info size={21} color={colors.text} strokeWidth={1.7} />}
               title="앱 정보"
               description="Tokyo Railway Guide"
-              onPress={() => router.push("/about")}
+              onPress={() => router.push("/about" as Href)}
               textColor={colors.text}
               secondaryTextColor={colors.textSecondary}
               borderColor={colors.border}

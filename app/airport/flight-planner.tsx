@@ -1,3 +1,6 @@
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
 import {
   ArrowLeft,
@@ -16,7 +19,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -51,6 +53,13 @@ const formatTime = (hour: number, minute: number) => {
   return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 };
 
+const timeStringToDate = (time: string) => {
+  const [hour, minute] = time.split(":").map(Number);
+  const date = new Date();
+  date.setHours(hour, minute, 0, 0);
+  return date;
+};
+
 const subtractMinutes = (time: string, minutes: number) => {
   const [hour, minute] = time.split(":").map(Number);
 
@@ -70,18 +79,14 @@ const subtractMinutes = (time: string, minutes: number) => {
   let totalMinutes = hour * 60 + minute - minutes;
   totalMinutes = ((totalMinutes % dayMinutes) + dayMinutes) % dayMinutes;
 
-  return formatTime(
-    Math.floor(totalMinutes / 60),
-    totalMinutes % 60,
-  );
+  return formatTime(Math.floor(totalMinutes / 60), totalMinutes % 60);
 };
 
 const FlightPlannerScreen = () => {
   const router = useRouter();
   const { colors, isDark } = useAppTheme();
 
-  const [selectedAirport, setSelectedAirport] =
-    useState<AirportId>("narita");
+  const [selectedAirport, setSelectedAirport] = useState<AirportId>("narita");
 
   const [flightDepartureTime, setFlightDepartureTime] = useState("13:20");
   const [isEditingTime, setIsEditingTime] = useState(false);
@@ -89,18 +94,12 @@ const FlightPlannerScreen = () => {
   const [timeError, setTimeError] = useState("");
 
   const airport = useMemo(
-    () =>
-      AIRPORTS.find((item) => item.id === selectedAirport) ??
-      AIRPORTS[0],
+    () => AIRPORTS.find((item) => item.id === selectedAirport) ?? AIRPORTS[0],
     [selectedAirport],
   );
 
   const recommendedAirportArrivalTime = useMemo(
-    () =>
-      subtractMinutes(
-        flightDepartureTime,
-        AIRPORT_ARRIVAL_BUFFER_MINUTES,
-      ),
+    () => subtractMinutes(flightDepartureTime, AIRPORT_ARRIVAL_BUFFER_MINUTES),
     [flightDepartureTime],
   );
 
@@ -110,27 +109,23 @@ const FlightPlannerScreen = () => {
     setIsEditingTime(true);
   };
 
-  const saveFlightTime = () => {
-    const match = draftFlightTime.trim().match(/^(\\d{1,2}):(\\d{2})$/);
-
-    if (!match) {
-      setTimeError("시간을 HH:MM 형식으로 입력해주세요.");
-      return;
+  const handleNativeTimeChange = (
+    event: DateTimePickerEvent,
+    selectedDate?: Date,
+  ) => {
+    if (Platform.OS === "android") {
+      setIsEditingTime(false);
     }
 
-    const hour = Number(match[1]);
-    const minute = Number(match[2]);
+    if (event.type === "dismissed" || !selectedDate) return;
 
-    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
-      setTimeError("00:00부터 23:59 사이의 시간을 입력해주세요.");
-      return;
-    }
-
-    const normalized = formatTime(hour, minute);
+    const normalized = formatTime(
+      selectedDate.getHours(),
+      selectedDate.getMinutes(),
+    );
     setFlightDepartureTime(normalized);
     setDraftFlightTime(normalized);
     setTimeError("");
-    setIsEditingTime(false);
   };
 
   const goBack = () => {
@@ -143,8 +138,15 @@ const FlightPlannerScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.screen, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+    <SafeAreaView
+      style={[styles.screen, { backgroundColor: colors.background }]}
+    >
+      <View
+        style={[
+          styles.header,
+          { backgroundColor: colors.surface, borderBottomColor: colors.border },
+        ]}
+      >
         <TouchableOpacity
           style={styles.backButton}
           activeOpacity={0.7}
@@ -154,7 +156,9 @@ const FlightPlannerScreen = () => {
         </TouchableOpacity>
 
         <View style={styles.headerTextArea}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>공항 이동 플래너</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
+            공항 이동 플래너
+          </Text>
           <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>
             귀국 항공편에 맞춰 이동 시간을 준비하세요
           </Text>
@@ -178,13 +182,15 @@ const FlightPlannerScreen = () => {
           </Text>
 
           <Text style={styles.heroDescription}>
-            이용할 공항과 항공편 출발시간을 기준으로 공항 도착
-            목표시간을 계산합니다.
+            이용할 공항과 항공편 출발시간을 기준으로 공항 도착 목표시간을
+            계산합니다.
           </Text>
         </View>
 
         <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>이용 공항</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
+            이용 공항
+          </Text>
 
           <View style={styles.airportRow}>
             {AIRPORTS.map((item) => {
@@ -195,7 +201,10 @@ const FlightPlannerScreen = () => {
                   key={item.id}
                   style={[
                     styles.airportCard,
-                    { backgroundColor: colors.surface, borderColor: colors.border },
+                    {
+                      backgroundColor: colors.surface,
+                      borderColor: colors.border,
+                    },
                     selected && styles.airportCardSelected,
                   ]}
                   activeOpacity={0.75}
@@ -219,16 +228,16 @@ const FlightPlannerScreen = () => {
                       </Text>
                     </View>
 
-                    {selected && (
-                      <View style={styles.selectedDot} />
-                    )}
+                    {selected && <View style={styles.selectedDot} />}
                   </View>
 
                   <Text style={[styles.airportNameKo, { color: colors.text }]}>
                     {item.nameKo}
                   </Text>
 
-                  <Text style={[styles.airportNameJa, { color: colors.textMuted }]}>
+                  <Text
+                    style={[styles.airportNameJa, { color: colors.textMuted }]}
+                  >
                     {item.nameJa}
                   </Text>
                 </TouchableOpacity>
@@ -238,7 +247,9 @@ const FlightPlannerScreen = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>귀국 항공편</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
+            귀국 항공편
+          </Text>
 
           <TouchableOpacity
             style={[
@@ -254,7 +265,11 @@ const FlightPlannerScreen = () => {
                 { backgroundColor: colors.surfaceSecondary },
               ]}
             >
-              <Clock3 size={20} color={colors.textSecondary} strokeWidth={1.8} />
+              <Clock3
+                size={20}
+                color={colors.textSecondary}
+                strokeWidth={1.8}
+              />
             </View>
 
             <View style={styles.infoTextArea}>
@@ -281,7 +296,10 @@ const FlightPlannerScreen = () => {
               ]}
             >
               <Text
-                style={[styles.timeEditorLabel, { color: colors.textSecondary }]}
+                style={[
+                  styles.timeEditorLabel,
+                  { color: colors.textSecondary },
+                ]}
               >
                 항공편 출발시간
               </Text>
@@ -309,32 +327,17 @@ const FlightPlannerScreen = () => {
                   }}
                 />
               ) : (
-                <TextInput
-                  style={[
-                    styles.nativeTimeInput,
-                    {
-                      backgroundColor: colors.surfaceSecondary,
-                      borderColor: colors.border,
-                      color: colors.text,
-                    },
-                  ]}
-                  value={draftFlightTime}
-                  onChangeText={(value) => {
-                    setDraftFlightTime(value);
-                    setTimeError("");
-                  }}
-                  placeholder="13:20"
-                  placeholderTextColor={colors.textMuted}
-                  keyboardType="numbers-and-punctuation"
-                  maxLength={5}
-                  returnKeyType="done"
-                  onSubmitEditing={saveFlightTime}
+                <DateTimePicker
+                  value={timeStringToDate(draftFlightTime)}
+                  mode="time"
+                  is24Hour
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  onChange={handleNativeTimeChange}
+                  themeVariant={isDark ? "dark" : "light"}
                 />
               )}
 
-              {!!timeError && (
-                <Text style={styles.timeError}>{timeError}</Text>
-              )}
+              {!!timeError && <Text style={styles.timeError}>{timeError}</Text>}
 
               <View style={styles.timeEditorActions}>
                 <TouchableOpacity
@@ -349,7 +352,10 @@ const FlightPlannerScreen = () => {
                   }}
                 >
                   <Text
-                    style={[styles.timeCancelText, { color: colors.textSecondary }]}
+                    style={[
+                      styles.timeCancelText,
+                      { color: colors.textSecondary },
+                    ]}
                   >
                     취소
                   </Text>
@@ -357,7 +363,7 @@ const FlightPlannerScreen = () => {
 
                 <TouchableOpacity
                   style={styles.timeSaveButton}
-                  onPress={saveFlightTime}
+                  onPress={() => setIsEditingTime(false)}
                 >
                   <Text style={styles.timeSaveText}>적용</Text>
                 </TouchableOpacity>
@@ -389,7 +395,12 @@ const FlightPlannerScreen = () => {
             </Text>
           </View>
 
-          <Text style={[styles.recommendationLabel, { color: colors.textSecondary }]}>
+          <Text
+            style={[
+              styles.recommendationLabel,
+              { color: colors.textSecondary },
+            ]}
+          >
             {airport.nameKo} 도착 목표
           </Text>
 
@@ -398,13 +409,14 @@ const FlightPlannerScreen = () => {
           </Text>
 
           <Text style={styles.recommendationDescription}>
-            항공편 출발 3시간 30분 전을 앱의 권장 공항 도착시간으로
-            계산합니다.
+            항공편 출발 3시간 30분 전을 앱의 권장 공항 도착시간으로 계산합니다.
           </Text>
         </View>
 
         <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>숙소에서 공항까지</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
+            숙소에서 공항까지
+          </Text>
 
           <View
             style={[
@@ -421,9 +433,14 @@ const FlightPlannerScreen = () => {
                 내 숙소에서 출발
               </Text>
 
-              <Text style={[styles.accommodationDescription, { color: colors.textMuted }]}>
-                v3 Journey Engine과 연결하면 숙소에서 몇 시에
-                출발해야 하는지 계산합니다.
+              <Text
+                style={[
+                  styles.accommodationDescription,
+                  { color: colors.textMuted },
+                ]}
+              >
+                v3 Journey Engine과 연결하면 숙소에서 몇 시에 출발해야 하는지
+                계산합니다.
               </Text>
             </View>
           </View>
@@ -434,15 +451,13 @@ const FlightPlannerScreen = () => {
           activeOpacity={0.8}
           disabled
         >
-          <Text style={styles.primaryButtonText}>
-            숙소 → 공항 경로 계산
-          </Text>
+          <Text style={styles.primaryButtonText}>숙소 → 공항 경로 계산</Text>
         </TouchableOpacity>
 
         <Text style={[styles.footerNote, { color: colors.textMuted }]}>
-          공항 도착 목표시간은 Tokyo Railway Guide의 여행 계획용
-          권장 기준입니다. 실제 탑승 수속 마감시간과 항공사 안내를
-          반드시 함께 확인하세요.
+          공항 도착 목표시간은 Tokyo Railway Guide의 여행 계획용 권장
+          기준입니다. 실제 탑승 수속 마감시간과 항공사 안내를 반드시 함께
+          확인하세요.
         </Text>
       </ScrollView>
     </SafeAreaView>

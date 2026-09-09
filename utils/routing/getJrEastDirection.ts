@@ -25,28 +25,17 @@ export const getJrEastDirection = (
 ): string | null => {
   switch (lineId) {
     case "yamanote":
-      return getYamanoteDirection(
-        fromStationId,
-        toStationId,
-      );
+      return getYamanoteDirection(fromStationId, toStationId);
 
     case "saikyo":
-      return getSaikyoDirection(
-        fromStationId,
-        toStationId,
-      );
+      return getSaikyoDirection(fromStationId, toStationId);
 
     case "chuo-rapid":
-      return getChuoRapidDirection(
-        fromStationId,
-        toStationId,
-      );
+      return getChuoRapidDirection(fromStationId, toStationId);
 
     case "chuo-sobu":
-      return getChuoSobuDirection(
-        fromStationId,
-        toStationId,
-      );
+    case "chuo-sobu-local":
+      return getChuoSobuDirection(fromStationId, toStationId);
 
     /*
      * ===============================================
@@ -58,82 +47,82 @@ export const getJrEastDirection = (
      */
 
     case "shonan-shinjuku": {
-  if (fromStationId === "JS20" && toStationId === "JS19") {
-    return "Southbound";
-  }
+      if (fromStationId === "JS20" && toStationId === "JS19") {
+        return "Southbound";
+      }
 
-  if (fromStationId === "JS19" && toStationId === "JS20") {
-    return "Northbound";
-  }
+      if (fromStationId === "JS19" && toStationId === "JS20") {
+        return "Northbound";
+      }
 
-  return null;
-}
+      return null;
+    }
 
-case "tokaido":
-  if (fromStationId === "JT01" && toStationId === "JT02") {
-    return "Outbound";
-  }
+    case "tokaido":
+      if (fromStationId === "JT01" && toStationId === "JT02") {
+        return "Outbound";
+      }
 
-  if (fromStationId === "JT02" && toStationId === "JT01") {
-    return "Inbound";
-  }
+      if (fromStationId === "JT02" && toStationId === "JT01") {
+        return "Inbound";
+      }
 
-  return null;
+      return null;
 
-case "keihin-tohoku":
-  if (fromStationId === "JK26" && toStationId === "JK25") {
-    return "Southbound";
-  }
+    case "keihin-tohoku":
+      if (fromStationId === "JK26" && toStationId === "JK25") {
+        return "Southbound";
+      }
 
-  if (fromStationId === "JK25" && toStationId === "JK26") {
-    return "Northbound";
-  }
+      if (fromStationId === "JK25" && toStationId === "JK26") {
+        return "Northbound";
+      }
 
-  return null;
+      return null;
 
-case "keiyo":
-  if (fromStationId === "JE01" && toStationId === "JE02") {
-    return "Outbound";
-  }
+    case "keiyo":
+      if (fromStationId === "JE01" && toStationId === "JE02") {
+        return "Outbound";
+      }
 
-  if (fromStationId === "JE02" && toStationId === "JE01") {
-    return "Inbound";
-  }
+      if (fromStationId === "JE02" && toStationId === "JE01") {
+        return "Inbound";
+      }
 
-  return null;
+      return null;
 
-case "yokosuka":
-  if (fromStationId === "JO19" && toStationId === "JO18") {
-    return "Outbound";
-  }
+    case "yokosuka":
+      if (fromStationId === "JO19" && toStationId === "JO18") {
+        return "Outbound";
+      }
 
-  if (fromStationId === "JO18" && toStationId === "JO19") {
-    return "Inbound";
-  }
+      if (fromStationId === "JO18" && toStationId === "JO19") {
+        return "Inbound";
+      }
 
-  return null;
+      return null;
 
-case "sobu":
-  if (fromStationId === "JO28" && toStationId === "JO30") {
-    return "Outbound";
-  }
+    case "sobu":
+      if (fromStationId === "JO28" && toStationId === "JO30") {
+        return "Outbound";
+      }
 
-  if (fromStationId === "JO30" && toStationId === "JO28") {
-    return "Inbound";
-  }
+      if (fromStationId === "JO30" && toStationId === "JO28") {
+        return "Inbound";
+      }
 
-  return null;
+      return null;
 
-case "sobu-rapid":
-  if (fromStationId === "JO19" && toStationId === "JO22") {
-    return "Outbound";
-  }
+    case "sobu-rapid":
+      if (fromStationId === "JO19" && toStationId === "JO22") {
+        return "Outbound";
+      }
 
-  if (fromStationId === "JO22" && toStationId === "JO19") {
-    return "Inbound";
-  }
+      if (fromStationId === "JO22" && toStationId === "JO19") {
+        return "Inbound";
+      }
 
-  return null;
+      return null;
     default:
       return null;
   }
