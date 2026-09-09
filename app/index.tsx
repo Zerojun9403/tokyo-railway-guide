@@ -24,6 +24,7 @@ import {
   MapPin,
   Minus,
   Navigation,
+  Plane,
   Plus,
   Search,
   X,
@@ -968,6 +969,92 @@ const HomeScreen = () => {
             <ChevronRight size={23} color={colors.textMuted} strokeWidth={2} />
           </TouchableOpacity>
         </View>
+
+        {/* Airport */}
+
+        <View style={styles.section}>
+          <Text
+            style={[
+              styles.sectionTitle,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
+            공항 가는 길
+          </Text>
+
+          <Text
+            style={[
+              styles.sectionDescription,
+              {
+                color: colors.textMuted,
+              },
+            ]}
+          >
+            나리타 · 하네다 공항 이동과 공항 Journey를 준비하세요.
+          </Text>
+
+          <TouchableOpacity
+            style={[
+              styles.airportCard,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+            ]}
+            activeOpacity={0.72}
+            onPress={() => router.push("/airport" as any)}
+          >
+            <View
+              style={[
+                styles.airportIconArea,
+                {
+                  backgroundColor: colors.surfaceSecondary,
+                },
+              ]}
+            >
+              <Plane size={25} color="#A78BFA" strokeWidth={1.9} />
+            </View>
+
+            <View style={styles.airportTextArea}>
+              <Text
+                style={[
+                  styles.airportEyebrow,
+                  {
+                    color: colors.textMuted,
+                  },
+                ]}
+              >
+                AIRPORT JOURNEY
+              </Text>
+
+              <Text
+                style={[
+                  styles.airportTitle,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+              >
+                나리타 · 하네다 공항
+              </Text>
+
+              <Text
+                style={[
+                  styles.airportDescription,
+                  {
+                    color: colors.textMuted,
+                  },
+                ]}
+              >
+                공항 교통 안내와 출국 Journey를 확인하세요.
+              </Text>
+            </View>
+
+            <ChevronRight size={23} color={colors.textMuted} strokeWidth={2} />
+          </TouchableOpacity>
+        </View>
       </ScrollView>
 
       {/* 출발 시간 선택 Modal */}
@@ -1517,6 +1604,50 @@ const styles = StyleSheet.create({
   },
 
   mapDescription: {
+    marginTop: 3,
+    fontSize: 11,
+    lineHeight: 16,
+  },
+
+  airportCard: {
+    minHeight: 104,
+    marginTop: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 20,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  airportIconArea: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  airportTextArea: {
+    flex: 1,
+    marginLeft: 14,
+  },
+
+  airportEyebrow: {
+    fontSize: 9,
+    lineHeight: 13,
+    fontWeight: "800",
+    letterSpacing: 1,
+  },
+
+  airportTitle: {
+    marginTop: 2,
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: "900",
+  },
+
+  airportDescription: {
     marginTop: 3,
     fontSize: 11,
     lineHeight: 16,

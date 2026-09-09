@@ -195,6 +195,71 @@ const AirportGuideScreen = () => {
           ]}
         />
 
+        {/* Airport → Accommodation */}
+        <Pressable
+          onPress={() =>
+            router.push("/airport/airport-to-accommodation" as Href)
+          }
+          style={({ pressed }) => [
+            styles.plannerCard,
+            {
+              borderColor: colors.border,
+            },
+            pressed && styles.pressed,
+          ]}
+        >
+          <View style={styles.plannerIcon}>
+            <Plane
+              size={20}
+              color="#A78BFA"
+              strokeWidth={1.8}
+            />
+          </View>
+
+          <View style={styles.plannerContent}>
+            <Text
+              style={[
+                styles.plannerEyebrow,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
+              ARRIVAL JOURNEY
+            </Text>
+
+            <Text
+              style={[
+                styles.plannerTitle,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              공항에서 숙소로
+            </Text>
+
+            <Text
+              style={[
+                styles.plannerDescription,
+                {
+                  color: colors.textSecondary,
+                },
+              ]}
+            >
+              도착 공항과 저장된 숙소를 기준으로 이동 Journey를 준비합니다.
+            </Text>
+          </View>
+
+          <ChevronRight
+            size={19}
+            color={colors.textSecondary}
+            strokeWidth={1.7}
+          />
+        </Pressable>
+
+        <View style={styles.plannerGap} />
+
         {/* Airport Journey Planner */}
         <Pressable
           onPress={() => router.push("/airport/flight-planner" as Href)}
@@ -453,6 +518,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#EDF5F1",
+  },
+
+  plannerGap: {
+    height: 12,
   },
 
   plannerContent: {
