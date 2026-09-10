@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import {
   Modal,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -13,6 +14,8 @@ import {
 import { Orbitron_700Bold, useFonts } from "@expo-google-fonts/orbitron";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
+import { LinearGradient } from "expo-linear-gradient";
+import { VideoView, useVideoPlayer } from "expo-video";
 import { router, useLocalSearchParams } from "expo-router";
 import {
   ArrowDownUp,
@@ -121,6 +124,15 @@ type AccommodationData = {
 
 const HomeScreen = () => {
   const { colors } = useAppTheme();
+
+  const heroVideoPlayer = useVideoPlayer(
+    require("../assets/videos/main-background.mp4"),
+    (player) => {
+      player.loop = true;
+      player.muted = true;
+      player.play();
+    },
+  );
 
   const [fontsLoaded] = useFonts({
     Orbitron_700Bold,
@@ -546,41 +558,60 @@ const HomeScreen = () => {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero */}
+        {/* Hero Video */}
 
         <View style={styles.hero}>
-          <Text
-            style={[
-              styles.eyebrow,
-              {
-                color: colors.textMuted,
-              },
-            ]}
-          >
-            TOKYO RAILWAY GUIDE
-          </Text>
+          {Platform.OS === "web" ? (
+            <video
+              src={require("../assets/videos/main-background.mp4")}
+              autoPlay
+              muted
+              loop
+              playsInline
+              style={styles.heroWebVideo as any}
+            />
+          ) : (
+            <VideoView
+              player={heroVideoPlayer}
+              style={styles.heroVideo}
+              contentFit="cover"
+              nativeControls={false}
+            />
+          )}
 
-          <Text
-            style={[
-              styles.title,
-              {
-                color: colors.text,
-              },
-            ]}
-          >
-            어디로 갈까요?
-          </Text>
+          <View style={styles.heroOverlay} />
 
-          <Text
-            style={[
-              styles.description,
-              {
-                color: colors.textSecondary,
-              },
+          <LinearGradient
+            pointerEvents="none"
+            colors={[
+              "rgba(64, 45, 92, 0.14)",
+              "rgba(34, 28, 54, 0.10)",
+              "rgba(15, 16, 18, 0.02)",
             ]}
-          >
-            출발역과 도착역을 선택하면 환승 경로를 안내해 드려요.
-          </Text>
+            locations={[0, 0.55, 1]}
+            style={styles.heroToneFilter}
+          />
+
+          <LinearGradient
+            pointerEvents="none"
+            colors={[
+              "rgba(15,16,18,0)",
+              "rgba(15,16,18,0.18)",
+              "rgba(15,16,18,0.62)",
+              "rgba(15,16,18,1)",
+              "#0F1012",
+            ]}
+            locations={[0, 0.35, 0.58, 0.82, 1]}
+            style={styles.heroBottomGradient}
+          />
+
+          <View style={styles.heroContent}>
+            <Text style={styles.eyebrow}>TOKYO RAILWAY GUIDE</Text>
+            <Text style={styles.title}>어디로 갈까요?</Text>
+            <Text style={styles.description}>
+              출발역과 도착역을 선택하면 환승 경로를 안내해 드려요.
+            </Text>
+          </View>
         </View>
 
         {/* Route Search */}
@@ -1337,10 +1368,52 @@ const styles = StyleSheet.create({
   },
 
   hero: {
+    height: 420,
+    marginHorizontal: -20,
+    marginTop: -24,
     marginBottom: 28,
+    overflow: "hidden",
+    position: "relative",
+    justifyContent: "flex-end",
+  },
+
+  heroVideo: {
+    ...StyleSheet.absoluteFillObject,
+  },
+
+  heroWebVideo: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+  },
+
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.48)",
+  },
+
+  heroToneFilter: {
+    ...StyleSheet.absoluteFillObject,
+  },
+
+  heroBottomGradient: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "58%",
+  },
+
+  heroContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 30,
   },
 
   eyebrow: {
+    color: "rgba(255,255,255,0.78)",
     fontSize: 11,
     lineHeight: 16,
     fontWeight: "800",
@@ -1349,6 +1422,7 @@ const styles = StyleSheet.create({
 
   title: {
     marginTop: 8,
+    color: "#FFFFFF",
     fontSize: 32,
     lineHeight: 40,
     fontWeight: "900",
@@ -1356,6 +1430,8 @@ const styles = StyleSheet.create({
 
   description: {
     marginTop: 8,
+    maxWidth: 330,
+    color: "rgba(255,255,255,0.82)",
     fontSize: 14,
     lineHeight: 21,
   },

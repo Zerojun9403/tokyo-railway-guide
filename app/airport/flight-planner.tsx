@@ -404,7 +404,12 @@ const FlightPlannerScreen = () => {
             {airport.nameKo} 도착 목표
           </Text>
 
-          <Text style={styles.recommendationTime}>
+          <Text
+            style={[
+              styles.recommendationTime,
+              { color: isDark ? "#F8FAFC" : "#1F2937" },
+            ]}
+          >
             {recommendedAirportArrivalTime}
           </Text>
 
