@@ -93,48 +93,27 @@ export const buildKeikyuTrainCandidates = ({
       continue;
     }
 
-    const destination = destinationTimetable
-      .filter((item) => {
-        if (!isSameKeikyuLine(item.lineId, lineId)) return false;
-        if (item.directionId !== origin.directionId) return false;
+    // CULLINAN 안전 원칙:
+    // trainNumber가 없는 케이큐 시간표는 동일 열차임을 확정할 수 없으므로
+    // 열차종별/목적지/가까운 시각을 이용한 추정 매칭을 하지 않는다.
+    if (!origin.trainNumber) {
+      continue;
+    }
 
-        // trainNumber가 실제로 제공되는 경우에는 기존의 정확 매칭을 우선한다.
-        if (origin.trainNumber && item.trainNumber) {
-          return item.trainNumber === origin.trainNumber;
-        }
+    const destination = destinationTimetable.find((item) => {
+      if (!isSameKeikyuLine(item.lineId, lineId)) return false;
+      if (item.directionId !== origin.directionId) return false;
+      if (!item.trainNumber) return false;
+      if (item.trainNumber !== origin.trainNumber) return false;
 
-        // 도큐/게이큐/세이부 API는 현재 trainNumber를 제공하지 않는다.
-        // 같은 방향 + 열차종별 + 목적지를 만족하면서 출발 이후 가장 가까운
-        // 도착역 시각을 같은 열차의 통과 시각으로 사용한다.
-        if (
-          origin.trainType &&
-          item.trainType &&
-          item.trainType !== origin.trainType
-        ) {
-          return false;
-        }
+      const destinationMinutes = toServiceMinutes(item.departureTime);
 
-        if (
-          origin.destinationStation &&
-          item.destinationStation &&
-          item.destinationStation !== origin.destinationStation
-        ) {
-          return false;
-        }
+      if (destinationMinutes === null) return false;
 
-        const destinationMinutes = toServiceMinutes(item.departureTime);
+      const travelMinutes = destinationMinutes - originMinutes;
 
-        if (destinationMinutes === null) return false;
-
-        const travelMinutes = destinationMinutes - originMinutes;
-
-        return travelMinutes > 0 && travelMinutes <= 180;
-      })
-      .sort((a, b) => {
-        const aMinutes = toServiceMinutes(a.departureTime) ?? Infinity;
-        const bMinutes = toServiceMinutes(b.departureTime) ?? Infinity;
-        return aMinutes - bMinutes;
-      })[0];
+      return travelMinutes > 0 && travelMinutes <= 180;
+    });
 
     if (!destination) continue;
 
