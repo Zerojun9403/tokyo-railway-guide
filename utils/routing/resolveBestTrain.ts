@@ -15,27 +15,17 @@ import type {
  * 21 * 60 + 13
  * = 1273
  */
-const timeToMinutes = (
-  time: string,
-): number | null => {
+const timeToMinutes = (time: string): number | null => {
   const [hourText, minuteText] = time.split(":");
 
   const hour = Number(hourText);
   const minute = Number(minuteText);
 
-  if (
-    !Number.isInteger(hour) ||
-    !Number.isInteger(minute)
-  ) {
+  if (!Number.isInteger(hour) || !Number.isInteger(minute)) {
     return null;
   }
 
-  if (
-    hour < 0 ||
-    hour > 23 ||
-    minute < 0 ||
-    minute > 59
-  ) {
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
     return null;
   }
 
@@ -50,30 +40,23 @@ const timeToMinutes = (
 const createResolvedTrain = (
   candidate: TrainCandidate,
 ): ResolvedTrain | null => {
-  const departureMinutes = timeToMinutes(
-    candidate.departureTime,
-  );
+  const departureMinutes = timeToMinutes(candidate.departureTime);
 
-  const arrivalMinutes = timeToMinutes(
-    candidate.arrivalTime,
-  );
+  let arrivalMinutes = timeToMinutes(candidate.arrivalTime);
 
-  if (
-    departureMinutes === null ||
-    arrivalMinutes === null
-  ) {
+  if (departureMinutes === null || arrivalMinutes === null) {
     return null;
   }
 
   /*
-   * 현재 Mock 단계에서는
-   * 같은 날짜 안의 열차만 비교한다.
+   * 자정을 넘어 도착하는 정상 열차는
+   * 도착 시각을 다음 날 분 값으로 보정한다.
    *
-   * 자정을 넘는 열차는
-   * 막차 / 심야 처리 단계에서 별도로 확장한다.
+   * 예: 23:33(1413) → 00:00(0)
+   *     00:00 + 1440 = 1440
    */
   if (arrivalMinutes < departureMinutes) {
-    return null;
+    arrivalMinutes += 24 * 60;
   }
 
   return {
@@ -102,24 +85,15 @@ const isBetterTrain = (
   candidate: ResolvedTrain,
   currentBest: ResolvedTrain,
 ): boolean => {
-  if (
-    candidate.arrivalMinutes <
-    currentBest.arrivalMinutes
-  ) {
+  if (candidate.arrivalMinutes < currentBest.arrivalMinutes) {
     return true;
   }
 
-  if (
-    candidate.arrivalMinutes >
-    currentBest.arrivalMinutes
-  ) {
+  if (candidate.arrivalMinutes > currentBest.arrivalMinutes) {
     return false;
   }
 
-  return (
-    candidate.departureMinutes <
-    currentBest.departureMinutes
-  );
+  return candidate.departureMinutes < currentBest.departureMinutes;
 };
 
 /*
@@ -156,9 +130,7 @@ export const resolveBestTrain = (
   candidates: TrainCandidate[],
   currentTime: string,
 ): TrainResolverResult => {
-  const currentMinutes = timeToMinutes(
-    currentTime,
-  );
+  const currentMinutes = timeToMinutes(currentTime);
 
   /*
    * 현재 시각 자체가 잘못된 경우
@@ -207,8 +179,7 @@ export const resolveBestTrain = (
      * 시간 데이터 변환
      * =====================================================
      */
-    const resolvedTrain =
-      createResolvedTrain(candidate);
+    const resolvedTrain = createResolvedTrain(candidate);
 
     if (!resolvedTrain) {
       diagnostics.invalidTimeCount += 1;
@@ -226,10 +197,7 @@ export const resolveBestTrain = (
      * 현재 시각과 출발 시각이 정확히 같다면
      * 현재 Mock 단계에서는 탑승 가능한 것으로 본다.
      */
-    if (
-      resolvedTrain.departureMinutes <
-      currentMinutes
-    ) {
+    if (resolvedTrain.departureMinutes < currentMinutes) {
       diagnostics.alreadyDepartedCount += 1;
       continue;
     }
@@ -251,12 +219,7 @@ export const resolveBestTrain = (
      * 더 빨리 도착하는 열차인지 비교
      * =====================================================
      */
-    if (
-      isBetterTrain(
-        resolvedTrain,
-        bestTrain,
-      )
-    ) {
+    if (isBetterTrain(resolvedTrain, bestTrain)) {
       bestTrain = resolvedTrain;
     }
   }

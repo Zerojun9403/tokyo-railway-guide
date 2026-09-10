@@ -115,8 +115,6 @@ const RouteResultScreen = () => {
       return;
     }
 
-    /* 각 Segment의 방향은 resolveLiveJourney 내부에서 자동 판별한다. */
-
     const run = async () => {
       try {
         const currentTime = departureDate.toTimeString().slice(0, 5);
@@ -127,11 +125,11 @@ const RouteResultScreen = () => {
           apiBaseUrl: "https://tokyo-railway-api.vercel.app",
         });
 
-        console.log("🚃 [v3.5 LiveJourney]", result);
+        console.log("💎 [CULLINAN LiveJourney]", result);
 
         setLiveJourney(result);
       } catch (error) {
-        console.error("🚃 [v3.5 LiveJourney Error]", error);
+        console.error("💎 [CULLINAN LiveJourney Error]", error);
 
         setLiveJourney(null);
       }
@@ -191,10 +189,15 @@ const RouteResultScreen = () => {
       .map(Number);
 
     const departureTotal = departureHour * 60 + departureMinute;
-
     const arrivalTotal = arrivalHour * 60 + arrivalMinute;
 
-    return arrivalTotal - departureTotal;
+    let durationMinutes = arrivalTotal - departureTotal;
+
+    if (durationMinutes < 0) {
+      durationMinutes += 24 * 60;
+    }
+
+    return durationMinutes;
   }, [resolvedLiveJourney, estimatedMinutes]);
 
   const getLine = (lineId: string) => {

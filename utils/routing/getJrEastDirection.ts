@@ -3,20 +3,84 @@ import { getSaikyoDirection } from "./getSaikyoDirection";
 import { getChuoRapidDirection } from "./getChuoRapidDirection";
 import { getChuoSobuDirection } from "./getChuoSobuDirection";
 
-/*
- * =========================================================
- * JR East Direction Resolver
- * =========================================================
- *
- * route-result.tsx가 개별 JR 노선의 방향 규칙을
- * 직접 알 필요가 없도록 한 곳에서 관리한다.
- *
- * 새 JR 노선을 지원할 때는 이 파일에만
- * 방향 판별 로직을 추가한다.
- *
- * 아직 검증되지 않은 노선은 null을 반환한다.
- * =========================================================
- */
+type LineDirectionConfig = {
+  stationOrder: string[];
+  forwardDirection: string;
+  backwardDirection: string;
+};
+
+const range = (prefix: string, start: number, end: number): string[] =>
+  Array.from(
+    { length: end - start + 1 },
+    (_, index) => `${prefix}${String(start + index).padStart(2, "0")}`,
+  );
+
+const JR_EAST_LINE_CONFIGS: Record<string, LineDirectionConfig> = {
+  "shonan-shinjuku": {
+    stationOrder: range("JS", 9, 24),
+    forwardDirection: "Northbound",
+    backwardDirection: "Southbound",
+  },
+
+  tokaido: {
+    stationOrder: range("JT", 1, 21),
+    forwardDirection: "Outbound",
+    backwardDirection: "Inbound",
+  },
+
+  "keihin-tohoku": {
+    stationOrder: range("JK", 1, 47),
+    forwardDirection: "Northbound",
+    backwardDirection: "Southbound",
+  },
+
+  keiyo: {
+    stationOrder: range("JE", 1, 18),
+    forwardDirection: "Outbound",
+    backwardDirection: "Inbound",
+  },
+
+  yokosuka: {
+    stationOrder: range("JO", 1, 19),
+    forwardDirection: "Inbound",
+    backwardDirection: "Outbound",
+  },
+
+  "sobu-rapid": {
+    stationOrder: range("JO", 19, 28),
+    forwardDirection: "Outbound",
+    backwardDirection: "Inbound",
+  },
+
+  sobu: {
+    stationOrder: range("JO", 28, 37),
+    forwardDirection: "Outbound",
+    backwardDirection: "Inbound",
+  },
+};
+
+const getOrderedLineDirection = (
+  lineId: string,
+  fromStationId: string,
+  toStationId: string,
+): string | null => {
+  const config = JR_EAST_LINE_CONFIGS[lineId];
+
+  if (!config) {
+    return null;
+  }
+
+  const fromIndex = config.stationOrder.indexOf(fromStationId);
+  const toIndex = config.stationOrder.indexOf(toStationId);
+
+  if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) {
+    return null;
+  }
+
+  return toIndex > fromIndex
+    ? config.forwardDirection
+    : config.backwardDirection;
+};
 
 export const getJrEastDirection = (
   lineId: string,
@@ -37,92 +101,15 @@ export const getJrEastDirection = (
     case "chuo-sobu-local":
       return getChuoSobuDirection(fromStationId, toStationId);
 
-    /*
-     * ===============================================
-     * JR East Live Journey 예정 노선
-     * ===============================================
-     *
-     * 실제 API 방향값과 역 순서를 검증한 뒤
-     * 하나씩 활성화한다.
-     */
-
-    case "shonan-shinjuku": {
-      if (fromStationId === "JS20" && toStationId === "JS19") {
-        return "Southbound";
-      }
-
-      if (fromStationId === "JS19" && toStationId === "JS20") {
-        return "Northbound";
-      }
-
-      return null;
-    }
-
+    case "shonan-shinjuku":
     case "tokaido":
-      if (fromStationId === "JT01" && toStationId === "JT02") {
-        return "Outbound";
-      }
-
-      if (fromStationId === "JT02" && toStationId === "JT01") {
-        return "Inbound";
-      }
-
-      return null;
-
     case "keihin-tohoku":
-      if (fromStationId === "JK26" && toStationId === "JK25") {
-        return "Southbound";
-      }
-
-      if (fromStationId === "JK25" && toStationId === "JK26") {
-        return "Northbound";
-      }
-
-      return null;
-
     case "keiyo":
-      if (fromStationId === "JE01" && toStationId === "JE02") {
-        return "Outbound";
-      }
-
-      if (fromStationId === "JE02" && toStationId === "JE01") {
-        return "Inbound";
-      }
-
-      return null;
-
     case "yokosuka":
-      if (fromStationId === "JO19" && toStationId === "JO18") {
-        return "Outbound";
-      }
-
-      if (fromStationId === "JO18" && toStationId === "JO19") {
-        return "Inbound";
-      }
-
-      return null;
-
     case "sobu":
-      if (fromStationId === "JO28" && toStationId === "JO30") {
-        return "Outbound";
-      }
-
-      if (fromStationId === "JO30" && toStationId === "JO28") {
-        return "Inbound";
-      }
-
-      return null;
-
     case "sobu-rapid":
-      if (fromStationId === "JO19" && toStationId === "JO22") {
-        return "Outbound";
-      }
+      return getOrderedLineDirection(lineId, fromStationId, toStationId);
 
-      if (fromStationId === "JO22" && toStationId === "JO19") {
-        return "Inbound";
-      }
-
-      return null;
     default:
       return null;
   }
