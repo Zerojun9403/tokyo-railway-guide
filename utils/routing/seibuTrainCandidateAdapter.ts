@@ -83,7 +83,7 @@ export const adaptSeibuTimetableToTrainCandidates = ({
 
     const destination = destinationTimetable
       .filter((item) => {
-        if (!item.lineId === apiLineId) return false;
+        if (item.lineId !== apiLineId) return false;
         if (item.directionId !== origin.directionId) return false;
 
         // trainNumber가 실제로 제공되는 경우에는 기존의 정확 매칭을 우선한다.

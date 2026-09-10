@@ -3,6 +3,7 @@ import { fetchLiveCandidates } from "../utils/routing/liveCandidateRegistry";
 import { getTokyuApiLineId } from "../utils/routing/tokyuTrainCandidateAdapter";
 import { getKeikyuApiLineId } from "../utils/routing/keikyuTrainCandidateAdapter";
 import { getSeibuApiLineId } from "../utils/routing/seibuTrainCandidateAdapter";
+import type { JourneySegment } from "../utils/routing/journeyTypes";
 
 const API_BASE_URL = "https://tokyo-railway-api.vercel.app";
 
@@ -395,7 +396,7 @@ const runOne = async (test: TestCase): Promise<Result> => {
       };
     }
 
-    const segment = {
+    const segment: JourneySegment = {
       lineId: test.lineId,
       fromNodeId: `${test.lineId}:${test.fromStationId}`,
       toNodeId: `${test.lineId}:${test.toStationId}`,
