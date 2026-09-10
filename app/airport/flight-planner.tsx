@@ -1,6 +1,7 @@
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import {
   ArrowLeft,
@@ -10,7 +11,7 @@ import {
   MapPin,
   Plane,
 } from "lucide-react-native";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useAppTheme } from "@/hooks/useAppTheme";
 import {
@@ -82,6 +83,16 @@ const subtractMinutes = (time: string, minutes: number) => {
   return formatTime(Math.floor(totalMinutes / 60), totalMinutes % 60);
 };
 
+const ACCOMMODATION_STORAGE_KEY = "tokyo-railway-guide:accommodation";
+
+type AccommodationData = {
+  name: string;
+  stationId: string;
+  lineId: string;
+  stationNameKo: string;
+  stationNameJa: string;
+};
+
 const FlightPlannerScreen = () => {
   const router = useRouter();
   const { colors, isDark } = useAppTheme();
@@ -92,6 +103,25 @@ const FlightPlannerScreen = () => {
   const [isEditingTime, setIsEditingTime] = useState(false);
   const [draftFlightTime, setDraftFlightTime] = useState("13:20");
   const [timeError, setTimeError] = useState("");
+  const [accommodation, setAccommodation] =
+    useState<AccommodationData | null>(null);
+
+  useEffect(() => {
+    const loadAccommodation = async () => {
+      try {
+        const saved = await AsyncStorage.getItem(ACCOMMODATION_STORAGE_KEY);
+        if (!saved) return;
+
+        const parsed = JSON.parse(saved) as AccommodationData;
+        setAccommodation(parsed);
+      } catch (error) {
+        console.error("Load accommodation error:", error);
+      }
+    };
+
+    void loadAccommodation();
+  }, []);
+
 
   const airport = useMemo(
     () => AIRPORTS.find((item) => item.id === selectedAirport) ?? AIRPORTS[0],
@@ -435,7 +465,9 @@ const FlightPlannerScreen = () => {
 
             <View style={styles.accommodationTextArea}>
               <Text style={[styles.accommodationTitle, { color: colors.text }]}>
-                내 숙소에서 출발
+                {accommodation?.stationNameKo
+                  ? `${accommodation.stationNameKo}역에서 출발`
+                  : "내 숙소에서 출발"}
               </Text>
 
               <Text
@@ -444,8 +476,11 @@ const FlightPlannerScreen = () => {
                   { color: colors.textMuted },
                 ]}
               >
-                v3 Journey Engine과 연결하면 숙소에서 몇 시에 출발해야 하는지
-                계산합니다.
+                {accommodation?.stationNameKo
+                  ? `${accommodation.stationNameKo}역 → ${airport.nameKo}`
+                  : `저장된 숙소역 → ${airport.nameKo}`}
+                {"\n"}
+                CULLINAN 엔진으로 공항 이동 경로를 계산합니다.
               </Text>
             </View>
           </View>
