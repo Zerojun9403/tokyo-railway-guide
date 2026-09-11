@@ -1,17 +1,15 @@
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import {
   ArrowLeft,
   ChevronRight,
   Clock3,
-  House,
   MapPin,
   Plane,
 } from "lucide-react-native";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useAppTheme } from "@/hooks/useAppTheme";
 import {
@@ -48,7 +46,78 @@ const AIRPORTS: AirportOption[] = [
   },
 ];
 
+
+type TerminalGuide = {
+  station: string;
+  terminals: {
+    terminal: string;
+    detail?: string;
+    airlines: string[];
+  }[];
+};
+
+const TERMINAL_GUIDES: Record<AirportId, TerminalGuide[]> = {
+  narita: [
+    {
+      station: "나리타공항역",
+      terminals: [
+        {
+          terminal: "제1터미널 북쪽윙",
+          airlines: ["대한항공", "진에어", "피치항공", "ZIPAIR"],
+        },
+        {
+          terminal: "제1터미널 남쪽윙",
+          airlines: ["에어서울", "에어부산", "아시아나항공", "에티오피아항공"],
+        },
+      ],
+    },
+    {
+      station: "공항 제2빌딩역",
+      terminals: [
+        {
+          terminal: "제2터미널",
+          airlines: ["트리니티항공", "에어프레미아", "파라타항공"],
+        },
+        {
+          terminal: "제3터미널",
+          detail: "LCC 중심",
+          airlines: ["이스타항공", "제주항공", "에어로케이"],
+        },
+      ],
+    },
+  ],
+  haneda: [
+    {
+      station: "하네다공항 제1·제2터미널역",
+      terminals: [
+        {
+          terminal: "제2터미널",
+          airlines: ["ANA"],
+        },
+      ],
+    },
+    {
+      station: "하네다공항 제3터미널역",
+      terminals: [
+        {
+          terminal: "제3터미널",
+          airlines: ["대한항공", "아시아나항공", "일본항공"],
+        },
+      ],
+    },
+  ],
+};
+
 const AIRPORT_ARRIVAL_BUFFER_MINUTES = 210;
+
+const getTerminalBadge = (terminal: string) => {
+  if (terminal.includes("제1터미널 북쪽")) return "T1 NORTH";
+  if (terminal.includes("제1터미널 남쪽")) return "T1 SOUTH";
+  if (terminal.includes("제1터미널")) return "T1";
+  if (terminal.includes("제2터미널")) return "T2";
+  if (terminal.includes("제3터미널")) return "T3";
+  return "TERMINAL";
+};
 
 const formatTime = (hour: number, minute: number) => {
   return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
@@ -83,15 +152,6 @@ const subtractMinutes = (time: string, minutes: number) => {
   return formatTime(Math.floor(totalMinutes / 60), totalMinutes % 60);
 };
 
-const ACCOMMODATION_STORAGE_KEY = "tokyo-railway-guide:accommodation";
-
-type AccommodationData = {
-  name: string;
-  stationId: string;
-  lineId: string;
-  stationNameKo: string;
-  stationNameJa: string;
-};
 
 const FlightPlannerScreen = () => {
   const router = useRouter();
@@ -103,24 +163,6 @@ const FlightPlannerScreen = () => {
   const [isEditingTime, setIsEditingTime] = useState(false);
   const [draftFlightTime, setDraftFlightTime] = useState("13:20");
   const [timeError, setTimeError] = useState("");
-  const [accommodation, setAccommodation] =
-    useState<AccommodationData | null>(null);
-
-  useEffect(() => {
-    const loadAccommodation = async () => {
-      try {
-        const saved = await AsyncStorage.getItem(ACCOMMODATION_STORAGE_KEY);
-        if (!saved) return;
-
-        const parsed = JSON.parse(saved) as AccommodationData;
-        setAccommodation(parsed);
-      } catch (error) {
-        console.error("Load accommodation error:", error);
-      }
-    };
-
-    void loadAccommodation();
-  }, []);
 
 
   const airport = useMemo(
@@ -404,6 +446,11 @@ const FlightPlannerScreen = () => {
           <Text style={[styles.helperText, { color: colors.textMuted }]}>
             항공편의 현지 출발시간을 선택해주세요.
           </Text>
+
+          <Text style={[styles.flightNotice, { color: colors.textMuted }]}>
+            공항 도착 목표시간은 Tokyo Railway Guide의 여행 계획용 권장 기준입니다.
+            {"\n"}실제 탑승 수속 마감시간과 항공사 안내를 반드시 함께 확인하세요.
+          </Text>
         </View>
 
         <View
@@ -450,55 +497,112 @@ const FlightPlannerScreen = () => {
 
         <View style={styles.section}>
           <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
-            숙소에서 공항까지
+            터미널별 항공사 안내
           </Text>
 
-          <View
-            style={[
-              styles.accommodationCard,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-            ]}
-          >
-            <View style={styles.accommodationIcon}>
-              <House size={20} color="#7FAF9B" strokeWidth={1.8} />
-            </View>
+          <Text style={[styles.terminalIntro, { color: colors.textMuted }]}>
+            {airport.nameKo}에서 이용하는 주요 항공사를 터미널별로 확인하세요.
+          </Text>
 
-            <View style={styles.accommodationTextArea}>
-              <Text style={[styles.accommodationTitle, { color: colors.text }]}>
-                {accommodation?.stationNameKo
-                  ? `${accommodation.stationNameKo}역에서 출발`
-                  : "내 숙소에서 출발"}
-              </Text>
+          <Text style={[styles.fidsNotice, { color: colors.textMuted }]}>
+            출발 체크인 카운터는 공항 내 FIDS를 참조해주세요.
+            {"\n"}항공편·공동운항에 따라 이용 터미널이 달라질 수 있으므로 출발 당일
+            예약 정보와 공항 안내를 다시 확인해주세요.
+          </Text>
 
-              <Text
+          <View style={styles.terminalList}>
+            {TERMINAL_GUIDES[selectedAirport].map((group) => (
+              <View
+                key={group.station}
                 style={[
-                  styles.accommodationDescription,
-                  { color: colors.textMuted },
+                  styles.stationGroupCard,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
                 ]}
               >
-                {accommodation?.stationNameKo
-                  ? `${accommodation.stationNameKo}역 → ${airport.nameKo}`
-                  : `저장된 숙소역 → ${airport.nameKo}`}
-                {"\n"}
-                CULLINAN 엔진으로 공항 이동 경로를 계산합니다.
-              </Text>
-            </View>
+                <View style={styles.stationGroupHeader}>
+                  <MapPin size={18} color="#7FAF9B" strokeWidth={2} />
+                  <Text style={[styles.stationGroupTitle, { color: colors.text }]}>
+                    {group.station}
+                  </Text>
+                </View>
+
+                {group.terminals.map((item, index) => (
+                  <View
+                    key={`${group.station}:${item.terminal}`}
+                    style={[
+                      styles.terminalBlock,
+                      index > 0 && {
+                        borderTopWidth: StyleSheet.hairlineWidth,
+                        borderTopColor: colors.border,
+                      },
+                    ]}
+                  >
+                    <View style={styles.terminalHeader}>
+                      <View
+                        style={[
+                          styles.terminalCodeBadge,
+                          {
+                            backgroundColor: isDark ? "#F1F5F9" : "#263238",
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.terminalCodeText,
+                            { color: isDark ? "#182026" : "#FFFFFF" },
+                          ]}
+                        >
+                          {getTerminalBadge(item.terminal)}
+                        </Text>
+                      </View>
+
+                      <View style={styles.terminalTitleArea}>
+                        <Text style={[styles.terminalTitle, { color: colors.text }]}>
+                          {item.terminal}
+                        </Text>
+                        {!!item.detail && (
+                          <Text
+                            style={[
+                              styles.terminalDetail,
+                              { color: colors.textMuted },
+                            ]}
+                          >
+                            {item.detail}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+
+                    <View style={styles.airlineChipRow}>
+                      {item.airlines.map((airline) => (
+                        <View
+                          key={`${item.terminal}:${airline}`}
+                          style={[
+                            styles.airlineChip,
+                            { backgroundColor: colors.surfaceSecondary },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.airlineChipText,
+                              { color: colors.textSecondary },
+                            ]}
+                          >
+                            {airline}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ))}
           </View>
+
+
         </View>
 
-        <TouchableOpacity
-          style={styles.primaryButton}
-          activeOpacity={0.8}
-          disabled
-        >
-          <Text style={styles.primaryButtonText}>숙소 → 공항 경로 계산</Text>
-        </TouchableOpacity>
 
-        <Text style={[styles.footerNote, { color: colors.textMuted }]}>
-          공항 도착 목표시간은 Tokyo Railway Guide의 여행 계획용 권장
-          기준입니다. 실제 탑승 수속 마감시간과 항공사 안내를 반드시 함께
-          확인하세요.
-        </Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -782,6 +886,15 @@ const styles = StyleSheet.create({
     color: "#94A3B8",
   },
 
+  flightNotice: {
+    width: "100%",
+    flexShrink: 1,
+    marginTop: 10,
+    paddingHorizontal: 4,
+    fontSize: 10,
+    lineHeight: 16,
+  },
+
   recommendationCard: {
     marginTop: 28,
     padding: 22,
@@ -834,63 +947,119 @@ const styles = StyleSheet.create({
     color: "#789084",
   },
 
-  accommodationCard: {
-    padding: 17,
-    flexDirection: "row",
-    alignItems: "center",
+
+  terminalIntro: {
+    marginTop: -4,
+    fontSize: 12,
+    lineHeight: 18,
+  },
+
+  fidsNotice: {
+    width: "100%",
+    flexShrink: 1,
+    marginTop: 6,
+    marginBottom: 12,
+    fontSize: 10,
+    lineHeight: 16,
+  },
+
+  terminalList: {
+    gap: 10,
+  },
+
+  stationGroupCard: {
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
-    backgroundColor: "#FFFFFF",
+    overflow: "hidden",
   },
 
-  accommodationIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
+  stationGroupHeader: {
+    minHeight: 52,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 9,
+    backgroundColor: "rgba(127,175,155,0.08)",
+  },
+
+  stationGroupTitle: {
+    fontSize: 15,
+    fontWeight: "800",
+  },
+
+  terminalBlock: {
+    padding: 16,
+  },
+
+  terminalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  terminalCodeBadge: {
+    minWidth: 54,
+    height: 32,
+    paddingHorizontal: 9,
+    borderRadius: 9,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#EDF5F1",
-    marginRight: 14,
+    marginRight: 11,
   },
 
-  accommodationTextArea: {
+  terminalCodeText: {
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 0.3,
+  },
+
+  terminalTitleArea: {
     flex: 1,
   },
 
-  accommodationTitle: {
+  terminalTitle: {
     fontSize: 15,
+    fontWeight: "800",
+  },
+
+  terminalDetail: {
+    marginTop: 2,
+    fontSize: 11,
+  },
+
+  airlineChipRow: {
+    marginTop: 13,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 7,
+  },
+
+  airlineChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    borderRadius: 10,
+  },
+
+  airlineChipText: {
+    fontSize: 11,
     fontWeight: "700",
-    color: "#1F2937",
   },
 
-  accommodationDescription: {
-    marginTop: 5,
-    fontSize: 12,
-    lineHeight: 18,
-    color: "#94A3B8",
-  },
-
-  primaryButton: {
-    height: 56,
-    marginTop: 26,
-    borderRadius: 17,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#CBD5E1",
-  },
-
-  primaryButtonText: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#FFFFFF",
+  terminalNotice: {
+    width: "100%",
+    flexShrink: 1,
+    marginTop: 11,
+    paddingHorizontal: 4,
+    fontSize: 10,
+    lineHeight: 16,
   },
 
   footerNote: {
+    width: "100%",
+    flexShrink: 1,
     marginTop: 16,
     paddingHorizontal: 6,
     fontSize: 11,
-    lineHeight: 17,
+    lineHeight: 18,
     textAlign: "center",
     color: "#94A3B8",
   },
