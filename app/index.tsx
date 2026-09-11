@@ -178,6 +178,7 @@ const HomeScreen = () => {
     null,
   );
   const [isLoadingAccommodation, setIsLoadingAccommodation] = useState(false);
+  const [isAccommodationJourney, setIsAccommodationJourney] = useState(false);
 
   useEffect(() => {
     if (params.departureStationId) {
@@ -235,6 +236,7 @@ const HomeScreen = () => {
     try {
       setIsLoadingAccommodation(true);
       setLocationMessage(null);
+      setIsAccommodationJourney(true);
 
       const saved = await AsyncStorage.getItem(ACCOMMODATION_STORAGE_KEY);
 
@@ -337,6 +339,7 @@ const HomeScreen = () => {
 
   const handleUseCurrentLocation = async () => {
     try {
+      setIsAccommodationJourney(false);
       setIsLocatingDeparture(true);
       setLocationMessage(null);
 
@@ -410,6 +413,8 @@ const HomeScreen = () => {
   };
 
   const handleSelectArrival = () => {
+    setIsAccommodationJourney(false);
+
     router.push({
       pathname: "/search",
 
@@ -428,6 +433,8 @@ const HomeScreen = () => {
   };
 
   const handleSwapStations = () => {
+    setIsAccommodationJourney(false);
+
     const previousDeparture = departure;
 
     setDeparture(arrival);
@@ -535,6 +542,7 @@ const HomeScreen = () => {
         departureTime: departureDate.toISOString(),
 
         departureTimeMode,
+        journeyMode: isAccommodationJourney ? "accommodation" : "normal",
       },
     });
   };

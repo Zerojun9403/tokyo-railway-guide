@@ -66,40 +66,35 @@ export const buildTokyoMetroTrainCandidates = ({
       continue;
     }
 
-    const destination = destinationTimetable.find(
+    /*
+     * Tokyo Metro는 동일 trainNumber가 목적지역 시간표에 실제로 존재할 때만
+     * 같은 열차로 확정한다.
+     *
+     * trainNumber가 없는 경우를 위한 시간/종별/행선지 휴리스틱은 막차 계산에서
+     * 다른 열차를 같은 열차로 오인할 수 있으므로 사용하지 않는다.
+     */
+    const matchedDestination = destinationTimetable.find(
       (item) =>
         item.lineId === lineId &&
         item.directionId === origin.directionId &&
-        item.trainNumber === origin.trainNumber,
+        item.trainNumber === origin.trainNumber &&
+        toServiceMinutes(item.departureTime) >=
+          toServiceMinutes(origin.departureTime),
     );
 
-    let matchedDestination = destination;
-
     if (!matchedDestination) {
-      const originMinutes = toServiceMinutes(origin.departureTime);
-
-      matchedDestination = destinationTimetable
-        .filter(
-          (item) =>
-            item.lineId === lineId &&
-            item.directionId === origin.directionId &&
-            (!origin.trainType ||
-              !item.trainType ||
-              item.trainType === origin.trainType) &&
-            (!origin.destinationStation ||
-              !item.destinationStation ||
-              item.destinationStation === origin.destinationStation) &&
-            toServiceMinutes(item.departureTime) >= originMinutes &&
-            toServiceMinutes(item.departureTime) - originMinutes <= 180,
-        )
-        .sort(
-          (a, b) =>
-            toServiceMinutes(a.departureTime) -
-            toServiceMinutes(b.departureTime),
-        )[0];
+      continue;
     }
 
-    if (!matchedDestination) {
+    /*
+     * 종착역 정보가 양쪽 시간표에 모두 있고 서로 다르면 동일 열차로 보지 않는다.
+     * 예: 우에노 종착 열차를 아사쿠사까지 가는 열차로 만드는 오매칭 방지.
+     */
+    if (
+      origin.destinationStation &&
+      matchedDestination.destinationStation &&
+      origin.destinationStation !== matchedDestination.destinationStation
+    ) {
       continue;
     }
 

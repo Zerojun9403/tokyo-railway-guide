@@ -25,7 +25,9 @@ import { buildRailwayGraph } from "../utils/routing/buildRailwayGraph";
 import { calculateRouteTime } from "../utils/routing/calculateRouteTime";
 import { findStationRoute } from "../utils/routing/findStationRoute";
 import { resolveLiveJourney } from "../utils/routing/resolveLiveJourney";
+import { resolveLiveLastJourney } from "../utils/routing/resolveLiveLastJourney";
 import type { JourneyResolverResult } from "../utils/routing/resolveJourney";
+import type { LastJourneyResolverResult } from "../utils/routing/resolveLastJourney";
 
 const formatTime = (date: Date) => {
   return date.toLocaleTimeString("ko-KR", {
@@ -45,6 +47,7 @@ const RouteResultScreen = () => {
     arrivalNameJa?: string;
     departureTime?: string;
     departureTimeMode?: string;
+    journeyMode?: string;
   }>();
 
   const graph = useMemo(() => {
@@ -138,6 +141,58 @@ const RouteResultScreen = () => {
     void run();
   }, [journeyStructure, departureDate]);
 
+  const [lastJourney, setLastJourney] =
+    useState<LastJourneyResolverResult | null>(null);
+  const [isLoadingLastJourney, setIsLoadingLastJourney] = useState(false);
+
+  useEffect(() => {
+    if (
+      params.journeyMode !== "accommodation" ||
+      !journeyStructure
+    ) {
+      setLastJourney(null);
+      setIsLoadingLastJourney(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const run = async () => {
+      try {
+        setIsLoadingLastJourney(true);
+
+        const result = await resolveLiveLastJourney({
+          journey: journeyStructure,
+          apiBaseUrl: "https://tokyo-railway-api.vercel.app",
+        });
+
+        if (cancelled) {
+          return;
+        }
+
+        console.log("🌙 [CULLINAN LastJourney]", result);
+        setLastJourney(result);
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+
+        console.error("🌙 [CULLINAN LastJourney Error]", error);
+        setLastJourney(null);
+      } finally {
+        if (!cancelled) {
+          setIsLoadingLastJourney(false);
+        }
+      }
+    };
+
+    void run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [journeyStructure, params.journeyMode]);
+
   const routeTime = useMemo(() => {
     if (!route) {
       return null;
@@ -199,6 +254,9 @@ const RouteResultScreen = () => {
 
     return durationMinutes;
   }, [resolvedLiveJourney, estimatedMinutes]);
+
+  const resolvedLastJourney =
+    lastJourney?.status === "resolved" ? lastJourney : null;
 
   const getLine = (lineId: string) => {
     return Object.values(railwayRegistry).find((line) => line.id === lineId);
@@ -513,6 +571,97 @@ const RouteResultScreen = () => {
             </>
           )}
         </View>
+
+        {params.journeyMode === "accommodation" && route && (
+          <View
+            style={[
+              styles.lastJourneyCard,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+            ]}
+          >
+            <View style={styles.lastJourneyHeader}>
+              <Clock3 size={18} color="#A78BFA" strokeWidth={2.2} />
+
+              <Text
+                style={[
+                  styles.lastJourneyEyebrow,
+                  {
+                    color: colors.textSecondary,
+                  },
+                ]}
+              >
+                숙소 막차 안내
+              </Text>
+            </View>
+
+            {isLoadingLastJourney ? (
+              <Text
+                style={[
+                  styles.lastJourneyDescription,
+                  {
+                    color: colors.textSecondary,
+                  },
+                ]}
+              >
+                숙소까지 돌아갈 수 있는 마지막 열차를 확인하고 있어요.
+              </Text>
+            ) : resolvedLastJourney ? (
+              <>
+                <Text
+                  style={[
+                    styles.lastJourneyTitle,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                >
+                  {resolvedLastJourney.departureTime}까지 출발하세요
+                </Text>
+
+                <Text
+                  style={[
+                    styles.lastJourneyDescription,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  {resolvedLastJourney.departureTime} 출발 ·{" "}
+                  {resolvedLastJourney.arrivalTime} 도착 · 환승{" "}
+                  {resolvedLastJourney.transferCount}회
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text
+                  style={[
+                    styles.lastJourneyTitle,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                >
+                  막차를 확정할 수 없어요
+                </Text>
+
+                <Text
+                  style={[
+                    styles.lastJourneyDescription,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  현재 제공되는 실제 시간표만으로 숙소까지의 마지막 열차를
+                  확정하지 못했습니다.
+                </Text>
+              </>
+            )}
+          </View>
+        )}
 
         {/* 결과 없음 */}
 
@@ -1044,6 +1193,40 @@ const styles = StyleSheet.create({
     fontSize: 11,
     lineHeight: 15,
     fontWeight: "900",
+  },
+
+  lastJourneyCard: {
+    marginTop: 14,
+    borderRadius: 20,
+    borderWidth: 1,
+    paddingHorizontal: 18,
+    paddingVertical: 17,
+  },
+
+  lastJourneyHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+  },
+
+  lastJourneyEyebrow: {
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "800",
+  },
+
+  lastJourneyTitle: {
+    marginTop: 12,
+    fontSize: 21,
+    lineHeight: 28,
+    fontWeight: "900",
+  },
+
+  lastJourneyDescription: {
+    marginTop: 6,
+    fontSize: 11,
+    lineHeight: 17,
+    fontWeight: "600",
   },
 
   noRouteCard: {
