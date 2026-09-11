@@ -112,6 +112,9 @@ const RouteResultScreen = () => {
     null,
   );
 
+  const [phantomText, setPhantomText] = useState<string | null>(null);
+  const [isLoadingPhantom, setIsLoadingPhantom] = useState(false);
+
   useEffect(() => {
     if (!journeyStructure) {
       setLiveJourney(null);
@@ -223,6 +226,98 @@ const RouteResultScreen = () => {
     liveJourney?.status === "resolved" ? liveJourney : null;
 
   const liveTrain = resolvedLiveJourney?.segments[0]?.train.candidate ?? null;
+
+
+  useEffect(() => {
+    if (!resolvedLiveJourney) {
+      setPhantomText(null);
+      setIsLoadingPhantom(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const run = async () => {
+      try {
+        setIsLoadingPhantom(true);
+        setPhantomText(null);
+
+        const segments = resolvedLiveJourney.segments.map((resolvedSegment) => {
+          const { segment, train } = resolvedSegment;
+          const candidate = train.candidate;
+
+          const fromNode = graph.nodes.get(segment.fromNodeId);
+          const toNode = graph.nodes.get(segment.toNodeId);
+          const line = getLine(segment.lineId);
+
+          return {
+            fromStation: fromNode?.station.nameKo ?? segment.fromStationId,
+            toStation: toNode?.station.nameKo ?? segment.toStationId,
+            lineName: line?.nameKo ?? segment.lineId,
+            trainNumber: candidate.trainNumber,
+            trainType: candidate.trainTypeKo ?? candidate.trainType,
+            departureTime: train.departureTime,
+            arrivalTime: train.arrivalTime,
+          };
+        });
+
+        const response = await fetch(
+          "https://tokyo-railway-api.vercel.app/api/phantom",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              journey: {
+                departureStation: params.departureNameKo ?? "-",
+                arrivalStation: params.arrivalNameKo ?? "-",
+                departureTime: resolvedLiveJourney.departureTime,
+                arrivalTime: resolvedLiveJourney.arrivalTime,
+                transferCount: resolvedLiveJourney.transferCount,
+                segments,
+              },
+            }),
+          },
+        );
+
+        const data = (await response.json()) as {
+          ok?: boolean;
+          text?: string;
+          error?: string;
+        };
+
+        if (!response.ok || !data.ok || !data.text) {
+          throw new Error(data.error ?? "PHANTOM 응답을 가져오지 못했습니다.");
+        }
+
+        if (!cancelled) {
+          setPhantomText(data.text);
+        }
+      } catch (error) {
+        console.error("👻 [PHANTOM Error]", error);
+
+        if (!cancelled) {
+          setPhantomText(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingPhantom(false);
+        }
+      }
+    };
+
+    void run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    graph,
+    params.arrivalNameKo,
+    params.departureNameKo,
+    resolvedLiveJourney,
+  ]);
 
   const displayDepartureTime =
     resolvedLiveJourney?.departureTime ?? departureTimeLabel;
@@ -717,6 +812,53 @@ const RouteResultScreen = () => {
                 : "예상 시간은 정거장당 평균 2분, 환승 1회당 평균 3분을 기준으로 계산합니다."}
             </Text>
 
+            {(isLoadingPhantom || phantomText) && (
+              <View
+                style={[
+                  styles.phantomCard,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.phantomEyebrow,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  PHANTOM AI 👻
+                </Text>
+
+                <Text
+                  style={[
+                    styles.phantomTitle,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                >
+                  여행 안내
+                </Text>
+
+                <Text
+                  style={[
+                    styles.phantomDescription,
+                    {
+                      color: colors.textSecondary,
+                    },
+                  ]}
+                >
+                  {isLoadingPhantom
+                    ? "CULLINAN의 실제 열차 결과를 바탕으로 안내를 만들고 있어요."
+                    : phantomText}
+                </Text>
+              </View>
+            )}
+
             {/* 상세 경로 */}
 
             <View style={styles.routeSection}>
@@ -1069,6 +1211,37 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
     fontSize: 10,
     lineHeight: 15,
+  },
+
+  phantomCard: {
+    marginTop: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    paddingHorizontal: 18,
+    paddingVertical: 17,
+  },
+
+  phantomEyebrow: {
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: "800",
+    letterSpacing: 0.8,
+  },
+
+  phantomTitle: {
+    marginTop: 4,
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: "900",
+  },
+
+  phantomDescription: {
+    marginTop: 9,
+    width: "100%",
+    flexShrink: 1,
+    fontSize: 12,
+    lineHeight: 20,
+    fontWeight: "600",
   },
 
   routeSection: {

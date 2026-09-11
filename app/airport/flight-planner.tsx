@@ -9,7 +9,7 @@ import {
   MapPin,
   Plane,
 } from "lucide-react-native";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useAppTheme } from "@/hooks/useAppTheme";
 import {
@@ -164,6 +164,10 @@ const FlightPlannerScreen = () => {
   const [draftFlightTime, setDraftFlightTime] = useState("13:20");
   const [timeError, setTimeError] = useState("");
 
+  const [selectedAirline, setSelectedAirline] = useState<string | null>(null);
+  const [phantomAirportText, setPhantomAirportText] = useState<string | null>(null);
+  const [isLoadingPhantomAirport, setIsLoadingPhantomAirport] = useState(false);
+
 
   const airport = useMemo(
     () => AIRPORTS.find((item) => item.id === selectedAirport) ?? AIRPORTS[0],
@@ -174,6 +178,75 @@ const FlightPlannerScreen = () => {
     () => subtractMinutes(flightDepartureTime, AIRPORT_ARRIVAL_BUFFER_MINUTES),
     [flightDepartureTime],
   );
+
+  useEffect(() => {
+    setSelectedAirline(null);
+    setPhantomAirportText(null);
+    setIsLoadingPhantomAirport(false);
+  }, [selectedAirport]);
+
+  useEffect(() => {
+    if (!selectedAirline) {
+      setPhantomAirportText(null);
+      setIsLoadingPhantomAirport(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const run = async () => {
+      try {
+        setIsLoadingPhantomAirport(true);
+        setPhantomAirportText(null);
+
+        const response = await fetch(
+          "https://tokyo-railway-api.vercel.app/api/phantom",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              airport: {
+                airport: airport.code,
+                airline: selectedAirline,
+              },
+            }),
+          },
+        );
+
+        const data = (await response.json()) as {
+          ok?: boolean;
+          text?: string;
+          error?: string;
+        };
+
+        if (!response.ok || !data.ok || !data.text) {
+          throw new Error(data.error ?? "PHANTOM 공항 안내를 가져오지 못했습니다.");
+        }
+
+        if (!cancelled) {
+          setPhantomAirportText(data.text);
+        }
+      } catch (error) {
+        console.error("👻 [PHANTOM Airport Error]", error);
+
+        if (!cancelled) {
+          setPhantomAirportText(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingPhantomAirport(false);
+        }
+      }
+    };
+
+    void run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [airport.code, selectedAirline]);
 
   const openTimeEditor = () => {
     setDraftFlightTime(flightDepartureTime);
@@ -574,24 +647,36 @@ const FlightPlannerScreen = () => {
                     </View>
 
                     <View style={styles.airlineChipRow}>
-                      {item.airlines.map((airline) => (
-                        <View
-                          key={`${item.terminal}:${airline}`}
-                          style={[
-                            styles.airlineChip,
-                            { backgroundColor: colors.surfaceSecondary },
-                          ]}
-                        >
-                          <Text
+                      {item.airlines.map((airline) => {
+                        const selected = airline === selectedAirline;
+
+                        return (
+                          <TouchableOpacity
+                            key={`${item.terminal}:${airline}`}
                             style={[
-                              styles.airlineChipText,
-                              { color: colors.textSecondary },
+                              styles.airlineChip,
+                              { backgroundColor: colors.surfaceSecondary },
+                              selected && styles.airlineChipSelected,
                             ]}
+                            activeOpacity={0.75}
+                            onPress={() =>
+                              setSelectedAirline((current) =>
+                                current === airline ? null : airline,
+                              )
+                            }
                           >
-                            {airline}
-                          </Text>
-                        </View>
-                      ))}
+                            <Text
+                              style={[
+                                styles.airlineChipText,
+                                { color: colors.textSecondary },
+                                selected && styles.airlineChipTextSelected,
+                              ]}
+                            >
+                              {airline}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
                     </View>
                   </View>
                 ))}
@@ -599,7 +684,41 @@ const FlightPlannerScreen = () => {
             ))}
           </View>
 
+          {(selectedAirline || isLoadingPhantomAirport || phantomAirportText) && (
+            <View
+              style={[
+                styles.phantomAirportCard,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.phantomAirportEyebrow,
+                  { color: colors.textSecondary },
+                ]}
+              >
+                PHANTOM AI 👻
+              </Text>
 
+              <Text style={[styles.phantomAirportTitle, { color: colors.text }]}>
+                {selectedAirline
+                  ? `${selectedAirline} 공항 안내`
+                  : "공항 안내"}
+              </Text>
+
+              <Text
+                style={[
+                  styles.phantomAirportDescription,
+                  { color: colors.textSecondary },
+                ]}
+              >
+                {isLoadingPhantomAirport
+                  ? "SPECTRE의 공항 정보를 바탕으로 안내를 만들고 있어요."
+                  : phantomAirportText ??
+                    "항공사를 선택하면 이용할 공항역과 터미널을 안내해드려요."}
+              </Text>
+            </View>
+          )}
         </View>
 
 
@@ -1042,6 +1161,46 @@ const styles = StyleSheet.create({
   airlineChipText: {
     fontSize: 11,
     fontWeight: "700",
+  },
+
+  airlineChipSelected: {
+    backgroundColor: "#7FAF9B",
+  },
+
+  airlineChipTextSelected: {
+    color: "#FFFFFF",
+    fontWeight: "900",
+  },
+
+  phantomAirportCard: {
+    marginTop: 16,
+    paddingHorizontal: 18,
+    paddingVertical: 17,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+
+  phantomAirportEyebrow: {
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: "800",
+    letterSpacing: 0.8,
+  },
+
+  phantomAirportTitle: {
+    marginTop: 4,
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: "900",
+  },
+
+  phantomAirportDescription: {
+    width: "100%",
+    flexShrink: 1,
+    marginTop: 9,
+    fontSize: 12,
+    lineHeight: 20,
+    fontWeight: "600",
   },
 
   terminalNotice: {
