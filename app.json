@@ -8,17 +8,19 @@
     "scheme": "tokyorailwayguide",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.zerojun.tokyorailwayguide"
     },
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#F9DD16",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false
-    },
+  "package": "com.zerojun.tokyorailwayguide",
+  "adaptiveIcon": {
+    "backgroundColor": "#F9DD16",
+    "foregroundImage": "./assets/images/android-icon-foreground.png",
+    "backgroundImage": "./assets/images/android-icon-background.png",
+    "monochromeImage": "./assets/images/android-icon-monochrome.png"
+  },
+  "predictiveBackGestureEnabled": false
+},
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import {
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -66,125 +68,129 @@ const PhantomAssistant = ({
         onRequestClose={() => setIsOpen(false)}
       >
         <SafeAreaView style={styles.modalRoot}>
-          <Pressable
-            style={styles.backdrop}
-            onPress={() => setIsOpen(false)}
-          />
-
-          <View
-            style={[
-              styles.panel,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-            ]}
+          <KeyboardAvoidingView
+            style={styles.keyboardAvoidingView}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
-            <View style={styles.handle} />
-
-            <View style={styles.header}>
-              <View style={styles.titleArea}>
-                <Text
-                  style={[
-                    styles.eyebrow,
-                    {
-                      color: colors.textSecondary,
-                    },
-                  ]}
-                >
-                  PHANTOM AI 👻
-                </Text>
-
-                <Text
-                  style={[
-                    styles.title,
-                    {
-                      color: colors.text,
-                    },
-                  ]}
-                >
-                  안녕하세요, PHANTOM AI입니다.
-                </Text>
-              </View>
-
-              <TouchableOpacity
-                style={[
-                  styles.closeButton,
-                  {
-                    backgroundColor: colors.surfaceSecondary,
-                  },
-                ]}
-                activeOpacity={0.7}
-                onPress={() => setIsOpen(false)}
-              >
-                <X
-                  size={19}
-                  color={colors.text}
-                  strokeWidth={2}
-                />
-              </TouchableOpacity>
-            </View>
-
-            <Text
-              style={[
-                styles.description,
-                {
-                  color: colors.textSecondary,
-                },
-              ]}
-            >
-              {isLoading
-                ? "현재 경로와 실제 열차 정보를 확인하고 있어요."
-                : text ??
-                  "현재 보고 있는 경로를 바탕으로 여행을 도와드릴게요."}
-            </Text>
+            <Pressable
+              style={styles.backdrop}
+              onPress={() => setIsOpen(false)}
+            />
 
             <View
               style={[
-                styles.inputContainer,
+                styles.panel,
                 {
-                  backgroundColor: colors.surfaceSecondary,
+                  backgroundColor: colors.surface,
                   borderColor: colors.border,
                 },
               ]}
             >
-              <TextInput
-                value={message}
-                onChangeText={setMessage}
-                placeholder="PHANTOM에게 질문하기..."
-                placeholderTextColor={colors.textSecondary}
-                style={[
-                  styles.input,
-                  {
-                    color: colors.text,
-                  },
-                ]}
-                returnKeyType="send"
-                editable={!isLoading}
-                onSubmitEditing={() => void handleSend()}
-              />
+              <View style={styles.handle} />
 
-              <TouchableOpacity
+              <View style={styles.header}>
+                <View style={styles.titleArea}>
+                  <Text
+                    style={[
+                      styles.eyebrow,
+                      {
+                        color: colors.textSecondary,
+                      },
+                    ]}
+                  >
+                    PHANTOM AI 👻
+                  </Text>
+
+                  <Text
+                    style={[
+                      styles.title,
+                      {
+                        color: colors.text,
+                      },
+                    ]}
+                  >
+                    안녕하세요, PHANTOM AI입니다.
+                  </Text>
+                </View>
+
+                <TouchableOpacity
+                  style={[
+                    styles.closeButton,
+                    {
+                      backgroundColor: colors.surfaceSecondary,
+                    },
+                  ]}
+                  activeOpacity={0.7}
+                  onPress={() => setIsOpen(false)}
+                >
+                  <X
+                    size={19}
+                    color={colors.text}
+                    strokeWidth={2}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              <Text
                 style={[
-                  styles.sendButton,
+                  styles.description,
                   {
-                    backgroundColor: colors.text,
-                    opacity:
-                      !message.trim() || isLoading ? 0.45 : 1,
+                    color: colors.textSecondary,
                   },
                 ]}
-                activeOpacity={0.75}
-                disabled={!message.trim() || isLoading}
-                onPress={() => void handleSend()}
               >
-                <Send
-                  size={18}
-                  color={colors.surface}
-                  strokeWidth={2.2}
+                {isLoading
+                  ? "현재 경로와 실제 열차 정보를 확인하고 있어요."
+                  : text ??
+                    "현재 보고 있는 경로를 바탕으로 여행을 도와드릴게요."}
+              </Text>
+
+              <View
+                style={[
+                  styles.inputContainer,
+                  {
+                    backgroundColor: colors.surfaceSecondary,
+                    borderColor: colors.border,
+                  },
+                ]}
+              >
+                <TextInput
+                  value={message}
+                  onChangeText={setMessage}
+                  placeholder="PHANTOM에게 질문하기..."
+                  placeholderTextColor={colors.textSecondary}
+                  style={[
+                    styles.input,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                  returnKeyType="send"
+                  editable={!isLoading}
+                  onSubmitEditing={() => void handleSend()}
                 />
-              </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.sendButton,
+                    {
+                      backgroundColor: colors.text,
+                      opacity: !message.trim() || isLoading ? 0.45 : 1,
+                    },
+                  ]}
+                  activeOpacity={0.75}
+                  disabled={!message.trim() || isLoading}
+                  onPress={() => void handleSend()}
+                >
+                  <Send
+                    size={18}
+                    color={colors.surface}
+                    strokeWidth={2.2}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          </KeyboardAvoidingView>
         </SafeAreaView>
       </Modal>
     </>
@@ -221,6 +227,10 @@ const styles = StyleSheet.create({
   },
 
   modalRoot: {
+    flex: 1,
+  },
+
+  keyboardAvoidingView: {
     flex: 1,
     justifyContent: "flex-end",
   },
