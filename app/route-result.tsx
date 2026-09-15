@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-
+import { API_BASE_URL } from "@/config/api";
 import {
   SafeAreaView,
   ScrollView,
@@ -129,7 +129,7 @@ const RouteResultScreen = () => {
         const result = await resolveLiveJourney({
           journey: journeyStructure,
           currentTime,
-          apiBaseUrl: "https://tokyo-railway-api.vercel.app",
+          apiBaseUrl: API_BASE_URL,
         });
 
         console.log("💎 [CULLINAN LiveJourney]", result);
@@ -167,7 +167,7 @@ const RouteResultScreen = () => {
 
         const result = await resolveLiveLastJourney({
           journey: journeyStructure,
-          apiBaseUrl: "https://tokyo-railway-api.vercel.app",
+          apiBaseUrl: API_BASE_URL,
         });
 
         if (cancelled) {
@@ -285,7 +285,7 @@ const RouteResultScreen = () => {
         setPhantomText(null);
 
         const response = await fetch(
-          "https://tokyo-railway-api.vercel.app/api/phantom",
+          `${API_BASE_URL}/api/phantom`,
           {
             method: "POST",
             headers: {
@@ -344,7 +344,7 @@ const handlePhantomMessage = async (message: string): Promise<boolean> => {
     setPhantomText(null);
 
     const response = await fetch(
-      "https://tokyo-railway-api.vercel.app/api/phantom",
+      `${API_BASE_URL}/api/phantom`,
       {
         method: "POST",
         headers: {

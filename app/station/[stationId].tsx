@@ -1,4 +1,5 @@
 import { resolveStationTransfers } from "../../utils/normalizeTransfers";
+import { API_BASE_URL } from "@/config/api";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -420,9 +421,6 @@ const LAST_TRAIN_SUPPORTED_OPERATORS = new Set([
   "toei",
 ]);
 
-const LAST_TRAIN_API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL ??
-  "https://tokyo-railway-api.vercel.app";
 
 const TRAIN_INFORMATION_SUPPORTED_OPERATORS = new Set([
   "jr-east",
@@ -705,18 +703,18 @@ export default function StationScreen() {
       });
 
       console.log("🌙 막차 API 요청", {
-        apiBaseUrl: LAST_TRAIN_API_BASE_URL,
+        apiBaseUrl: API_BASE_URL,
         operator: station.operatorId,
         guideLineId: station.lineId,
         lineId: lastTrainLineId,
         guideStationId: station.id,
         stationId: lastTrainStationId,
         directionId: selectedDirection.id,
-        url: `${LAST_TRAIN_API_BASE_URL}/api/last-train?${query.toString()}`,
+        url: `${API_BASE_URL}/api/last-train?${query.toString()}`,
       });
 
       const response = await fetch(
-        `${LAST_TRAIN_API_BASE_URL}/api/last-train?${query.toString()}`,
+        `${API_BASE_URL}/api/last-train?${query.toString()}`,
         {
           cache: "no-store",
         },
@@ -810,7 +808,7 @@ export default function StationScreen() {
       });
 
       const response = await fetch(
-        `${LAST_TRAIN_API_BASE_URL}/api/train-information?${query.toString()}`,
+        `${API_BASE_URL}/api/train-information?${query.toString()}`,
         { cache: "no-store" },
       );
 

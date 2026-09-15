@@ -1,5 +1,6 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
+import { API_BASE_URL } from "@/config/api";
 import {
   ArrowDown,
   ChevronLeft,
@@ -47,9 +48,7 @@ type SkylinerApiResponse = {
   count: number;
 };
 
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL ??
-  "https://tokyo-railway-api.vercel.app";
+
 
 const DEPARTURE_STATIONS: Record<
   Direction,

@@ -1,6 +1,7 @@
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import { API_BASE_URL } from "@/config/api";
 import { useRouter } from "expo-router";
 import {
   ArrowLeft,
@@ -200,7 +201,7 @@ const FlightPlannerScreen = () => {
         setPhantomAirportText(null);
 
         const response = await fetch(
-          "https://tokyo-railway-api.vercel.app/api/phantom",
+          `${API_BASE_URL}/api/phantom`,
           {
             method: "POST",
             headers: {
