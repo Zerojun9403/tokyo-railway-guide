@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { API_BASE_URL } from "@/config/api";
 import {
   SafeAreaView,
@@ -20,6 +20,7 @@ import {
 
 import { railwayRegistry } from "../data/railwayRegistry";
 import PhantomAssistant from "../components/phantom/PhantomAssistant";
+import { usePhantom } from "../contexts/PhantomContext";
 import { useAppTheme } from "../hooks/useAppTheme";
 import { buildJourneySegments } from "../utils/routing/buildJourneySegments";
 import { buildRailwayGraph } from "../utils/routing/buildRailwayGraph";
@@ -40,6 +41,7 @@ const formatTime = (date: Date) => {
 
 const RouteResultScreen = () => {
   const { colors } = useAppTheme();
+  const { setJourney, pendingRouteRequest } = usePhantom();
 
   const params = useLocalSearchParams<{
     departureNameKo?: string;
@@ -115,6 +117,8 @@ const RouteResultScreen = () => {
 
   const [phantomText, setPhantomText] = useState<string | null>(null);
   const [isLoadingPhantom, setIsLoadingPhantom] = useState(false);
+
+  const consumedPendingRouteMessageRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!journeyStructure) {
@@ -228,7 +232,7 @@ const RouteResultScreen = () => {
 
   const liveTrain = resolvedLiveJourney?.segments[0]?.train.candidate ?? null;
 
-  const phantomJourney = useMemo(() => {
+ const phantomJourney = useMemo(() => {
     if (!resolvedLiveJourney) {
       return null;
     }
@@ -269,6 +273,14 @@ const RouteResultScreen = () => {
     resolvedLiveJourney,
   ]);
 
+  useEffect(() => {
+    setJourney(phantomJourney);
+
+    return () => {
+      setJourney(null);
+    };
+  }, [phantomJourney, setJourney]);
+
 
   useEffect(() => {
     if (!phantomJourney) {
@@ -292,6 +304,10 @@ const RouteResultScreen = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
+              ...(pendingRouteRequest?.message &&
+              consumedPendingRouteMessageRef.current !== pendingRouteRequest.message
+                ? { message: pendingRouteRequest.message }
+                : {}),
               journey: phantomJourney,
             }),
           },
@@ -308,8 +324,13 @@ const RouteResultScreen = () => {
         }
 
         if (!cancelled) {
-          setPhantomText(data.text);
-        }
+          if (pendingRouteRequest?.message) {
+            consumedPendingRouteMessageRef.current =
+              pendingRouteRequest.message;
+          }
+
+             setPhantomText(data.text);
+          }
       } catch (error) {
         console.error("👻 [PHANTOM Error]", error);
 
