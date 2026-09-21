@@ -155,9 +155,15 @@ const RouteResultScreen = () => {
 
   useEffect(() => {
     if (
-      params.journeyMode !== "accommodation" ||
-      !journeyStructure
+      params.journeyMode !== "accommodation" &&
+      params.journeyMode !== "last-train"
     ) {
+      setLastJourney(null);
+      setIsLoadingLastJourney(false);
+      return;
+    }
+
+    if (!journeyStructure) {
       setLastJourney(null);
       setIsLoadingLastJourney(false);
       return;
@@ -232,12 +238,20 @@ const RouteResultScreen = () => {
 
   const liveTrain = resolvedLiveJourney?.segments[0]?.train.candidate ?? null;
 
- const phantomJourney = useMemo(() => {
-    if (!resolvedLiveJourney) {
+  const resolvedLastJourney =
+    lastJourney?.status === "resolved" ? lastJourney : null;
+
+  const phantomSourceJourney =
+    params.journeyMode === "last-train"
+      ? resolvedLastJourney
+      : resolvedLiveJourney;
+
+  const phantomJourney = useMemo(() => {
+    if (!phantomSourceJourney) {
       return null;
     }
 
-    const segments = resolvedLiveJourney.segments.map((resolvedSegment) => {
+    const segments = phantomSourceJourney.segments.map((resolvedSegment) => {
       const { segment, train } = resolvedSegment;
       const candidate = train.candidate;
 
@@ -261,16 +275,16 @@ const RouteResultScreen = () => {
     return {
       departureStation: params.departureNameKo ?? "-",
       arrivalStation: params.arrivalNameKo ?? "-",
-      departureTime: resolvedLiveJourney.departureTime,
-      arrivalTime: resolvedLiveJourney.arrivalTime,
-      transferCount: resolvedLiveJourney.transferCount,
+      departureTime: phantomSourceJourney.departureTime,
+      arrivalTime: phantomSourceJourney.arrivalTime,
+      transferCount: phantomSourceJourney.transferCount,
       segments,
     };
   }, [
     graph,
     params.arrivalNameKo,
     params.departureNameKo,
-    resolvedLiveJourney,
+    phantomSourceJourney,
   ]);
 
   useEffect(() => {
@@ -412,34 +426,28 @@ const handlePhantomMessage = async (message: string): Promise<boolean> => {
   const displayArrivalTime =
     resolvedLiveJourney?.arrivalTime ?? estimatedArrivalTime;
 
-  const displayMinutes = useMemo(() => {
-    if (!resolvedLiveJourney) {
-      return estimatedMinutes;
-    }
+const displayMinutes = useMemo(() => {
+  if (!phantomSourceJourney) {
+    return estimatedMinutes;
+  }
 
-    const [departureHour, departureMinute] = resolvedLiveJourney.departureTime
-      .split(":")
-      .map(Number);
+  const [departureHour, departureMinute] =
+    phantomSourceJourney.departureTime.split(":").map(Number);
 
-    const [arrivalHour, arrivalMinute] = resolvedLiveJourney.arrivalTime
-      .split(":")
-      .map(Number);
+  const [arrivalHour, arrivalMinute] =
+    phantomSourceJourney.arrivalTime.split(":").map(Number);
 
-    const departureTotal = departureHour * 60 + departureMinute;
-    const arrivalTotal = arrivalHour * 60 + arrivalMinute;
+  const departureTotal = departureHour * 60 + departureMinute;
+  const arrivalTotal = arrivalHour * 60 + arrivalMinute;
 
-    let durationMinutes = arrivalTotal - departureTotal;
+  let durationMinutes = arrivalTotal - departureTotal;
 
-    if (durationMinutes < 0) {
-      durationMinutes += 24 * 60;
-    }
+  if (durationMinutes < 0) {
+    durationMinutes += 24 * 60;
+  }
 
-    return durationMinutes;
-  }, [resolvedLiveJourney, estimatedMinutes]);
-
-  const resolvedLastJourney =
-    lastJourney?.status === "resolved" ? lastJourney : null;
-
+  return durationMinutes;
+}, [phantomSourceJourney, estimatedMinutes]);
   const getLine = (lineId: string) => {
     return Object.values(railwayRegistry).find((line) => line.id === lineId);
   };

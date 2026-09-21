@@ -9,7 +9,7 @@ const PHANTOM_API_URL =
   "https://tokyo-railway-api.vercel.app/api/phantom";
 
 type PhantomRouteIntent = {
-  intent: "route";
+  intent: "route" | "last-train";
   departureStation: string;
   arrivalStation: string;
 };
@@ -204,8 +204,10 @@ const GlobalPhantomAssistant = () => {
       }
 
       if (
-        data.mode === "route-intent" &&
-        data.intent?.intent === "route"
+        (data.mode === "route-intent" &&
+          data.intent?.intent === "route") ||
+        (data.mode === "last-train-intent" &&
+          data.intent?.intent === "last-train")
       ) {
         console.log(
           "[PHANTOM] route intent:",
@@ -279,7 +281,10 @@ const GlobalPhantomAssistant = () => {
               arrivalMatch.nameJa ?? "",
             departureTime,
             departureTimeMode: "now",
-            journeyMode: "normal",
+            journeyMode:
+              data.intent.intent === "last-train"
+                ? "last-train"
+                : "normal",
           },
         });
 
