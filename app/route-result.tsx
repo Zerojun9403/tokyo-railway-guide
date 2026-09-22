@@ -121,6 +121,11 @@ const RouteResultScreen = () => {
   const consumedPendingRouteMessageRef = useRef<string | null>(null);
 
   useEffect(() => {
+    if (params.journeyMode === "last-train") {
+      setLiveJourney(null);
+      return;
+    }
+
     if (!journeyStructure) {
       setLiveJourney(null);
       return;
@@ -147,7 +152,7 @@ const RouteResultScreen = () => {
     };
 
     void run();
-  }, [journeyStructure, departureDate]);
+  }, [journeyStructure, departureDate, params.journeyMode]);
 
   const [lastJourney, setLastJourney] =
     useState<LastJourneyResolverResult | null>(null);
