@@ -236,8 +236,6 @@ const RouteResultScreen = () => {
   const resolvedLiveJourney =
     liveJourney?.status === "resolved" ? liveJourney : null;
 
-  const liveTrain = resolvedLiveJourney?.segments[0]?.train.candidate ?? null;
-
   const resolvedLastJourney =
     lastJourney?.status === "resolved" ? lastJourney : null;
 
@@ -245,6 +243,9 @@ const RouteResultScreen = () => {
     params.journeyMode === "last-train"
       ? resolvedLastJourney
       : resolvedLiveJourney;
+
+  const liveTrain =
+    phantomSourceJourney?.segments[0]?.train.candidate ?? null;    
 
   const phantomJourney = useMemo(() => {
     if (!phantomSourceJourney) {
@@ -421,10 +422,10 @@ const handlePhantomMessage = async (message: string): Promise<boolean> => {
 };
 
   const displayDepartureTime =
-    resolvedLiveJourney?.departureTime ?? departureTimeLabel;
+    phantomSourceJourney?.departureTime ?? departureTimeLabel;
 
   const displayArrivalTime =
-    resolvedLiveJourney?.arrivalTime ?? estimatedArrivalTime;
+    phantomSourceJourney?.arrivalTime ?? estimatedArrivalTime;
 
 const displayMinutes = useMemo(() => {
   if (!phantomSourceJourney) {
