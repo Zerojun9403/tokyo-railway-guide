@@ -6,10 +6,11 @@ import {
   Pressable,
   SafeAreaView,
   StyleSheet,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+View, 
 } from "react-native";
 import { Send, X } from "lucide-react-native";
 
@@ -131,19 +132,28 @@ const PhantomAssistant = ({
                 </TouchableOpacity>
               </View>
 
-              <Text
-                style={[
-                  styles.description,
-                  {
-                    color: colors.textSecondary,
-                  },
-                ]}
-              >
-                {isLoading
-                  ? "현재 경로와 실제 열차 정보를 확인하고 있어요."
-                  : text ??
-                    "현재 보고 있는 경로를 바탕으로 여행을 도와드릴게요."}
-              </Text>
+<ScrollView
+  style={styles.descriptionScroll}
+  contentContainerStyle={styles.descriptionScrollContent}
+  showsVerticalScrollIndicator={false}
+  bounces
+>
+  <Text
+    style={[
+      styles.description,
+      {
+        color: colors.textSecondary,
+      },
+    ]}
+  >
+    {isLoading
+      ? "현재 경로와 실제 열차 정보를 확인하고 있어요."
+      : text ??
+        "현재 보고 있는 경로를 바탕으로 여행을 도와드릴게요."}
+  </Text>
+</ScrollView>
+
+
 
               <View
                 style={[
@@ -248,6 +258,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 28,
     minHeight: 260,
+    maxHeight: "72%",
   },
 
   handle: {
@@ -292,14 +303,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  description: {
+    descriptionScroll: {
     marginTop: 20,
+    flexShrink: 1,
+  },
+
+  descriptionScrollContent: {
+    paddingBottom: 2,
+  },
+
+  description: {
     fontSize: 13,
     lineHeight: 21,
     fontWeight: "600",
   },
 
-  inputContainer: {
+    inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 20,

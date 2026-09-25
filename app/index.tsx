@@ -337,7 +337,7 @@ const HomeScreen = () => {
     }
   };
 
-  const handleUseCurrentLocation = async () => {
+   const handleUseCurrentLocation = async () => {
     try {
       setIsAccommodationJourney(false);
       setIsLocatingDeparture(true);
@@ -354,27 +354,55 @@ const HomeScreen = () => {
         accuracy: Location.Accuracy.High,
       });
 
-      const nearest = findNearestStationCoordinate(
-        location.coords.latitude,
-        location.coords.longitude,
-      );
-      if (!nearest?.nameJa) {
-        setLocationMessage("가까운 역을 찾지 못했어요.");
+      const guideStations = getAllStations();
+      const coordinates = stationCoordinates as StationCoordinate[];
+
+      let nearest:
+        | {
+            station: (typeof guideStations)[number];
+            distance: number;
+          }
+        | null = null;
+
+      for (const station of guideStations) {
+        const coordinate = coordinates.find(
+          (item) => item.nameJa === station.nameJa,
+        );
+
+        if (!coordinate) {
+          continue;
+        }
+
+        const distance = calculateDistance(
+          location.coords.latitude,
+          location.coords.longitude,
+          coordinate.latitude,
+          coordinate.longitude,
+        );
+
+        if (!nearest || distance < nearest.distance) {
+          nearest = {
+            station,
+            distance,
+          };
+        }
+      }
+
+      if (!nearest) {
+        setLocationMessage("가까운 지원 역을 찾지 못했어요.");
         return;
       }
 
-      const guideStations = getAllStations().filter(
-        (station) => station.nameJa === nearest.nameJa,
-      );
+      const MAX_NEAREST_STATION_DISTANCE_METERS = 10_000;
 
-      if (guideStations.length === 0) {
+      if (nearest.distance > MAX_NEAREST_STATION_DISTANCE_METERS) {
         setLocationMessage(
-          `${nearest.nameJa}역은 현재 GUIDE 노선에서 검색할 수 없어요.`,
+          "현재 위치 주변에서 지원되는 역을 찾을 수 없어요. 도쿄 지역에서 다시 시도해 주세요.",
         );
         return;
       }
 
-      const representativeStation = guideStations[0];
+      const representativeStation = nearest.station;
 
       setDeparture({
         stationId: representativeStation.id,
@@ -1372,7 +1400,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     paddingTop: 24,
-    paddingBottom: 40,
+    paddingBottom: 130,
   },
 
   hero: {

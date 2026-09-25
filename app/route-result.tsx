@@ -1316,7 +1316,7 @@ const styles = StyleSheet.create({
     minHeight: 92,
     marginLeft: 7,
     paddingTop: 12,
-    paddingBottom: 16,
+    paddingBottom: 130,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
 
