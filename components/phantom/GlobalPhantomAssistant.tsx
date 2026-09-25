@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { router } from "expo-router";
+import * as Location from "expo-location";
 
 import { usePhantom } from "../../contexts/PhantomContext";
+import { findNearestGuideStation } from "../../lib/location/nearestStation";
 import { resolvePhantomStation } from "../../lib/phantom/stationResolver";
 import PhantomAssistant from "./PhantomAssistant";
 
 const PHANTOM_API_URL =
   "https://tokyo-railway-api.vercel.app/api/phantom";
+
+const MAX_CURRENT_LOCATION_DISTANCE_METERS = 50_000;
 
 type PhantomRouteIntent = {
   intent: "route" | "last-train";
@@ -158,6 +162,62 @@ const GlobalPhantomAssistant = () => {
     setPendingRouteRequest,
   ]);
 
+  const resolveCurrentLocationStation = async () => {
+    const { status } =
+      await Location.requestForegroundPermissionsAsync();
+
+    if (status !== "granted") {
+      setPhantomText(
+        "현재 위치에서 출발하려면 위치 권한을 허용해 주세요.",
+      );
+
+      return null;
+    }
+
+    const location =
+      await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+    const nearest = findNearestGuideStation(
+      location.coords.latitude,
+      location.coords.longitude,
+    );
+
+    if (!nearest) {
+      setPhantomText(
+        "현재 위치에서 가까운 GUIDE 지원 역을 찾지 못했어요.",
+      );
+
+      return null;
+    }
+
+    if (
+      nearest.distance >
+      MAX_CURRENT_LOCATION_DISTANCE_METERS
+    ) {
+      setPhantomText(
+        "현재 위치가 도쿄 철도 서비스 지역에서 너무 멀어요. 출발역을 직접 입력해 주세요.",
+      );
+
+      return null;
+    }
+
+    console.log(
+      "[PHANTOM] current location station:",
+      {
+        station: nearest.station,
+        distance: nearest.distance,
+      },
+    );
+
+    return {
+      nameKo: nearest.station.nameKo,
+      nameJa: nearest.station.nameJa,
+      representativeStation: nearest.station,
+    };
+  };
+
   const handleSendMessage = async (
     message: string,
   ): Promise<boolean> => {
@@ -215,14 +275,44 @@ const GlobalPhantomAssistant = () => {
         );
 
         const departureMatch =
-          resolvePhantomStation(
-            data.intent.departureStation,
-          );
+          data.intent.departureStation === "current-location"
+            ? await resolveCurrentLocationStation()
+            : resolvePhantomStation(
+                data.intent.departureStation,
+              );
+
+        if (!departureMatch) {
+          if (
+            data.intent.departureStation !==
+            "current-location"
+          ) {
+            setPhantomText(
+              `${data.intent.departureStation}역을 Tokyo Railway Guide의 역 데이터에서 찾지 못했어요.`,
+            );
+          }
+
+          return false;
+        }
 
         const arrivalMatch =
-          resolvePhantomStation(
-            data.intent.arrivalStation,
-          );
+          data.intent.arrivalStation === "current-location"
+            ? await resolveCurrentLocationStation()
+            : resolvePhantomStation(
+                data.intent.arrivalStation,
+              );
+
+        if (!arrivalMatch) {
+          if (
+            data.intent.arrivalStation !==
+            "current-location"
+          ) {
+            setPhantomText(
+              `${data.intent.arrivalStation}역을 Tokyo Railway Guide의 역 데이터에서 찾지 못했어요.`,
+            );
+          }
+
+          return false;
+        }
 
         console.log(
           "[PHANTOM] departure station:",
@@ -233,22 +323,6 @@ const GlobalPhantomAssistant = () => {
           "[PHANTOM] arrival station:",
           arrivalMatch,
         );
-
-        if (!departureMatch) {
-          setPhantomText(
-            `${data.intent.departureStation}역을 Tokyo Railway Guide의 역 데이터에서 찾지 못했어요.`,
-          );
-
-          return false;
-        }
-
-        if (!arrivalMatch) {
-          setPhantomText(
-            `${data.intent.arrivalStation}역을 Tokyo Railway Guide의 역 데이터에서 찾지 못했어요.`,
-          );
-
-          return false;
-        }
 
         const departureTime =
           new Date().toISOString();
@@ -308,7 +382,7 @@ const GlobalPhantomAssistant = () => {
       );
 
       setPhantomText(
-        "PHANTOM 서버에 연결하지 못했어요.",
+        "현재 위치 또는 PHANTOM 서버 정보를 확인하지 못했어요.",
       );
 
       return false;

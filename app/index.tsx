@@ -33,9 +33,9 @@ import {
   X,
 } from "lucide-react-native";
 
-import stationCoordinates from "../data/stationCoordinates.json";
 import { getAllStations } from "../data/railwayRegistry";
 import { useAppTheme } from "../hooks/useAppTheme";
+import { findNearestStationCoordinate } from "../lib/location/nearestStation";
 
 type SelectedStation = {
   stationId: string;
@@ -48,68 +48,6 @@ type DepartureTimeMode = "now" | "scheduled";
 
 const padTime = (value: number) => {
   return value.toString().padStart(2, "0");
-};
-
-type StationCoordinate = {
-  operatorId: string;
-  odptOperatorId: string;
-  odptStationId: string | null;
-  railwayId: string | null;
-  stationCode: string | null;
-  nameJa: string | null;
-  nameEn: string | null;
-  latitude: number;
-  longitude: number;
-};
-
-type NearestStationCoordinate = StationCoordinate & {
-  distance: number;
-};
-
-const toRadians = (degree: number) => (degree * Math.PI) / 180;
-
-const calculateDistance = (
-  latitude1: number,
-  longitude1: number,
-  latitude2: number,
-  longitude2: number,
-) => {
-  const earthRadius = 6371000;
-  const latitudeDifference = toRadians(latitude2 - latitude1);
-  const longitudeDifference = toRadians(longitude2 - longitude1);
-  const firstLatitude = toRadians(latitude1);
-  const secondLatitude = toRadians(latitude2);
-
-  const a =
-    Math.sin(latitudeDifference / 2) ** 2 +
-    Math.cos(firstLatitude) *
-      Math.cos(secondLatitude) *
-      Math.sin(longitudeDifference / 2) ** 2;
-
-  return earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-};
-
-const findNearestStationCoordinate = (
-  latitude: number,
-  longitude: number,
-): NearestStationCoordinate | null => {
-  const stations = stationCoordinates as StationCoordinate[];
-  let nearest: NearestStationCoordinate | null = null;
-
-  for (const station of stations) {
-    const distance = calculateDistance(
-      latitude,
-      longitude,
-      station.latitude,
-      station.longitude,
-    );
-
-    if (!nearest || distance < nearest.distance) {
-      nearest = { ...station, distance };
-    }
-  }
-
-  return nearest;
 };
 
 const ACCOMMODATION_STORAGE_KEY = "tokyo-railway-guide:accommodation";
@@ -354,42 +292,13 @@ const HomeScreen = () => {
         accuracy: Location.Accuracy.High,
       });
 
-      const guideStations = getAllStations();
-      const coordinates = stationCoordinates as StationCoordinate[];
+      const nearest = findNearestStationCoordinate(
+        location.coords.latitude,
+        location.coords.longitude,
+      );
 
-      let nearest:
-        | {
-            station: (typeof guideStations)[number];
-            distance: number;
-          }
-        | null = null;
-
-      for (const station of guideStations) {
-        const coordinate = coordinates.find(
-          (item) => item.nameJa === station.nameJa,
-        );
-
-        if (!coordinate) {
-          continue;
-        }
-
-        const distance = calculateDistance(
-          location.coords.latitude,
-          location.coords.longitude,
-          coordinate.latitude,
-          coordinate.longitude,
-        );
-
-        if (!nearest || distance < nearest.distance) {
-          nearest = {
-            station,
-            distance,
-          };
-        }
-      }
-
-      if (!nearest) {
-        setLocationMessage("가까운 지원 역을 찾지 못했어요.");
+      if (!nearest?.nameJa) {
+        setLocationMessage("가까운 역을 찾지 못했어요.");
         return;
       }
 
@@ -402,7 +311,18 @@ const HomeScreen = () => {
         return;
       }
 
-      const representativeStation = nearest.station;
+      const guideStations = getAllStations().filter(
+        (station) => station.nameJa === nearest.nameJa,
+      );
+
+      if (guideStations.length === 0) {
+        setLocationMessage(
+          `${nearest.nameJa}역은 현재 GUIDE 노선에서 검색할 수 없어요.`,
+        );
+        return;
+      }
+
+      const representativeStation = guideStations[0];
 
       setDeparture({
         stationId: representativeStation.id,
