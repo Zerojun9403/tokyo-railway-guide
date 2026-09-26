@@ -2,12 +2,15 @@ import FloatingBottomBar from "@/components/common/FloatingBottomBar";
 import GlobalPhantomAssistant from "@/components/phantom/GlobalPhantomAssistant";
 import { PhantomProvider } from "@/contexts/PhantomContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 
 const RootLayout = () => {
   const { isDark, colors } = useAppTheme();
+  const pathname = usePathname();
+
+  const isRouteResultScreen = pathname === "/route-result";
 
   return (
     <PhantomProvider>
@@ -29,7 +32,10 @@ const RootLayout = () => {
         />
 
         <FloatingBottomBar />
-        <GlobalPhantomAssistant />
+
+        {!isRouteResultScreen && (
+          <GlobalPhantomAssistant />
+        )}
       </View>
     </PhantomProvider>
   );

@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import { router, useLocalSearchParams } from "expo-router";
+import * as Location from "expo-location";
 import {
   ArrowLeft,
   ArrowRight,
@@ -22,6 +23,8 @@ import { railwayRegistry } from "../data/railwayRegistry";
 import PhantomAssistant from "../components/phantom/PhantomAssistant";
 import { usePhantom } from "../contexts/PhantomContext";
 import { useAppTheme } from "../hooks/useAppTheme";
+import { findNearestGuideStation } from "../lib/location/nearestStation";
+import { resolvePhantomStation } from "../lib/phantom/stationResolver";
 import { buildJourneySegments } from "../utils/routing/buildJourneySegments";
 import { buildRailwayGraph } from "../utils/routing/buildRailwayGraph";
 import { calculateRouteTime } from "../utils/routing/calculateRouteTime";
@@ -30,6 +33,22 @@ import { resolveLiveJourney } from "../utils/routing/resolveLiveJourney";
 import { resolveLiveLastJourney } from "../utils/routing/resolveLiveLastJourney";
 import type { JourneyResolverResult } from "../utils/routing/resolveJourney";
 import type { LastJourneyResolverResult } from "../utils/routing/resolveLastJourney";
+
+const MAX_CURRENT_LOCATION_DISTANCE_METERS = 50_000;
+
+type PhantomRouteIntent = {
+  intent: "route" | "last-train";
+  departureStation: string;
+  arrivalStation: string;
+};
+
+type PhantomApiResponse = {
+  ok: boolean;
+  mode?: string;
+  text?: string;
+  intent?: PhantomRouteIntent;
+  error?: string;
+};
 
 const formatTime = (date: Date) => {
   return date.toLocaleTimeString("ko-KR", {
@@ -324,10 +343,6 @@ const RouteResultScreen = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              ...(pendingRouteRequest?.message &&
-              consumedPendingRouteMessageRef.current !== pendingRouteRequest.message
-                ? { message: pendingRouteRequest.message }
-                : {}),
               journey: phantomJourney,
             }),
           },
@@ -338,6 +353,8 @@ const RouteResultScreen = () => {
           text?: string;
           error?: string;
         };
+
+        console.log("👻 [PHANTOM Auto Response]", data);
 
         if (!response.ok || !data.ok || !data.text) {
           throw new Error(data.error ?? "PHANTOM 응답을 가져오지 못했습니다.");
@@ -371,12 +388,56 @@ const RouteResultScreen = () => {
     };
   }, [phantomJourney]);
 
+const resolveCurrentLocationStation = async () => {
+  const { status } = await Location.requestForegroundPermissionsAsync();
+
+  if (status !== "granted") {
+    setPhantomText("현재 위치에서 출발하려면 위치 권한을 허용해 주세요.");
+    return null;
+  }
+
+  const location = await Location.getCurrentPositionAsync({
+    accuracy: Location.Accuracy.High,
+  });
+
+  const nearest = findNearestGuideStation(
+    location.coords.latitude,
+    location.coords.longitude,
+  );
+
+  if (!nearest) {
+    setPhantomText("현재 위치에서 가까운 GUIDE 지원 역을 찾지 못했어요.");
+    return null;
+  }
+
+  if (nearest.distance > MAX_CURRENT_LOCATION_DISTANCE_METERS) {
+    setPhantomText(
+      "현재 위치가 도쿄 철도 서비스 지역에서 너무 멀어요. 출발역을 직접 입력해 주세요.",
+    );
+    return null;
+  }
+
+  console.log("[PHANTOM] current location station:", {
+    station: nearest.station,
+    distance: nearest.distance,
+  });
+
+  return {
+    nameKo: nearest.station.nameKo,
+    nameJa: nearest.station.nameJa,
+    representativeStation: nearest.station,
+  };
+};
+
 const handlePhantomMessage = async (message: string): Promise<boolean> => {
+  const trimmedMessage = message.trim();
+
+  if (!trimmedMessage) return false;
+
   if (!phantomJourney) {
     setPhantomText(
       "현재 실제 열차 정보를 불러오지 못했어요. 열차 정보를 확인한 뒤 다시 질문해 주세요.",
     );
-
     return false;
   }
 
@@ -384,42 +445,90 @@ const handlePhantomMessage = async (message: string): Promise<boolean> => {
     setIsLoadingPhantom(true);
     setPhantomText(null);
 
-    const response = await fetch(
-      `${API_BASE_URL}/api/phantom`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message,
-          journey: phantomJourney,
-        }),
-      },
-    );
+    const response = await fetch(`${API_BASE_URL}/api/phantom`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: trimmedMessage,
+        journey: phantomJourney,
+      }),
+    });
 
-    const data = (await response.json()) as {
-      ok?: boolean;
-      text?: string;
-      error?: string;
-    };
+    const data = (await response.json()) as PhantomApiResponse;
 
-    if (!response.ok || !data.ok || !data.text) {
-      throw new Error(
-        data.error ?? "PHANTOM 응답을 가져오지 못했습니다.",
-      );
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error ?? "PHANTOM 응답을 가져오지 못했습니다.");
     }
 
-    setPhantomText(data.text);
+    const isRouteIntent =
+      (data.mode === "route-intent" && data.intent?.intent === "route") ||
+      (data.mode === "last-train-intent" &&
+        data.intent?.intent === "last-train");
 
-    return true;
+    if (isRouteIntent && data.intent) {
+      const departureMatch =
+        data.intent.departureStation === "current-location"
+          ? await resolveCurrentLocationStation()
+          : resolvePhantomStation(data.intent.departureStation);
+
+      const arrivalMatch =
+        data.intent.arrivalStation === "current-location"
+          ? await resolveCurrentLocationStation()
+          : resolvePhantomStation(data.intent.arrivalStation);
+
+      if (!departureMatch) {
+        if (data.intent.departureStation !== "current-location") {
+          setPhantomText(
+            `${data.intent.departureStation}역을 Tokyo Railway Guide의 역 데이터에서 찾지 못했어요.`,
+          );
+        }
+        return false;
+      }
+
+      if (!arrivalMatch) {
+        if (data.intent.arrivalStation !== "current-location") {
+          setPhantomText(
+            `${data.intent.arrivalStation}역을 Tokyo Railway Guide의 역 데이터에서 찾지 못했어요.`,
+          );
+        }
+        return false;
+      }
+
+      const departureTime = new Date().toISOString();
+
+      setPhantomText(
+        `${departureMatch.nameKo} → ${arrivalMatch.nameKo} 경로를 CULLINAN이 확인하고 있어요.`,
+      );
+
+      router.replace({
+        pathname: "/route-result" as any,
+        params: {
+          departureNameKo: departureMatch.nameKo,
+          departureNameJa: departureMatch.nameJa ?? "",
+          arrivalNameKo: arrivalMatch.nameKo,
+          arrivalNameJa: arrivalMatch.nameJa ?? "",
+          departureTime,
+          departureTimeMode: "now",
+          journeyMode:
+            data.intent.intent === "last-train" ? "last-train" : "normal",
+        },
+      });
+
+      return true;
+    }
+
+    if (data.text) {
+      setPhantomText(data.text);
+      return true;
+    }
+
+    setPhantomText("PHANTOM의 응답을 확인할 수 없어요.");
+    return false;
   } catch (error) {
     console.error("👻 [PHANTOM Question Error]", error);
-
     setPhantomText(
       "PHANTOM에 연결하지 못했어요. 잠시 후 다시 질문해 주세요.",
     );
-
     return false;
   } finally {
     setIsLoadingPhantom(false);
